@@ -87,6 +87,15 @@ install_gvm_libs() {
     /usr/bin/logger 'install_gvmlibs finished' -t 'gse';
 }
 
+install_python_gvm() {
+    /usr/bin/logger 'install_python_gvm' -t 'gse';
+    cd /usr/local/src/greenbone/;
+    cd python-gvm-20.12.1/;
+    /usr/bin/python3 -m pip install .;
+    /usr/poetry/bin/poetry install;
+    /usr/bin/logger 'install_python_gvm finished' -t 'gse';
+}
+
 install_openvas_smb() {
     /usr/bin/logger 'install_openvas_smb' -t 'gse';
     cd /usr/local/src/greenbone;
@@ -476,6 +485,9 @@ client-output-buffer-limit pubsub 32mb 8mb 60
 hz 10
 aof-rewrite-incremental-fsync yes
 EOF'
+    # Redis requirements - overcommit memory and TCP backlog setting > 511
+    echo "vm.overcommit_memory=1" >> /etc/sysctl.conf;
+    echo "net.core.somaxconn=1024" >> /etc/sysctl.conf;
     sync;
     /usr/bin/logger 'configure_redis finished' -t 'gse';
 }
@@ -530,7 +542,8 @@ main() {
         install_openvas;
         install_gvm_tools;
         install_gsa;        
-    
+        install_python_gvm;
+
         # Configuration of installed components
         prepare_postgresql;
         configure_gvm;
