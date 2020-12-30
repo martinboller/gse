@@ -21,4 +21,6 @@ A BIG Thank You to Greenbone Networks GmbH for supporting the security community
   - Not tested with separate scanner systems
 
 
-All feedback is welcome and the plan is to maintain this one, contrary to the older version using GVM11
+All feedback is welcome and the plan is to maintain this one, contrary to the older version using GVM10
+
+There's a short companion blog on https://blog.infosecworrier.dk/2020/12/building-your-own-greenbone.html
