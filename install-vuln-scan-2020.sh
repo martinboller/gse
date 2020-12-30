@@ -6,7 +6,7 @@
 #                                                                   #
 # Email:        martin                                              #
 # Last Update:  2020-12-29                                          #
-# Version:      1.00                                                #
+# Version:      1.01                                                #
 #                                                                   #
 # Changes:      Initial Version (1.00)                              #
 #                                                                   #
@@ -115,8 +115,9 @@ install_ospd() {
     cd /usr/local/src/greenbone
     # Configure and build scanner
     cd ospd-20.8.1;
-    /usr/bin/python3 -m pip install .;
-    /usr/poetry/bin/poetry install;
+    /usr/bin/python3 -m pip install ospd;
+#    /usr/bin/python3 -m pip install .;
+#    /usr/poetry/bin/poetry install;
 #    /usr/bin/python3 -m pip install ospd
     /usr/bin/logger 'install_ospd finished' -t 'gse';
 }
@@ -126,8 +127,9 @@ install_ospd_openvas() {
     cd /usr/local/src/greenbone;
     # Configure and build scanner
     cd ospd-openvas-20.8.0;
-    /usr/bin/python3 -m pip install .;
-    /usr/poetry/bin/poetry install;
+    /usr/bin/python3 -m pip install ospd-openvas;
+#    /usr/bin/python3 -m pip install .;
+#    /usr/poetry/bin/poetry install;
     /usr/bin/logger 'install_ospd_openvas finished' -t 'gse';
 }
 
@@ -384,30 +386,34 @@ ExecStart=/usr/local/var/lib/gse-updater/gse-updater.sh
 WantedBy=multi-user.target
 EOF'    
     # Create shell script
-    sudo sh -c "cat << EOF  > /usr/local/var/lib/gse-updater/gse-updater.sh;
+    sudo sh -c 'cat << EOF  > /usr/local/var/lib/gse-updater/gse-updater.sh;
 #! /bin/bash
 # updates feeds for Greenbone Vulnerability Manager
+
 # NVT data
-su gvm -c '/usr/local/bin/greenbone-nvt-sync';
+su gvm -c "/usr/local/bin/greenbone-nvt-sync";
 sleep 2;
-su gvm -c '/usr/bin/logger \"NVT data Feed Version $(greenbone-nvt-sync --feedversion)\" -t \"gse\"';
+/usr/bin/logger ''nvt data Feed Version \$(su gvm -c "greenbone-nvt-sync --feedversion")'' -t gse;
 sleep 10;
+
 # CERT data
-su gvm -c '/usr/local/bin/greenbone-feed-sync --type cert';
+su gvm -c "/usr/local/sbin/greenbone-feed-sync --type cert";
 sleep 2;
-su gvm -c '/usr/bin/logger \"Certdata Feed Version $(greenbone-feed-sync --type cert --feedversion)\" -t \"gse\"';
+/usr/bin/logger ''Certdata Feed Version \$(su gvm -c "greenbone-feed-sync --type cert --feedversion")'' -t gse;
 sleep 10;
+
 # SCAP data
-su gvm -c '/usr/local/bin/greenbone-feed-sync --type scap';
+su gvm -c "/usr/local/sbin/greenbone-feed-sync --type scap";
 sleep 2;
-su gvm -c '/usr/bin/logger \"Scapdata Feed Version $(greenbone-feed-sync --type scap --feedversion)\" -t \"gse\"';
+/usr/bin/logger ''Scapdata Feed Version \$(su gvm -c "greenbone-feed-sync --type scap --feedversion")'' -t gse;
 sleep 10;
-# SCAP data
-su gvm -c '/usr/local/bin/greenbone-feed-sync --type gvmd_data';
+
+# GVMD data
+su gvm -c "/usr/local/sbin/greenbone-feed-sync --type gvmd_data";
 sleep 2;
-su gvm -c '/usr/bin/logger \"GVMD_DATA Feed Version $(greenbone-feed-sync --type gvmd_data --feedversion)\" -t \"gse\"';
+/usr/bin/logger ''gvmd data Feed Version \$(su gvm -c "greenbone-feed-sync --type gvmd_data --feedversion")'' -t gse;
 exit 0
-EOF"
+EOF'
    sync;
    chmod +x /usr/local/var/lib/gse-updater/gse-updater.sh;
    /usr/bin/logger 'configure_greenbone_updates finished' -t 'gse';
@@ -533,10 +539,10 @@ main() {
         then
         # Installation of specific components
         # This is the master server so install GSAD
-        install_poetry;
+    #    install_poetry;
         install_gvm_libs;
         install_gvm;
-        install_ospd;
+    #    install_ospd;
         install_ospd_openvas;
         install_openvas_smb;
         install_openvas;
