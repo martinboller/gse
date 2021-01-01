@@ -441,8 +441,6 @@ configure_redis() {
     /usr/bin/logger 'configure_redis' -t 'gse';
     mkdir -p /var/run/redis;
     chown -R redis:redis /var/run/redis;
-    # Disable THP
-    echo never > /sys/kernel/mm/transparent_hugepage/enabled;
     sudo sh -c 'cat << EOF  > /etc/redis/redis.conf
 daemonize yes
 pidfile /var/run/redis/redis-server.pid
@@ -492,8 +490,12 @@ hz 10
 aof-rewrite-incremental-fsync yes
 EOF'
     # Redis requirements - overcommit memory and TCP backlog setting > 511
-    echo "vm.overcommit_memory=1" >> /etc/sysctl.conf;
-    echo "net.core.somaxconn=1024" >> /etc/sysctl.conf;
+    sysctl -w vm.overcommit_memory=1;
+    sysctl -w net.core.somaxconn=1024;
+    echo "vm.overcommit_memory=1" >> /etc/sysctl.d/60-gse-redis.conf;
+    echo "net.core.somaxconn=1024" >> /etc/sysctl.d/60-gse-redis.conf;
+    # Disable THP
+    echo never > /sys/kernel/mm/transparent_hugepage/enabled;
     sync;
     /usr/bin/logger 'configure_redis finished' -t 'gse';
 }
