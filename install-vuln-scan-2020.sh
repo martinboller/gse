@@ -11,7 +11,7 @@
 # Changes:      Initial Version (1.00)                              #
 #                                                                   #
 #                                                                   #
-# Info:         https://sadsloth.net/post/install-greenbone-src/    #
+# Info:        https://sadsloth.net/post/install-gvm10-src/         #
 #                                                                   #
 #                                                                   #
 # Instruction:  Run this script as root on a fully updated          #
@@ -26,10 +26,12 @@ install_prerequisites() {
     # Install prerequisites
     apt-get update;
     apt-get -y install software-properties-common cmake pkg-config libglib2.0-dev libgpgme11-dev uuid-dev libssh-gcrypt-dev libhiredis-dev gcc libgnutls28-dev libpcap-dev \
-    libgpgme-dev bison libksba-dev libsnmp-dev libgcrypt20-dev redis-server libsqlite3-dev libical-dev gnutls-bin doxygen nmap libmicrohttpd-dev libxml2-dev apt-transport-https \
-    curl xmltoman xsltproc gcc-mingw-w64 perl-base heimdal-dev libpopt-dev graphviz nodejs rpm nsis wget sshpass socat snmp gettext python-polib git libgpgme-dev libldap2-dev \
-    libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev libssh-gcrypt-dev bison libmicrohttpd-dev postgresql postgresql-contrib postgresql-server-dev-all xml-twig-tools;
-   /usr/bin/logger 'install_prerequisites finished' -t 'gse';
+        libgpgme-dev bison libksba-dev libsnmp-dev libgcrypt20-dev redis-server libsqlite3-dev libical-dev gnutls-bin doxygen nmap libmicrohttpd-dev libxml2-dev \
+        apt-transport-https curl xmltoman xsltproc gcc-mingw-w64 perl-base heimdal-dev libpopt-dev graphviz nodejs rpm nsis wget sshpass socat snmp gettext python3-polib \
+        git libgpgme-dev libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev libssh-gcrypt-dev bison libmicrohttpd-dev postgresql postgresql-contrib \
+        postgresql-server-dev-all xml-twig-tools python3-psutil build-essential fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
+        python3-defusedxml python3-pip python3-psutil virtualenv texlive-latex-extra texlive-fonts-recommended python-impacket;
+    /usr/bin/logger 'install_prerequisites finished' -t 'gse';
 }
 
 prepare_nix_users() {
@@ -204,8 +206,15 @@ install_gsa() {
 install_gvm_tools() {
     /usr/bin/logger 'install_gvm_tools' -t 'gse';
     # Install gvm-tools
-    pip3 install gvm-tools;
+    python3 -m pip install gvm-tools;
     /usr/bin/logger 'install_gvm_tools finished' -t 'gse';
+}
+
+install_impacket() {
+    /usr/bin/logger 'install_impacket' -t 'gse';
+    # Install impacket
+    python3 -m pip install impacket;
+    /usr/bin/logger 'install_impacket finished' -t 'gse';
 }
 
 prepare_postgresql() {
@@ -495,7 +504,7 @@ EOF'
     echo "vm.overcommit_memory=1" >> /etc/sysctl.d/60-gse-redis.conf;
     echo "net.core.somaxconn=1024" >> /etc/sysctl.d/60-gse-redis.conf;
     # Disable THP
-    echo never > /sys/kernel/mm/transparent_hugepage/enabled;
+    echo never > /sys/kernel/mm/transparent_hugepage/enabled;   
     sync;
     /usr/bin/logger 'configure_redis finished' -t 'gse';
 }
@@ -541,7 +550,7 @@ main() {
         then
         # Installation of specific components
         # This is the master server so install GSAD
-    #    install_poetry;
+        install_poetry;
         install_gvm_libs;
         install_gvm;
     #    install_ospd;
@@ -551,6 +560,7 @@ main() {
         install_gvm_tools;
         install_gsa;        
         install_python_gvm;
+#       install_impacket;
 
         # Configuration of installed components
         prepare_postgresql;
@@ -567,6 +577,7 @@ main() {
         start_services;
         configure_feed_owner;
         echo $HOSTNAME: $(date) | sudo tee -a /mnt/backup/servers;
+        /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gse';
     fi
 }
 
@@ -574,12 +585,24 @@ main;
 
 exit 0;
 
-##########################################################################################
-# Post install instructions
+######################################################################################################################################
+# Post install 
 # 
-# Make the admin account as import feed owner: https://community.greenbone.net/t/gvm-20-08-missing-report-formats-and-scan-configs/6397/2
+# The admin account is import feed owner: https://community.greenbone.net/t/gvm-20-08-missing-report-formats-and-scan-configs/6397/2
 # gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value UUID of admin account 
-# example 2cd1c565-bfb7-40c8-8611-4b9e678081ef
 # Get the uuid using gvmd --get-users --verbose
 # The first OpenVas scanner is always this UUID gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73
+#
+# Admin user:   cat /usr/local/lib/adminuser.
+#               You should change this: gvmd --user admin --new-password 'Your new password'
+#
+# Check the logs:
+# tail -f /usr/local/var/log/gvm/ospd-openvas.log
+# tail -f /usr/local/var/log/gvm/gvmd.log
+# tail -f /var/log/syslog | grep -i gse
+#
+# Using ps or top, You'll notice that postgres is being hammered by gvmd and that redis are
+# too, but by ospd-openvas.
+#
+# When running a scan tail -f /usr/local/var/log/openvas.log is useful in following on during the scanning.
 #
