@@ -25,6 +25,11 @@ install_prerequisites() {
     export DEBIAN_FRONTEND=noninteractive;
     # Install prerequisites
     apt-get update;
+    # Install some basic tools on a Debian net install
+    apt-get -y install --fix-policy;
+    apt-get -y install adduser whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 software-properties-common sudo dnsutils ntp \
+        dirmngr --install-recommends;
+    # Install pre-requisites for GSE
     apt-get -y install software-properties-common cmake pkg-config libglib2.0-dev libgpgme11-dev uuid-dev libssh-gcrypt-dev libhiredis-dev gcc libgnutls28-dev libpcap-dev \
         libgpgme-dev bison libksba-dev libsnmp-dev libgcrypt20-dev redis-server libsqlite3-dev libical-dev gnutls-bin doxygen nmap libmicrohttpd-dev libxml2-dev \
         apt-transport-https curl xmltoman xsltproc gcc-mingw-w64 perl-base heimdal-dev libpopt-dev graphviz nodejs rpm nsis wget sshpass socat snmp gettext python3-polib \
@@ -36,8 +41,8 @@ install_prerequisites() {
 
 prepare_nix_users() {
     # Create gvm user
-    useradd --system --create-home -c "GVM User" --shell /bin/bash gvm;
-    useradd --system --create-home -c "ospd User" --shell /bin/bash ospd;
+    /usr/sbin/useradd --system --create-home -c "GVM User" --shell /bin/bash gvm;
+    /usr/sbin/useradd --system --create-home -c "ospd User" --shell /bin/bash ospd;
     sudo sh -c 'cat << EOF > /etc/sudoers.d/50-ospd
 ospd	ALL = NOPASSWD: /usr/local/sbin/*
 EOF'        
@@ -612,6 +617,7 @@ main() {
         configure_greenbone_updates;
         configure_permissions;
         update_scan_data;
+        /usr/local/sbin/openvas --update-vt-info;
         start_services;
         configure_feed_owner;
         echo $HOSTNAME: $(date) | sudo tee -a /mnt/backup/servers;
