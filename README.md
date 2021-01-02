@@ -17,10 +17,10 @@ A BIG Thank You to Greenbone Networks GmbH for supporting the security community
 
 ### Known issues:
   - ospd-openvas running as root (it needs that for openvas scanning) however that should be changed to a specific account
-  - openvas-smb throws some errors at compile time - need to investigate
   - Not tested with separate scanner systems
 
+Please use the install-vuln-scan-2021.sh script. The naming is stupid as it still installs version 20.8, but...
 
-All feedback is welcome and the plan is to maintain this one, contrary to the older version using GVM10
+All feedback is welcome and the plan is to maintain this one, contrary to the older version using GVM10.
 
 There's a short companion blog on https://blog.infosecworrier.dk/2020/12/building-your-own-greenbone.html

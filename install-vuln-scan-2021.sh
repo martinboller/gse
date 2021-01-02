@@ -5,13 +5,13 @@
 # Author:       Martin Boller                                       #
 #                                                                   #
 # Email:        martin                                              #
-# Last Update:  2020-12-29                                          #
-# Version:      1.01                                                #
+# Last Update:  2021-01-02                                          #
+# Version:      1.00                                                #
 #                                                                   #
 # Changes:      Initial Version (1.00)                              #
 #                                                                   #
 #                                                                   #
-# Info:        https://sadsloth.net/post/install-gvm10-src/         #
+# Info:        https://sadsloth.net/post/install-gvm11-src_part1/   #
 #                                                                   #
 #                                                                   #
 # Instruction:  Run this script as root on a fully updated          #
@@ -48,24 +48,58 @@ prepare_source() {
     mkdir -p /usr/local/src/greenbone
     chown -R gvm:gvm /usr/local/src/greenbone;
     cd /usr/local/src/greenbone;
-    # git clone https://github.com/greenbone/gvmd.git;
-    # git clone https://github.com/greenbone/gsa.git;
-    # git clone https://github.com/greenbone/openvas.git;
-    # git clone https://github.com/greenbone/gvm-libs.git;
-    # git clone https://github.com/greenbone/openvas-smb.git;
-    # git clone https://github.com/greenbone/ospd-openvas.git;
+
+    # Get all packages (the python elements can be installed w/o, but downloaded and used for install anyway)
     wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/v20.8.0.tar.gz;
     wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/v20.8.0.tar.gz;
     wget -O openvas.tar.gz https://github.com/greenbone/openvas/archive/v20.8.0.tar.gz;
-    wget -O gvm.tar.gz https://github.com/greenbone/gvmd/archive/v20.8.0.tar.gz;
+    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/v20.8.0.tar.gz;
     wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/v20.8.0.tar.gz;
     wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/v1.0.5.tar.gz;
     wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/v20.8.1.tar.gz;
+    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/v20.8.0.tar.gz;
     wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/v20.12.1.tar.gz;
+    wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/v1.4.0.tar.gz;
+   
+    # open the tarballs
     find *.gz | xargs -n1 tar zxvfp;
+    sync;
+
+    # Naming of directories w/o version
+    mv gvm-libs-20.8.0 gvm-libs;
+    mv ospd-openvas-20.8.0 ospd-openvas;
+    mv openvas-20.8.0 openvas;
+    mv gvmd-20.8.0 gvmd;
+    mv gsa-20.8.0 gsa;
+    mv openvas-smb-1.0.5 openvas-smb;
+    mv ospd-20.8.1 ospd;
+    mv ospd-openvas-20.8.0 ospd-openvas;
+    mv python-gvm-20.8.0 python-gvm;
+    mv gvm-tools-1.4.0 gvm-tools;
     sync;
     chown -R gvm:gvm /usr/local/src/greenbone;
     /usr/bin/logger 'prepare_source finished' -t 'gse';
+}
+
+prepare_source_latest() {    
+    /usr/bin/logger 'prepare_source_latest' -t 'gse';
+    mkdir -p /usr/local/src/greenbone
+    chown -R gvm:gvm /usr/local/src/greenbone;
+    cd /usr/local/src/greenbone;
+    ## If you want to experiment with the latest builds
+    ## Warning: It WILL liekly break, so don't :)
+    git clone https://github.com/greenbone/gvmd.git;
+    git clone https://github.com/greenbone/gsa.git;
+    git clone https://github.com/greenbone/openvas.git;
+    git clone https://github.com/greenbone/gvm-libs.git;
+    git clone https://github.com/greenbone/openvas-smb.git;
+    git clone https://github.com/greenbone/ospd-openvas.git;
+    git clone https://github.com/greenbone/ospd.git;
+    git clone https://github.com/greenbone/python-gvm.git;
+    git clone https://github.com/greenbone/gvm-tools.git;
+    sync;
+    chown -R gvm:gvm /usr/local/src/greenbone;
+    /usr/bin/logger 'prepare_source_latest EXPERIMENTAL finished' -t 'gse';
 }
 
 install_poetry() {
@@ -79,7 +113,7 @@ install_poetry() {
 install_gvm_libs() {
     /usr/bin/logger 'install_gvmlibs' -t 'gse';
     cd /usr/local/src/greenbone/;
-    cd gvm-libs-20.8.0/;
+    cd gvm-libs/;
     cmake .;
     make                # build the libraries
     make doc-full       # build more developer-oriented documentation
@@ -92,7 +126,7 @@ install_gvm_libs() {
 install_python_gvm() {
     /usr/bin/logger 'install_python_gvm' -t 'gse';
     cd /usr/local/src/greenbone/;
-    cd python-gvm-20.12.1/;
+    cd python-gvm/;
     /usr/bin/python3 -m pip install .;
     /usr/poetry/bin/poetry install;
     /usr/bin/logger 'install_python_gvm finished' -t 'gse';
@@ -102,7 +136,7 @@ install_openvas_smb() {
     /usr/bin/logger 'install_openvas_smb' -t 'gse';
     cd /usr/local/src/greenbone;
     #config and build openvas-smb
-    cd openvas-smb-1.0.5;
+    cd openvas-smb;
 #    export PKG_CONFIG_PATH=/opt/greenbone;
     cmake .;
     make                # build the libraries
@@ -116,11 +150,11 @@ install_ospd() {
     /usr/bin/logger 'install_ospd' -t 'gse';
     cd /usr/local/src/greenbone
     # Configure and build scanner
-    cd ospd-20.8.1;
-    /usr/bin/python3 -m pip install ospd;
-#    /usr/bin/python3 -m pip install .;
-#    /usr/poetry/bin/poetry install;
-#    /usr/bin/python3 -m pip install ospd
+    cd ospd;
+    /usr/bin/python3 -m pip install .
+    # The poetry install part will fail if poetry is not installed
+    # so left here for use when testing (just comment uncomment poetry install in "main")
+    /usr/poetry/bin/poetry install;
     /usr/bin/logger 'install_ospd finished' -t 'gse';
 }
 
@@ -128,10 +162,11 @@ install_ospd_openvas() {
     /usr/bin/logger 'install_ospd_openvas' -t 'gse';
     cd /usr/local/src/greenbone;
     # Configure and build scanner
-    cd ospd-openvas-20.8.0;
-    /usr/bin/python3 -m pip install ospd-openvas;
-#    /usr/bin/python3 -m pip install .;
-#    /usr/poetry/bin/poetry install;
+    cd ospd-openvas;
+    /usr/bin/python3 -m pip install .
+    # The poetry install part will fail if poetry is not installed
+    # so left here for use when testing (just comment uncomment poetry install in "main")
+    /usr/poetry/bin/poetry install;
     /usr/bin/logger 'install_ospd_openvas finished' -t 'gse';
 }
 
@@ -139,7 +174,7 @@ install_openvas() {
     /usr/bin/logger 'install_openvas' -t 'gse';
     cd /usr/local/src/greenbone;
     # Configure and build scanner
-    cd openvas-20.8.0;
+    cd openvas;
     #export PKG_CONFIG_PATH=/opt/greenbone;
     cmake .;
     make                # build the libraries
@@ -155,7 +190,7 @@ install_gvm() {
     /usr/bin/logger 'install_gvm' -t 'gse';
     cd /usr/local/src/greenbone;
     # Build Manager
-    cd gvmd-20.8.0;
+    cd gvmd/;
 #    export PKG_CONFIG_PATH=/opt/greenbone;
     cmake .;
     make                # build the libraries
@@ -194,7 +229,7 @@ install_gsa() {
     sudo apt-get -y install yarn;
 
     # GSA Install
-    cd gsa-20.8.0;
+    cd gsa/;
     cmake .;
     make                # build the libraries
     make doc-full       # build more developer-oriented documentation
@@ -205,8 +240,11 @@ install_gsa() {
 
 install_gvm_tools() {
     /usr/bin/logger 'install_gvm_tools' -t 'gse';
+    cd /usr/local/src/greenbone
     # Install gvm-tools
-    python3 -m pip install gvm-tools;
+    cd gvm-tools/;
+    python3 -m pip install .;
+    /usr/poetry/bin/poetry install;
     /usr/bin/logger 'install_gvm_tools finished' -t 'gse';
 }
 
@@ -544,23 +582,22 @@ main() {
         install_prerequisites;
         prepare_nix_users;
         prepare_source;
+        # For latest builds use prepare_source_latest instead of prepare_source
+        # It is likely to break, so Don't.
+        #prepare_source_latest;
         
-        # Server specific elements
-    if [ "$HOSTNAME" = "manticore" ]; 
-        then
         # Installation of specific components
         # This is the master server so install GSAD
-        install_poetry;
+        #install_poetry;
         install_gvm_libs;
         install_gvm;
-#        install_ospd;
+        install_ospd;
         install_ospd_openvas;
         install_openvas_smb;
         install_openvas;
         install_gvm_tools;
         install_gsa;        
         install_python_gvm;
-#       install_impacket;
 
         # Configuration of installed components
         prepare_postgresql;
@@ -568,6 +605,7 @@ main() {
         configure_openvas;
         configure_gsa;
         configure_redis;
+
         # Prestage only works on the specific Vagrant lab where I've copied the scan-data to the Host. 
         # Update scan-data only from greenbone when used everywhere else 
         prestage_scan_data;
@@ -578,7 +616,6 @@ main() {
         configure_feed_owner;
         echo $HOSTNAME: $(date) | sudo tee -a /mnt/backup/servers;
         /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gse';
-    fi
 }
 
 main;
