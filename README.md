@@ -16,10 +16,9 @@ the file deleted. Do NOT delete the user admin unless you also change the feedow
 A BIG Thank You to Greenbone Networks GmbH for supporting the security community, especially Björn Ricks (https://twitter.com/BjoernRicks).
 
 ### Known issues:
-  - ospd-openvas running as root (it needs that for openvas scanning) however that should be changed to a specific account
+  - ~~ospd-openvas running as root (it needs that for openvas scanning) however that should be changed to a specific account~~
   - Not tested with separate scanner systems
 
-Please use the install-vuln-scan-2021.sh script. The naming is stupid as it still installs version 20.8, but...
 
 All feedback is welcome and the plan is to maintain this one, contrary to the older version using GVM10.
 

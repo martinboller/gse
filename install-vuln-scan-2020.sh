@@ -281,6 +281,13 @@ prepare_postgresql() {
 
 configure_openvas() {
     /usr/bin/logger 'configure_openvas' -t 'gse';
+    # Create dir for ospd run files
+    mkdir /run/ospd;
+    chown -R ospd:ospd /run/ospd;
+    # Ensure it is recreated after reboot
+    sudo sh -c 'cat << EOF > /etc/tmpfiles.d/ospd-openvas.conf
+d /run/ospd 1777 ospd ospd
+EOF'
     sudo sh -c 'cat << EOF > /usr/local/lib/systemd/system/ospd-openvas.service
 [Unit]
 Description=OSPD OpenVAS
@@ -308,17 +315,17 @@ EOF'
     # Directory for ospd configuration file
     mkdir -p /etc/ospd;
     # Directory for ospd pid file
-    mkdir -p /var/run/ospd;
+    mkdir -p /run/ospd;
     # Directory for ospd configuration file
     mkdir -p /usr/local/var/log/ospd;
     sudo sh -c 'cat << EOF > /etc/ospd/ospd.conf
 [OSPD - openvas]
 log_level = INFO
 socket_mode = 0o766
-unix_socket = /var/run/ospd/ospd.sock
-pid_file = /var/run/ospd/ospd-openvas.pid
-; default = /var/run/ospd
-lock_file_dir = /var/run/ospd
+unix_socket = /run/ospd/ospd.sock
+pid_file = /run/ospd/ospd-openvas.pid
+; default = /run/ospd
+lock_file_dir = /run/ospd
 
 ; max_scans, is the number of scan/task to be started before start to queuing.
 max_scans = 0
@@ -337,9 +344,14 @@ EOF'
 configure_gvm() {
     /usr/bin/logger 'configure_gvm' -t 'gse';
     # Prepare sock file for gvmd
-    touch /var/run/gvmd.sock;
-    chown gvm:gvm /var/run/gvmd.sock;
-    # Create Certificates
+    mkdir /run/gvmd;
+    touch /run/gvmd/gvmd.sock;
+    chown -R gvm:gvm /run/gvmd;
+    # Ensure it is recreated after reboot
+    sudo sh -c 'cat << EOF > /etc/tmpfiles.d/gvmd.conf
+d /run/gvmd 1777 gvm ospd
+EOF'   
+# Create Certificates
     export GVM_CERTIFICATE_LIFETIME=3650;
     /usr/local/bin/gvm-manage-certs -a;
         sudo sh -c 'cat << EOF > /usr/local/lib/systemd/system/gvmd.service
@@ -356,10 +368,10 @@ User=gvm
 Group=gvm
 PIDFile=/usr/local/var/run/gvmd.pid
 EnvironmentFile=/usr/local/etc/default/gvmd
-ExecStart=-/usr/local/sbin/gvmd --unix-socket=/usr/local/var/run/gvmd.sock --listen-group=gvm --client-watch-interval=0 --osp-vt-update=/var/run/ospd/ospd.sock
-#ExecStart=-/usr/local/sbin/gvmd --unix-socket=/usr/local/var/run/gvmd.sock --listen-group=gvm --client-watch-interval=0
+ExecStart=-/usr/local/sbin/gvmd --unix-socket=/run/gvmd/gvmd.sock --feed-lock-path=/run/ospd/feed-update.lock --listen-group=gvm --client-watch-interval=0 --osp-vt-update=/run/ospd/ospd.sock
+#ExecStart=-/usr/local/sbin/gvmd --unix-socket=/run/gvmd/gvmd.sock --listen-group=gvm --client-watch-interval=0
 Restart=always
-TimeoutStopSec=10
+TimeoutStopSec=20
 
 [Install]
 WantedBy=multi-user.target
@@ -383,8 +395,7 @@ Type=forking
 User=gvm
 Group=gvm
 PIDFile=/usr/local/var/run/gsad.pid
-EnvironmentFile=/usr/local/etc/default/gsad
-ExecStart=/usr/local/sbin/gsad --port=8443 --gnutls-priorities=SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2 --no-redirect --secure-cookie --http-sts
+ExecStart=/usr/local/sbin/gsad --port=8443 --unix-socket=/run/gvmd/gsad.sock --munix-socket=/run/gvmd/gvmd.sock --gnutls-priorities=SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2 --no-redirect --secure-cookie --http-sts
 Restart=always
 TimeoutStopSec=10
 
@@ -444,7 +455,7 @@ ConditionKernelCommandLine=!recovery
 
 [Service]
 Type=forking
-#PIDFile=/usr/local/var/run/gse-update.pid
+PIDFile=/run/gvmd/gse-update.pid
 ExecStart=/usr/local/var/lib/gse-updater/gse-updater.sh
 
 [Install]
@@ -532,14 +543,17 @@ start_services() {
 
 configure_redis() {
     /usr/bin/logger 'configure_redis' -t 'gse';
-    mkdir -p /var/run/redis;
-    chown -R redis:redis /var/run/redis;
+        sudo sh -c 'cat << EOF > /etc/tmpfiles.d/redis.conf
+d /run/redis 0755 redis redis
+EOF'
+    mkdir -p /run/redis;
+    chown -R redis:redis /run/redis;
     sudo sh -c 'cat << EOF  > /etc/redis/redis.conf
 daemonize yes
-pidfile /var/run/redis/redis-server.pid
+pidfile /run/redis/redis-server.pid
 port 0
 tcp-backlog 511
-unixsocket /var/run/redis/redis.sock
+unixsocket /run/redis/redis.sock
 unixsocketperm 766
 timeout 0
 tcp-keepalive 0
@@ -606,9 +620,11 @@ configure_permissions() {
     chown -R gvm:gvm /usr/local/var/log/gvm;
     chown -R gvm:gvm /usr/local/var/run;
     # OpenVAS 
+    chown -R gvm:gvm /usr/local/var/run;
     chown -R gvm:ospd /usr/local/var/lib/openvas;
-    chown -R ospd:ospd /var/run/ospd/;
+    chown -R ospd:ospd /run/ospd/;
     chown -R ospd:ospd /etc/ospd/;
+    chown -R gvm:gvm /run/gvmd/;
     chown -R ospd:ospd /usr/local/var/log/ospd;
     # Home dirs
     chown -R gvm:gvm /home/gvm;
@@ -623,15 +639,15 @@ from gvm.protocols.gmp import Gmp
 from gvm.transforms import EtreeTransform
 from gvm.xml import pretty_print
 
-connection = UnixSocketConnection(path = '/usr/local/var/run/gvmd.sock')
+connection = UnixSocketConnection(path = '/run/gvmd/gvmd.sock')
 transform = EtreeTransform()
 
 with Gmp(connection, transform=transform) as gmp:
     # Retrieve GMP version supported by the remote daemon
-    #version = gmp.get_version()
+    version = gmp.get_version()
 
     # Prints the XML in beautiful form
-    #pretty_print(version)
+    pretty_print(version)
 
     # Login
     gmp.authenticate('admin', 'password')
