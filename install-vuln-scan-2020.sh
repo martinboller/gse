@@ -5,8 +5,8 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Email:        martin                                                      #
-# Last Update:  2021-01-04                                                  #
-# Version:      1.07                                                        #
+# Last Update:  2021-01-08                                                  #
+# Version:      1.10                                                        #
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
 #                                                                           #
@@ -27,17 +27,31 @@ install_prerequisites() {
     apt-get update;
     # Install some basic tools on a Debian net install
     apt-get -y install --fix-policy;
-    apt-get -y install adduser whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 software-properties-common sudo dnsutils ntp \
-        dirmngr --install-recommends;
-    # Install pre-requisites for GSE
-    apt-get -y install software-properties-common cmake pkg-config libglib2.0-dev libgpgme11-dev uuid-dev libssh-gcrypt-dev libhiredis-dev gcc libgnutls28-dev libpcap-dev \
-        libgpgme-dev bison libksba-dev libsnmp-dev libgcrypt20-dev redis-server libsqlite3-dev libical-dev gnutls-bin doxygen nmap libmicrohttpd-dev libxml2-dev \
-        apt-transport-https curl xmltoman xsltproc gcc-mingw-w64 perl-base heimdal-dev libpopt-dev graphviz nodejs rpm nsis wget sshpass socat snmp gettext python3-polib \
-        git libgpgme-dev libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev libssh-gcrypt-dev bison libmicrohttpd-dev postgresql postgresql-contrib \
-        postgresql-server-dev-all xml-twig-tools python3-psutil build-essential fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-        python3-defusedxml python3-pip python3-psutil virtualenv texlive texlive-latex-extra texlive-fonts-recommended python-impacket;
+    apt-get -y install adduser wget whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 software-properties-common \
+        sudo dnsutils dirmngr --install-recommends;
+    # Install pre-requisites for gvmd
+    apt-get -y install gcc cmake libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all postgresql-server-dev-11 \
+        pkg-config libical-dev xsltproc doxygen;
+    # For development
+    #apt-get -y install libcgreen1;
+    # Install pre-requisites for openvas
+    apt-get -y install gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
+        libgcrypt20-dev redis-server;
+    # Install pre-requisites for gsad
+    apt-get -y install libmicrohttpd-dev libxml2-dev;
+    # Other pre-requisites for GSE
+    apt-get -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
+        bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
+        sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
+        xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
+        python3-defusedxml python3-pip python3-psutil virtualenv texlive-latex-extra texlive-fonts-recommended python-impacket;
     # Install my preferences
     apt-get -y install bash-completion;
+    apt-get update;
+    apt-get -y full-upgrade;
+    apt-get -y auto-remove --purge -y;
+    # Python pip packages
+    #python3 -m pip install setuptools wrapt psutil packaging;
     /usr/bin/logger 'install_prerequisites finished' -t 'gse';
 }
 
@@ -67,8 +81,8 @@ prepare_source() {
     wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/v20.8.0.tar.gz;
     wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/v20.12.1.tar.gz;
     wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/v1.4.0.tar.gz;
-
-    # open the tarballs
+   
+    # open and extract the tarballs
     find *.gz | xargs -n1 tar zxvfp;
     sync;
 
@@ -94,7 +108,7 @@ prepare_source_latest() {
     chown -R gvm:gvm /usr/local/src/greenbone;
     cd /usr/local/src/greenbone;
     ## If you want to experiment with the latest builds
-    ## Warning: It WILL liekly break, so don't :)
+    ## Warning: It WILL likely break, so don't :)
     git clone https://github.com/greenbone/gvmd.git;
     git clone https://github.com/greenbone/gsa.git;
     git clone https://github.com/greenbone/openvas.git;
@@ -132,9 +146,10 @@ install_gvm_libs() {
 
 install_python_gvm() {
     /usr/bin/logger 'install_python_gvm' -t 'gse';
-    cd /usr/local/src/greenbone/;
-    cd python-gvm/;
+    # Installing from repo
     /usr/bin/python3 -m pip install python-gvm;
+    #cd /usr/local/src/greenbone/;
+    #cd python-gvm/;
     #/usr/bin/python3 -m pip install .;
     #/usr/poetry/bin/poetry install;
     /usr/bin/logger 'install_python_gvm finished' -t 'gse';
@@ -145,7 +160,6 @@ install_openvas_smb() {
     cd /usr/local/src/greenbone;
     #config and build openvas-smb
     cd openvas-smb;
-#    export PKG_CONFIG_PATH=/opt/greenbone;
     cmake .;
     make                # build the libraries
     make doc-full       # build more developer-oriented documentation
@@ -156,10 +170,13 @@ install_openvas_smb() {
 
 install_ospd() {
     /usr/bin/logger 'install_ospd' -t 'gse';
+    # Install from repo
+    #/usr/bin/python3 -m pip install ospd;
+    # Uncomment below for install from source
     cd /usr/local/src/greenbone
     # Configure and build scanner
     cd ospd;
-    /usr/bin/python3 -m pip install .
+    /usr/bin/python3 -m pip install . >> /usr/local/var/log/ospd-openvas-install-log
     # The poetry install part will fail if poetry is not installed
     # so left here for use when testing (just comment uncomment poetry install in "main")
     /usr/poetry/bin/poetry install;
@@ -168,10 +185,13 @@ install_ospd() {
 
 install_ospd_openvas() {
     /usr/bin/logger 'install_ospd_openvas' -t 'gse';
+    # Install from repo
+    #/usr/bin/python3 -m pip install ospd-openvas
     cd /usr/local/src/greenbone;
     # Configure and build scanner
+    # Uncomment below for install from source
     cd ospd-openvas;
-    /usr/bin/python3 -m pip install .
+    /usr/bin/python3 -m pip install . >> /usr/local/var/log/ospd-openvas-install-log
     # The poetry install part will fail if poetry is not installed
     # so left here for use when testing (just comment uncomment poetry install in "main")
     /usr/poetry/bin/poetry install;
@@ -183,7 +203,6 @@ install_openvas() {
     cd /usr/local/src/greenbone;
     # Configure and build scanner
     cd openvas;
-    #export PKG_CONFIG_PATH=/opt/greenbone;
     cmake .;
     make                # build the libraries
     make doc-full       # build more developer-oriented documentation
@@ -199,7 +218,6 @@ install_gvm() {
     cd /usr/local/src/greenbone;
     # Build Manager
     cd gvmd/;
-#    export PKG_CONFIG_PATH=/opt/greenbone;
     cmake .;
     make                # build the libraries
     make doc-full       # build more developer-oriented documentation
@@ -414,7 +432,7 @@ configure_feed_owner() {
         su gvm -c '/usr/local/sbin/gvmd --create-user=admin' >> /usr/local/var/lib/adminuser;
         su gvm -c 'gvmd --get-users --verbose' > /usr/local/var/lib/feedowner;
         awk -F " " {'print $2'} /usr/local/var/lib/feedowner > /usr/local/var/lib/uuid;
-        # Ensure strOwnerUUID is available in user gvm context
+        # Ensure UUID is available in user gvm context
         su gvm -c 'cat /usr/local/var/lib/uuid | xargs gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value $1'
         /usr/bin/logger 'configure_feed_owner User creation success' -t 'gse';
     else
@@ -445,48 +463,43 @@ Unit=gse-update.service
 WantedBy=multi-user.target
 EOF'  
 
-## Service
+    ## Create gse-update.service
     sudo sh -c 'cat << EOF > /usr/local/lib/systemd/system/gse-update.service
 [Unit]
 Description=gse updater
 After=network.target networking.service
 Documentation=man:gvmd(8)
-ConditionKernelCommandLine=!recovery
 
 [Service]
-Type=forking
-PIDFile=/run/gvmd/gse-update.pid
 ExecStart=/usr/local/var/lib/gse-updater/gse-updater.sh
+TimeoutSec=900
 
 [Install]
 WantedBy=multi-user.target
 EOF'    
-    # Create shell script
+
+    # Create script for gse-update.service
     sudo sh -c 'cat << EOF  > /usr/local/var/lib/gse-updater/gse-updater.sh;
 #! /bin/bash
 # updates feeds for Greenbone Vulnerability Manager
 
 # NVT data
 su gvm -c "/usr/local/bin/greenbone-nvt-sync";
-sleep 2;
 /usr/bin/logger ''nvt data Feed Version \$(su gvm -c "greenbone-nvt-sync --feedversion")'' -t gse;
 sleep 10;
 
 # CERT data
 su gvm -c "/usr/local/sbin/greenbone-feed-sync --type cert";
-sleep 2;
 /usr/bin/logger ''Certdata Feed Version \$(su gvm -c "greenbone-feed-sync --type cert --feedversion")'' -t gse;
 sleep 10;
 
 # SCAP data
 su gvm -c "/usr/local/sbin/greenbone-feed-sync --type scap";
-sleep 2;
 /usr/bin/logger ''Scapdata Feed Version \$(su gvm -c "greenbone-feed-sync --type scap --feedversion")'' -t gse;
 sleep 10;
 
 # GVMD data
 su gvm -c "/usr/local/sbin/greenbone-feed-sync --type gvmd_data";
-sleep 2;
 /usr/bin/logger ''gvmd data Feed Version \$(su gvm -c "greenbone-feed-sync --type gvmd_data --feedversion")'' -t gse;
 exit 0
 EOF'
@@ -514,8 +527,7 @@ start_services() {
     systemctl enable gse-update.timer;
     systemctl enable gse-update.service;
     # Will start after next reboot - may disturb the initial update
-    #systemctl start gse-update.timer;
-    
+    systemctl start gse-update.timer;
     # Check status of critical services
     # gvmd.service
     if systemctl is-active --quiet gvmd.service;
@@ -537,6 +549,12 @@ start_services() {
         /usr/bin/logger 'ospd-openvas.service started successfully' -t 'gse';
     else
         /usr/bin/logger 'ospd-openvas.service FAILED!' -t 'gse';
+    fi
+    if systemctl is-active --quiet gse-update.timer;
+    then
+        /usr/bin/logger 'gse-update.timer started successfully' -t 'gse';
+    else
+        /usr/bin/logger 'gse-update.timer FAILED! Updates will not be automated' -t 'gse';
     fi
     /usr/bin/logger 'start_services finished' -t 'gse';
 }
@@ -682,10 +700,10 @@ main() {
         #install_poetry;
         install_gvm_libs;
         install_gvm;
-        install_ospd;
-        install_ospd_openvas;
         install_openvas_smb;
         install_openvas;
+        install_ospd;
+        install_ospd_openvas;
         install_gvm_tools;
         install_gsa;        
         install_python_gvm;
