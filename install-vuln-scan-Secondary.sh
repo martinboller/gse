@@ -238,7 +238,7 @@ Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 User=ospd
 Group=gvm
 # Change log-level to info before production
-ExecStart=/usr/local/bin/ospd-openvas --port=9391 --bind-address=0.0.0.0 --pid-file=/run/ospd/ospd-openvas.pid --lock-file-dir=/run/ospd/ --key-file=/usr/local/var/lib/gvm/CA/abolethkey.pem --cert-file=/usr/local/var/lib/gvm/CA/abolethcert.pem --ca-file=/usr/local/var/lib/gvm/CA/cacert.pem --log-file=/usr/local/var/log/ospd/ospd-openvas.log --log-level=debug
+ExecStart=/usr/local/bin/ospd-openvas --port=9391 --bind-address=0.0.0.0 --pid-file=/run/ospd/ospd-openvas.pid --lock-file-dir=/run/ospd/ --key-file=/usr/local/var/lib/gvm/private/CA/secondarykey.pem --cert-file=/usr/local/var/lib/gvm/CA/secondarycert.pem --ca-file=/usr/local/var/lib/gvm/CA/cacert.pem --log-file=/usr/local/var/log/ospd/ospd-openvas.log --log-level=info
 # log level can be debug too, info is default
 # This works asynchronously, but does not take the daemon down during the reload so it is ok.
 Restart=always
