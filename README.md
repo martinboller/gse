@@ -17,8 +17,12 @@ A BIG Thank You to Greenbone Networks GmbH for supporting the security community
 
 ### Known issues:
   - ~~ospd-openvas running as root (it needs that for openvas scanning) however that should be changed to a specific account~~
-  - Not tested with separate scanner systems
+  - ~~Not tested with separate scanner systems~~
 
+### Latest changes 2020-01-16 - now working with secondary ospd-openvas scanner.
+This requires a few manual steps, specifically:
+ - Generating the certificates needed for the secondary on the primary server
+ - Copying these certificates to the secondary in the correct locations (helper script install-secondary-certs does that for you)
 
 All feedback is welcome and the plan is to maintain this one, contrary to the older version using GVM10.
 

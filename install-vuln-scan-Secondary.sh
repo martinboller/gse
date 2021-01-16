@@ -5,8 +5,8 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Email:        martin                                                      #
-# Last Update:  2021-01-08                                                  #
-# Version:      1.10                                                        #
+# Last Update:  2021-01-16                                                  #
+# Version:      1.00                                                        #
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
 #                                                                           #
@@ -52,12 +52,17 @@ install_prerequisites() {
     apt-get -y auto-remove --purge -y;
     # Python pip packages
     #python3 -m pip install setuptools wrapt psutil packaging;
+    mkdir -p /usr/local/var/lib/gvm/private/CA;
+    mkdir -p /usr/local/var/lib/gvm/CA;
+    mkdir -p /usr/local/var/lib/openvas/plugins;
+    mkdir -p /usr/local/var/lib/gvm/private/CA;
+    mkdir -p /usr/local/var/log/ospd/;
+    mkdir -p /usr/local/var/log/gvm/;
+    mkdir -p /usr/local/var/run/;
     /usr/bin/logger 'install_prerequisites finished' -t 'gse';
 }
 
 prepare_nix_users() {
-    # Create gvm user
-    /usr/sbin/useradd --system --create-home -c "gvm User" --shell /bin/bash gvm;
     /usr/sbin/useradd --system --create-home -c "ospd-openvas User" --shell /bin/bash ospd;
     sudo sh -c "cat << EOF > /etc/sudoers.d/50-ospd
 ospd	ALL = NOPASSWD: /usr/local/sbin/openvas
@@ -67,62 +72,39 @@ EOF"
 prepare_source() {    
     /usr/bin/logger 'prepare_source' -t 'gse';
     mkdir -p /usr/local/src/greenbone
-    chown -R gvm:gvm /usr/local/src/greenbone;
+    chown -R ospd:ospd /usr/local/src/greenbone;
     cd /usr/local/src/greenbone;
 
     # Get all packages (the python elements can be installed w/o, but downloaded and used for install anyway)
     wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/v20.8.0.tar.gz;
-    #git clone https://github.com/greenbone/gvm-libs;
     wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/v20.8.0.tar.gz;
     wget -O openvas.tar.gz https://github.com/greenbone/openvas/archive/v20.8.0.tar.gz;
-    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/v20.8.0.tar.gz;
-    wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/v20.8.0.tar.gz;
+    #wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/v20.8.0.tar.gz;
+    #wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/v20.8.0.tar.gz;
     wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/v1.0.5.tar.gz;
-    wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/v20.8.1.tar.gz;
+    #wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/v20.8.1.tar.gz;
     wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/v20.8.0.tar.gz;
-    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/v20.12.1.tar.gz;
-    wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/v1.4.0.tar.gz;
-    wget -O nmap.deb http://ftp.de.debian.org/debian/pool/main/n/nmap/nmap_7.91+dfsg1-1_amd64.deb;
-
-    # open and extract the tarballs
+    #wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/v20.12.1.tar.gz;
+    #wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/v1.4.0.tar.gz;
+   
+    # open the tarballs
     find *.gz | xargs -n1 tar zxvfp;
     sync;
 
     # Naming of directories w/o version
-    mv /usr/local/src/greenbone/gvm-libs-20.8.0 /usr/local/src/greenbone/gvm-libs-20.8.0;
-    mv /usr/local/src/greenbone/ospd-openvas-20.8.0 /usr/local/src/greenbone/ospd-openvas;
-    mv /usr/local/src/greenbone/openvas-20.8.0 /usr/local/src/greenbone/openvas;
-    mv /usr/local/src/greenbone/gvmd-20.8.0 /usr/local/src/greenbone/gvmd;
-    mv /usr/local/src/greenbone/gsa-20.8.0 /usr/local/src/greenbone/gsa;
-    mv /usr/local/src/greenbone/openvas-smb-1.0.5 /usr/local/src/greenbone/openvas-smb;
-    mv /usr/local/src/greenbone/ospd-20.8.1 /usr/local/src/greenbone/ospd;
-    mv /usr/local/src/greenbone/ospd-openvas-20.8.0 /usr/local/src/greenbone/ospd-openvas;
-    mv /usr/local/src/greenbone/python-gvm-20.12.1 /usr/local/src/greenbone/python-gvm;
-    mv /usr/local/src/greenbone/gvm-tools-1.4.0 /usr/local/src/greenbone/gvm-tools;
+    mv gvm-libs-20.8.0 gvm-libs;
+    mv ospd-openvas-20.8.0 ospd-openvas;
+    mv openvas-20.8.0 openvas;
+    mv gvmd-20.8.0 gvmd;
+    mv gsa-20.8.0 gsa;
+    mv openvas-smb-1.0.5 openvas-smb;
+    mv ospd-20.8.1 ospd;
+    mv ospd-openvas-20.8.0 ospd-openvas;
+    mv python-gvm-20.8.0 python-gvm;
+    mv gvm-tools-1.4.0 gvm-tools;
     sync;
-    chown -R gvm:gvm /usr/local/src/greenbone;
+    chown -R ospd:ospd /usr/local/src/greenbone;
     /usr/bin/logger 'prepare_source finished' -t 'gse';
-}
-
-prepare_source_latest() {    
-    /usr/bin/logger 'prepare_source_latest' -t 'gse';
-    mkdir -p /usr/local/src/greenbone
-    chown -R gvm:gvm /usr/local/src/greenbone;
-    cd /usr/local/src/greenbone;
-    ## If you want to experiment with the latest builds
-    ## Warning: It WILL likely break, so don't :)
-    git clone https://github.com/greenbone/gvmd.git;
-    git clone https://github.com/greenbone/gsa.git;
-    git clone https://github.com/greenbone/openvas.git;
-    git clone https://github.com/greenbone/gvm-libs.git;
-    git clone https://github.com/greenbone/openvas-smb.git;
-    git clone https://github.com/greenbone/ospd-openvas.git;
-    git clone https://github.com/greenbone/ospd.git;
-    git clone https://github.com/greenbone/python-gvm.git;
-    git clone https://github.com/greenbone/gvm-tools.git;
-    sync;
-    chown -R gvm:gvm /usr/local/src/greenbone;
-    /usr/bin/logger 'prepare_source_latest EXPERIMENTAL finished' -t 'gse';
 }
 
 install_poetry() {
@@ -160,17 +142,6 @@ install_gvm_libs_bp() {
     /usr/bin/logger 'install_gvmlibs_bp finished' -t 'gse';
 }
 
-install_python_gvm() {
-    /usr/bin/logger 'install_python_gvm' -t 'gse';
-    # Installing from repo
-    /usr/bin/python3 -m pip install python-gvm;
-    #cd /usr/local/src/greenbone/;
-    #cd python-gvm/;
-    #/usr/bin/python3 -m pip install .;
-    #/usr/poetry/bin/poetry install;
-    /usr/bin/logger 'install_python_gvm finished' -t 'gse';
-}
-
 install_openvas_smb() {
     /usr/bin/logger 'install_openvas_smb' -t 'gse';
     cd /usr/local/src/greenbone;
@@ -192,7 +163,7 @@ install_ospd() {
     cd /usr/local/src/greenbone
     # Configure and build scanner
     cd ospd;
-    /usr/bin/python3 -m pip install . >> /usr/local/var/log/ospd-openvas-install-log
+    /usr/bin/python3 -m pip install .
     # The poetry install part will fail if poetry is not installed
     # so left here for use when testing (just comment uncomment install_poetry in "main")
     /usr/poetry/bin/poetry install;
@@ -207,7 +178,7 @@ install_ospd_openvas() {
     # Configure and build scanner
     # Uncomment below for install from source
     cd ospd-openvas;
-    /usr/bin/python3 -m pip install . >> /usr/local/var/log/ospd-openvas-install-log
+    /usr/bin/python3 -m pip install .
     # The poetry install part will fail if poetry is not installed
     # so left here for use when testing (just comment uncomment poetry install in "main")
     /usr/poetry/bin/poetry install;
@@ -229,29 +200,6 @@ install_openvas() {
     /usr/bin/logger 'install_openvas finished' -t 'gse';
 }
 
-install_gvm() {
-    /usr/bin/logger 'install_gvm' -t 'gse';
-    cd /usr/local/src/greenbone;
-    # Build Manager
-    cd gvmd/;
-    cmake .;
-    make                # build the libraries
-    make doc-full       # build more developer-oriented documentation
-    make install        # install the build
-    sync;
-    ldconfig;
-    /usr/bin/logger 'install_gvm finished' -t 'gse';
-}
-
-install_nmap() {
-    /usr/bin/logger 'install_nmap' -t 'gse';
-    cd /usr/local/src/greenbone;
-    # Install NMAP
-    apt-get -y install ./nmap.deb --fix-missing;
-    sync;
-    /usr/bin/logger 'install_nmap finished' -t 'gse';
-}
-
 prestage_scan_data() {
     /usr/bin/logger 'prestage_scan_data' -t 'gse';
     # copy scan data from 2020-12-29 to prestage athe ~1.5 Gib required otherwise
@@ -259,7 +207,6 @@ prestage_scan_data() {
     cd /tmp/configfiles/;
     tar -xzf /tmp/configfiles/scandata.tar.gz; 
     /bin/cp -r /tmp/configfiles/GVM/lib/openvas/plugins/* /usr/local/var/lib/openvas/plugins/;
-    /bin/cp -r /tmp/configfiles/GVM/lib/gvm/* /usr/local/var/lib/gvm/;
     /usr/bin/logger 'prestage_scan_data finished' -t 'gse';
 }
 
@@ -268,59 +215,6 @@ update_scan_data() {
     ## This relies on the configure_greenbone_updates
     /usr/local/var/lib/gse-updater/gse-updater.sh;
     /usr/bin/logger 'update_scan_data finished' -t 'gse';
-}
-
-install_gsa() {
-    /usr/bin/logger 'install_gsa' -t 'gse';
-    ## Install GSA
-    cd /usr/local/src/greenbone
-    # GSA prerequisites
-    curl --silent --show-error https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -;
-    echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list;
-    sudo apt-get update;
-    sudo apt-get -y install --no-install-recommends yarn;
-
-    # GSA Install
-    cd gsa/;
-    cmake .;
-    make                # build the libraries
-    make doc-full       # build more developer-oriented documentation
-    make install        # install the build
-    sync;
-    /usr/bin/logger 'install_gsa finished' -t 'gse';
-}
-
-install_gvm_tools() {
-    /usr/bin/logger 'install_gvm_tools' -t 'gse';
-    cd /usr/local/src/greenbone
-    # Install gvm-tools
-    cd gvm-tools/;
-    python3 -m pip install .;
-    /usr/poetry/bin/poetry install;
-    /usr/bin/logger 'install_gvm_tools finished' -t 'gse';
-}
-
-install_impacket() {
-    /usr/bin/logger 'install_impacket' -t 'gse';
-    # Install impacket
-    python3 -m pip install impacket;
-    /usr/bin/logger 'install_impacket finished' -t 'gse';
-}
-
-prepare_postgresql() {
-    /usr/bin/logger 'prepare_postgresql' -t 'gse';
-    #sudo -Hiu postgres
-    su postgres -c 'createuser -DRS gvm;'
-    su postgres -c 'createuser -DRS root;'
-    su postgres -c 'createdb -O gvm gvmd;'
-    # Setup permissions.
-    su postgres -c "psql gvmd -c 'create role dba with superuser noinherit;'"
-    su postgres -c "psql gvmd -c 'grant dba to gvm;'"
-    su postgres -c "psql gvmd -c 'grant dba to root;'"
-    #   Create DB extensions (also necessary when the database got dropped).
-    su postgres -c 'psql gvmd -c "create extension \"uuid-ossp\";"'
-    su postgres -c 'psql gvmd -c "create extension "pgcrypto";"'
-    /usr/bin/logger 'prepare_postgresql finished' -t 'gse';
 }
 
 configure_openvas() {
@@ -332,7 +226,7 @@ configure_openvas() {
     sudo sh -c 'cat << EOF > /etc/tmpfiles.d/ospd-openvas.conf
 d /run/ospd 1777 ospd ospd
 EOF'
-    sudo sh -c 'cat << EOF > /usr/local/lib/systemd/system/ospd-openvas.service
+    sudo sh -c 'cat << EOF > /lib/systemd/system/ospd-openvas.service
 [Unit]
 Description=OSPD OpenVAS
 After=network.target networking.service redis-server.service systemd-tmpfiles.service
@@ -344,7 +238,7 @@ Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 User=ospd
 Group=gvm
 # Change log-level to info before production
-ExecStart=/usr/local/bin/ospd-openvas --config=/etc/ospd/ospd.conf --log-file=/usr/local/var/log/ospd/ospd-openvas.log --log-level=info
+ExecStart=/usr/local/bin/ospd-openvas --port=9391 --bind-address=0.0.0.0 --pid-file=/run/ospd/ospd-openvas.pid --lock-file-dir=/run/ospd/ --key-file=/usr/local/var/lib/gvm/CA/abolethkey.pem --cert-file=/usr/local/var/lib/gvm/CA/abolethcert.pem --ca-file=/usr/local/var/lib/gvm/CA/cacert.pem --log-file=/usr/local/var/log/ospd/ospd-openvas.log --log-level=debug
 # log level can be debug too, info is default
 # This works asynchronously, but does not take the daemon down during the reload so it is ok.
 Restart=always
@@ -354,129 +248,8 @@ RestartSec=60
 WantedBy=multi-user.target
 Alias=ospd-openvas.service
 EOF'
-
-    ## Configure ospd
-    # Directory for ospd configuration file
-    mkdir -p /etc/ospd;
-    # Directory for ospd pid file
-    mkdir -p /run/ospd;
-    # Directory for ospd configuration file
-    mkdir -p /usr/local/var/log/ospd;
-    sudo sh -c 'cat << EOF > /etc/ospd/ospd.conf
-[OSPD - openvas]
-log_level = INFO
-socket_mode = 0o766
-unix_socket = /run/ospd/ospd.sock
-pid_file = /run/ospd/ospd-openvas.pid
-; default = /run/ospd
-lock_file_dir = /run/ospd
-
-; max_scans, is the number of scan/task to be started before start to queuing.
-max_scans = 0
-
-; The minimal available memory before the GSM starts to queue scans.
-min_free_mem_scan_queue = 1500
-
-; max_queued_scans is the maximum amount of queued scans before starting to reject the new task (will not be queued) and send an error message to gvmd
-; This options are disabled with the value 0 (zero), all arriving tasks will be started without queuing.
-max_queued_scans = 0
-EOF'        
     sync;
     /usr/bin/logger 'configure_openvas finished' -t 'gse';
-}
-
-configure_gvm() {
-    /usr/bin/logger 'configure_gvm' -t 'gse';
-    # Prepare sock file for gvmd
-    mkdir /run/gvmd;
-    touch /run/gvmd/gvmd.sock;
-    chown -R gvm:gvm /run/gvmd;
-    # Ensure it is recreated after reboot
-    sudo sh -c 'cat << EOF > /etc/tmpfiles.d/gvmd.conf
-d /run/gvmd 1777 gvm ospd
-EOF'
-    # Create Certificates
-    # Certificate options
-    # Lifetime in days
-    export GVM_CERTIFICATE_LIFETIME=3650
-    # Country
-    export GVM_CERTIFICATE_COUNTRY="DK"
-    # Locality
-    export GVM_CERTIFICATE_LOCALITY="Denmark"
-    # Organization
-    export GVM_CERTIFICATE_ORG="bsecure.dk"
-    # (Organization unit)
-    export GVM_CERTIFICATE_ORG_UNIT="Security"
-    /usr/local/bin/gvm-manage-certs -a;
-    sudo sh -c 'cat << EOF > /usr/local/lib/systemd/system/gvmd.service
-[Unit]
-Description=Greenbone Vulnerability Manager daemon (gvmd)
-After=network.target networking.service postgresql.service ospd-openvas.service
-Wants=postgresql.service ospd-openvas.service
-Documentation=man:gvmd(8)
-ConditionKernelCommandLine=!recovery
-
-[Service]
-Type=forking
-User=gvm
-Group=gvm
-PIDFile=/usr/local/var/run/gvmd.pid
-EnvironmentFile=/usr/local/etc/default/gvmd
-ExecStart=-/usr/local/sbin/gvmd --unix-socket=/run/gvmd/gvmd.sock --feed-lock-path=/run/ospd/feed-update.lock --listen-group=gvm --client-watch-interval=0 --osp-vt-update=/run/ospd/ospd.sock
-#ExecStart=-/usr/local/sbin/gvmd --unix-socket=/run/gvmd/gvmd.sock --listen-group=gvm --client-watch-interval=0
-Restart=always
-TimeoutStopSec=20
-
-[Install]
-WantedBy=multi-user.target
-EOF'    
-    sync;
-    /usr/bin/logger 'configure_gvm finished' -t 'gse';
-    }
-
-configure_gsa() {
-    /usr/bin/logger 'configure_gsa' -t 'gse';
-    # Configure GSA daemon
-    sudo sh -c 'cat << EOF > /usr/local/lib/systemd/system/gsad.service
-[Unit]
-Description=Greenbone Security Assistant daemon (gsad)
-After=network.target networking.service gvmd.service
-Documentation=man:gsad(8)
-ConditionKernelCommandLine=!recovery
-
-[Service]
-Environment=HOSTNAME=$HOSTNAME
-Type=forking
-User=gvm
-Group=gvm
-PIDFile=/usr/local/var/run/gsad.pid
-ExecStart=/usr/local/sbin/gsad --port=8443 --unix-socket=/run/gvmd/gsad.sock --munix-socket=/run/gvmd/gvmd.sock --gnutls-priorities=SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2 --no-redirect --secure-cookie --http-sts --timeout=60 --http-cors="https://%H:8443/"
-Restart=always
-TimeoutStopSec=10
-
-[Install]
-WantedBy=multi-user.target
-EOF'    
-    sync;
-/usr/bin/logger 'configure_gsa finished' -t 'gse';
-}
-
-configure_feed_owner() {
-    /usr/bin/logger 'configure_feed_owner' -t 'gse';
-    echo "User admin for GVM $HOSTNAME " >> /usr/local/var/lib/adminuser;
-    if systemctl is-active --quiet gvmd.service;
-    then
-        su gvm -c '/usr/local/sbin/gvmd --create-user=admin' >> /usr/local/var/lib/adminuser;
-        su gvm -c 'gvmd --get-users --verbose' > /usr/local/var/lib/feedowner;
-        awk -F " " {'print $2'} /usr/local/var/lib/feedowner > /usr/local/var/lib/uuid;
-        # Ensure UUID is available in user gvm context
-        su gvm -c 'cat /usr/local/var/lib/uuid | xargs gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value $1'
-        /usr/bin/logger 'configure_feed_owner User creation success' -t 'gse';
-    else
-        echo "User admin for GVM $HOSTNAME could NOT be created - FAIL!" >> /usr/local/var/lib/adminuser;
-        /usr/bin/logger 'configure_feed_owner User creation FAILED!' -t 'gse';
-    fi
-    /usr/bin/logger 'configure_feed_owner finished' -t 'gse';
 }
 
 configure_greenbone_updates() {
@@ -523,21 +296,6 @@ EOF'
 # NVT data
 su gvm -c "/usr/local/bin/greenbone-nvt-sync";
 /usr/bin/logger ''nvt data Feed Version \$(su gvm -c "greenbone-nvt-sync --feedversion")'' -t gse;
-sleep 10;
-
-# CERT data
-su gvm -c "/usr/local/sbin/greenbone-feed-sync --type cert";
-/usr/bin/logger ''Certdata Feed Version \$(su gvm -c "greenbone-feed-sync --type cert --feedversion")'' -t gse;
-sleep 10;
-
-# SCAP data
-su gvm -c "/usr/local/sbin/greenbone-feed-sync --type scap";
-/usr/bin/logger ''Scapdata Feed Version \$(su gvm -c "greenbone-feed-sync --type scap --feedversion")'' -t gse;
-sleep 10;
-
-# GVMD data
-su gvm -c "/usr/local/sbin/greenbone-feed-sync --type gvmd_data";
-/usr/bin/logger ''gvmd data Feed Version \$(su gvm -c "greenbone-feed-sync --type gvmd_data --feedversion")'' -t gse;
 exit 0
 EOF'
 sync;
@@ -547,39 +305,19 @@ chmod +x /usr/local/var/lib/gse-updater/gse-updater.sh;
 
 start_services() {
     /usr/bin/logger 'start_services' -t 'gse';
-    # GVMD
     # Load new/changed systemd-unitfiles
     systemctl daemon-reload;
     # Restart Redis with new config
     systemctl restart redis;
     # Enable GSE units
     systemctl enable ospd-openvas;
-    systemctl enable gvmd.service;
-    systemctl enable gsad.service;
     # Start GSE units
     systemctl restart ospd-openvas;
-    systemctl restart gvmd.service;
-    systemctl restart gsad.service;
     # Enable gse-update timer and service
     systemctl enable gse-update.timer;
     systemctl enable gse-update.service;
-    # Will start after next reboot - may disturb the initial update
     systemctl start gse-update.timer;
     # Check status of critical services
-    # gvmd.service
-    if systemctl is-active --quiet gvmd.service;
-    then
-        /usr/bin/logger 'gvmd.service started successfully' -t 'gse';
-    else
-        /usr/bin/logger 'gvmd.service FAILED!' -t 'gse';
-    fi
-    # gsad.service
-    if systemctl is-active --quiet gsad.service;
-    then
-        /usr/bin/logger 'gsad.service started successfully' -t 'gse';
-    else
-        /usr/bin/logger 'gsad.service FAILED!' -t 'gse';
-    fi
     # ospd-openvas.service
     if systemctl is-active --quiet ospd-openvas.service;
     then
@@ -670,52 +408,17 @@ EOF'
 }
 
 configure_permissions() {
-    chown -R gvm:gvm /usr/local/src/;
-    chown -R gvm:gvm /usr/local/var/lib/gvm;
-    chown -R gvm:gvm /usr/local/var/log/gvm;
-    chown -R gvm:gvm /usr/local/var/run;
+    chown -R ospd:ospd /usr/local/src/;
+    chown -R ospd:ospd /usr/local/var/lib/gvm;
+    chown -R ospd:ospd /usr/local/var/log/gvm;
+    chown -R ospd:ospd /usr/local/var/run;
     # OpenVAS 
-    chown -R gvm:gvm /usr/local/var/run;
-    chown -R gvm:ospd /usr/local/var/lib/openvas;
+    chown -R ospd:ospd /usr/local/var/run;
+    chown -R ospd:ospd /usr/local/var/lib/openvas;
     chown -R ospd:ospd /run/ospd/;
-    chown -R ospd:ospd /etc/ospd/;
-    chown -R gvm:gvm /run/gvmd/;
     chown -R ospd:ospd /usr/local/var/log/ospd;
     # Home dirs
-    chown -R gvm:gvm /home/gvm;
     chown -R ospd:ospd /home/ospd;
-}
-
-create_gvm_python_script() {
-    /usr/bin/logger 'create_gvm_python_script' -t 'gse';
-    sudo sh -c "cat << EOF  > /home/gvm/gvm-tasks.py
-from gvm.connections import UnixSocketConnection
-from gvm.protocols.gmp import Gmp
-from gvm.transforms import EtreeTransform
-from gvm.xml import pretty_print
-
-connection = UnixSocketConnection(path = '/run/gvmd/gvmd.sock')
-transform = EtreeTransform()
-
-with Gmp(connection, transform=transform) as gmp:
-    # Retrieve GMP version supported by the remote daemon
-    version = gmp.get_version()
-
-    # Prints the XML in beautiful form
-    pretty_print(version)
-
-    # Login
-    gmp.authenticate('admin', 'password')
-
-    # Retrieve all tasks
-    tasks = gmp.get_tasks()
-
-    # Get names of tasks
-    task_names = tasks.xpath('task/name/text()')
-    pretty_print(task_names)
-EOF"
-    sync;
-/usr/bin/logger 'create_gvm_python_script finished' -t 'gse';
 }
 
 ##################################################################################################################
@@ -732,31 +435,17 @@ main() {
         #prepare_source_latest;
         
         # Installation of specific components
-        # This is the master server so install GSAD
         # Only install poetry when testing
         #install_poetry;
-        #install_nmap;
         install_gvm_libs;
-        install_gvm;
-        install_gsa;
+        install_gvm_libs_bp;
         install_openvas_smb;
         install_openvas;
         install_ospd;
         install_ospd_openvas;
-        install_gvm_tools;        
-        install_python_gvm;
-        ## Dirty workaround to install backported changes to allow remote scanner
-        install_gvm_libs_bp;
-        # Need to reinstall gvm with the new backported libs
-        install_gvm;    
         # Configuration of installed components
-        prepare_postgresql;
-        configure_gvm;
         configure_openvas;
-        configure_gsa;
         configure_redis;
-        #configure_openvas_smb;
-        create_gvm_python_script;
 
         # Prestage only works on the specific Vagrant lab where I've copied the scan-data to the Host. 
         # Update scan-data only from greenbone when used everywhere else 
@@ -793,19 +482,12 @@ exit 0;
 #
 # Creating a secondary sensor requires a backport for 20.08
 # Create required certs for secondary
-# su gvm
-# cd /home/gvm
-# gvm-manage-certs -e ./gsecert.cfg -v -d -c
-# copy secondarycert.pem, secondarykey.pem, and /usr/local/var/lib/gvm/CA/cacert.pem to the remote system to the correct locations. 
-# Then create the scanner in GVMD
-# gvmd --create-scanner="OSP Scanner secondary hostname" --scanner-host=hostname --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/usr/local/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem
-#
-# On Secondary:
-# copy certificate files to correct locations. When copied locally use the script install-vuln-secondary-certs.sh
-# The script also restarts the unit.
-#
-# Using ps or top, You'll notice that postgres is being hammered by gvmd and that redis are
-# too, but by ospd-openvas.
+# 
+# gvm-manage-certs -e ./gsecert.cfg  -v -d -c
+## Create required certs for secondary
+# 
+# gvm-manage-certs -e ./gsecert.cfg  -v -d -c
+# Using ps or top, You'll notice that redis is being hammered by ospd-openvas.
 #
 # When running a - tail -f /usr/local/var/log/openvas.log - is useful in following on during the scanning.
 #
