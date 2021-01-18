@@ -723,51 +723,51 @@ EOF"
 ##################################################################################################################
 
 main() {
-        # Shared components
-        install_prerequisites;
-        prepare_nix_users;
-        prepare_source;
-        # For latest builds use prepare_source_latest instead of prepare_source
-        # It is likely to break, so Don't.
-        #prepare_source_latest;
-        
-        # Installation of specific components
-        # This is the master server so install GSAD
-        # Only install poetry when testing
-        #install_poetry;
-        #install_nmap;
-        install_gvm_libs;
-        install_gvm;
-        install_gsa;
-        install_openvas_smb;
-        install_openvas;
-        install_ospd;
-        install_ospd_openvas;
-        install_gvm_tools;        
-        install_python_gvm;
-        ## Dirty workaround to install backported changes to allow remote scanner
-        install_gvm_libs_bp;
-        # Need to reinstall gvm with the new backported libs
-        install_gvm;    
-        # Configuration of installed components
-        prepare_postgresql;
-        configure_gvm;
-        configure_openvas;
-        configure_gsa;
-        configure_redis;
-        #configure_openvas_smb;
-        create_gvm_python_script;
+    # Shared components
+    install_prerequisites;
+    prepare_nix_users;
+    prepare_source;
+    # For latest builds use prepare_source_latest instead of prepare_source
+    # It is likely to break, so Don't.
+    #prepare_source_latest;
+    
+    # Installation of specific components
+    # This is the master server so install GSAD
+    # Only install poetry when testing
+    #install_poetry;
+    #install_nmap;
+    install_gvm_libs;
+    install_gvm;
+    install_gsa;
+    install_openvas_smb;
+    install_openvas;
+    install_ospd;
+    install_ospd_openvas;
+    install_gvm_tools;        
+    install_python_gvm;
+    ## Dirty workaround to install backported changes to allow remote scanner
+    install_gvm_libs_bp;
+    # Need to reinstall gvm with the new backported libs
+    install_gvm;    
+    # Configuration of installed components
+    prepare_postgresql;
+    configure_gvm;
+    configure_openvas;
+    configure_gsa;
+    configure_redis;
+    #configure_openvas_smb;
+    create_gvm_python_script;
 
-        # Prestage only works on the specific Vagrant lab where I've copied the scan-data to the Host. 
-        # Update scan-data only from greenbone when used everywhere else 
-        prestage_scan_data;
-        configure_greenbone_updates;
-        configure_permissions;
-        #update_scan_data;
-        /usr/local/sbin/openvas --update-vt-info;
-        start_services;
-        configure_feed_owner;
-        /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gse';
+    # Prestage only works on the specific Vagrant lab where I've copied the scan-data to the Host. 
+    # Update scan-data only from greenbone when used everywhere else 
+    prestage_scan_data;
+    configure_greenbone_updates;
+    configure_permissions;
+    #update_scan_data;
+    /usr/local/sbin/openvas --update-vt-info;
+    start_services;
+    configure_feed_owner;
+    /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gse';
 }
 
 main;
@@ -799,7 +799,7 @@ exit 0;
 # copy secondarycert.pem, secondarykey.pem, and /usr/local/var/lib/gvm/CA/cacert.pem to the remote system to the correct locations. 
 # Then create the scanner in GVMD
 # gvmd --create-scanner="OSP Scanner secondary hostname" --scanner-host=hostname --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/usr/local/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem
-#
+# The gsecert.cfg file supplied creates a wildcard cert, so can be used on all the secondaries you wish. 
 # On Secondary:
 # copy certificate files to correct locations. When copied locally use the script install-vuln-secondary-certs.sh
 # The script also restarts the unit.

@@ -236,9 +236,9 @@ ConditionKernelCommandLine=!recovery
 Type=forking
 Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 User=ospd
-Group=gvm
+Group=ospd
 # Change log-level to info before production
-ExecStart=/usr/local/bin/ospd-openvas --port=9391 --bind-address=0.0.0.0 --pid-file=/run/ospd/ospd-openvas.pid --lock-file-dir=/run/ospd/ --key-file=/usr/local/var/lib/gvm/private/CA/secondarykey.pem --cert-file=/usr/local/var/lib/gvm/CA/secondarycert.pem --ca-file=/usr/local/var/lib/gvm/CA/cacert.pem --log-file=/usr/local/var/log/ospd/ospd-openvas.log --log-level=info
+ExecStart=/usr/local/bin/ospd-openvas --port=9390 --bind-address=0.0.0.0 --pid-file=/run/ospd/ospd-openvas.pid --lock-file-dir=/run/ospd/ --key-file=/usr/local/var/lib/gvm/private/CA/secondarykey.pem --cert-file=/usr/local/var/lib/gvm/CA/secondarycert.pem --ca-file=/usr/local/var/lib/gvm/CA/cacert.pem --log-file=/usr/local/var/log/ospd/ospd-openvas.log --log-level=info
 # log level can be debug too, info is default
 # This works asynchronously, but does not take the daemon down during the reload so it is ok.
 Restart=always
@@ -254,12 +254,12 @@ EOF'
 
 configure_greenbone_updates() {
 /usr/bin/logger 'configure_greenbone_updates' -t 'gse';
-    # Configure daily GVM updates timer and service
+    # Configure daily greenbone-nvt-syn updates timer and service
     mkdir -p /usr/local/var/lib/gse-updater;
     # Timer
-    sudo sh -c 'cat << EOF > /usr/local/lib/systemd/system/gse-update.timer
+    sudo sh -c 'cat << EOF > /lib/systemd/system/gse-update.timer
 [Unit]
-Description=Daily job to update all Greenbone feeds
+Description=Daily job to update nvt feed
 
 [Timer]
 # Do not run for the first 37 minutes after boot
@@ -274,7 +274,7 @@ WantedBy=multi-user.target
 EOF'  
 
     ## Create gse-update.service
-    sudo sh -c 'cat << EOF > /usr/local/lib/systemd/system/gse-update.service
+    sudo sh -c 'cat << EOF > /lib/systemd/system/gse-update.service
 [Unit]
 Description=gse updater
 After=network.target networking.service
@@ -294,8 +294,8 @@ EOF'
 # updates feeds for Greenbone Vulnerability Manager
 
 # NVT data
-su gvm -c "/usr/local/bin/greenbone-nvt-sync";
-/usr/bin/logger ''nvt data Feed Version \$(su gvm -c "greenbone-nvt-sync --feedversion")'' -t gse;
+su ospd -c "/usr/local/bin/greenbone-nvt-sync";
+/usr/bin/logger ''nvt data Feed Version \$(su ospd -c "greenbone-nvt-sync --feedversion")'' -t gse;
 exit 0
 EOF'
 sync;
@@ -426,37 +426,33 @@ configure_permissions() {
 ##################################################################################################################
 
 main() {
-        # Shared components
-        install_prerequisites;
-        prepare_nix_users;
-        prepare_source;
-        # For latest builds use prepare_source_latest instead of prepare_source
-        # It is likely to break, so Don't.
-        #prepare_source_latest;
-        
-        # Installation of specific components
-        # Only install poetry when testing
-        #install_poetry;
-        install_gvm_libs;
-        install_gvm_libs_bp;
-        install_openvas_smb;
-        install_openvas;
-        install_ospd;
-        install_ospd_openvas;
-        # Configuration of installed components
-        configure_openvas;
-        configure_redis;
+    # Shared components
+    install_prerequisites;
+    prepare_nix_users;
+    prepare_source;
+    
+    # Installation of specific components
+    # Only install poetry when testing
+    #install_poetry;
+    install_gvm_libs;
+    install_gvm_libs_bp;
+    install_openvas_smb;
+    install_openvas;
+    install_ospd;
+    install_ospd_openvas;
+    # Configuration of installed components
+    configure_openvas;
+    configure_redis;
 
-        # Prestage only works on the specific Vagrant lab where I've copied the scan-data to the Host. 
-        # Update scan-data only from greenbone when used everywhere else 
-        prestage_scan_data;
-        configure_greenbone_updates;
-        configure_permissions;
-        #update_scan_data;
-        /usr/local/sbin/openvas --update-vt-info;
-        start_services;
-        configure_feed_owner;
-        /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gse';
+    # Prestage only works on the specific Vagrant lab where I've copied the scan-data to the Host. 
+    # Update scan-data only from greenbone when used everywhere else 
+    prestage_scan_data;
+    configure_greenbone_updates;
+    configure_permissions;
+    #update_scan_data;
+    /usr/local/sbin/openvas --update-vt-info;
+    start_services;
+    /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gse';
 }
 
 main;
@@ -481,12 +477,8 @@ exit 0;
 # tail -f /var/log/syslog | grep -i gse
 #
 # Creating a secondary sensor requires a backport for 20.08
-# Create required certs for secondary
-# 
-# gvm-manage-certs -e ./gsecert.cfg  -v -d -c
-## Create required certs for secondary
-# 
-# gvm-manage-certs -e ./gsecert.cfg  -v -d -c
+# Create required certs for secondary on primary run gvm-manage-certs -e ./gsecert.cfg  -v -d -c
+#
 # Using ps or top, You'll notice that redis is being hammered by ospd-openvas.
 #
 # When running a - tail -f /usr/local/var/log/openvas.log - is useful in following on during the scanning.

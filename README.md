@@ -24,6 +24,6 @@ This requires a few manual steps, specifically:
  - Generating the certificates needed for the secondary on the primary server
  - Copying these certificates to the secondary in the correct locations (helper script install-secondary-certs does that for you)
 
-All feedback is welcome and the plan is to maintain this one, contrary to the older version using GVM10.
+All feedback is welcome and the plan is to maintain this one, contrary to the older GVM10 install-script on my GitHub.
 
 There's a short companion blog on https://blog.infosecworrier.dk/2020/12/building-your-own-greenbone.html

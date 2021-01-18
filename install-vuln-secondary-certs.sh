@@ -20,9 +20,6 @@
 #                                                                           #
 #############################################################################
 
-
-
-
 install_certs() {
     /usr/bin/logger 'install_certs' -t 'gse';
     cp ./secondarycert.pem /usr/local/var/lib/gvm/CA/;
