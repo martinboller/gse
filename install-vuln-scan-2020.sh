@@ -5,8 +5,8 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Email:        martin                                                      #
-# Last Update:  2021-01-08                                                  #
-# Version:      1.10                                                        #
+# Last Update:  2021-01-19                                                  #
+# Version:      1.20                                                        #
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
 #                                                                           #
@@ -82,8 +82,7 @@ prepare_source() {
     wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/v20.8.0.tar.gz;
     wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/v20.12.1.tar.gz;
     wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/v1.4.0.tar.gz;
-    wget -O nmap.deb http://ftp.de.debian.org/debian/pool/main/n/nmap/nmap_7.91+dfsg1-1_amd64.deb;
-
+    
     # open and extract the tarballs
     find *.gz | xargs -n1 tar zxvfp;
     sync;
@@ -369,7 +368,7 @@ socket_mode = 0o766
 unix_socket = /run/ospd/ospd.sock
 pid_file = /run/ospd/ospd-openvas.pid
 ; default = /run/ospd
-lock_file_dir = /run/ospd
+lock_file_dir = /usr/local/var/run/
 
 ; max_scans, is the number of scan/task to be started before start to queuing.
 max_scans = 0
@@ -422,8 +421,8 @@ User=gvm
 Group=gvm
 PIDFile=/usr/local/var/run/gvmd.pid
 EnvironmentFile=/usr/local/etc/default/gvmd
-ExecStart=-/usr/local/sbin/gvmd --unix-socket=/run/gvmd/gvmd.sock --feed-lock-path=/run/ospd/feed-update.lock --listen-group=gvm --client-watch-interval=0 --osp-vt-update=/run/ospd/ospd.sock
-#ExecStart=-/usr/local/sbin/gvmd --unix-socket=/run/gvmd/gvmd.sock --listen-group=gvm --client-watch-interval=0
+# feed-update lock must be shared between ospd, gvmd, and greenbone-nvt-sync/greenbone-feed-sync
+ExecStart=-/usr/local/sbin/gvmd --unix-socket=/run/gvmd/gvmd.sock --feed-lock-path=/usr/local/var/run/feed-update.lock --listen-group=gvm --client-watch-interval=0 --osp-vt-update=/run/ospd/ospd.sock
 Restart=always
 TimeoutStopSec=20
 
@@ -523,17 +522,17 @@ EOF'
 # NVT data
 su gvm -c "/usr/local/bin/greenbone-nvt-sync";
 /usr/bin/logger ''nvt data Feed Version \$(su gvm -c "greenbone-nvt-sync --feedversion")'' -t gse;
-sleep 10;
+sleep 45;
 
 # CERT data
 su gvm -c "/usr/local/sbin/greenbone-feed-sync --type cert";
 /usr/bin/logger ''Certdata Feed Version \$(su gvm -c "greenbone-feed-sync --type cert --feedversion")'' -t gse;
-sleep 10;
+sleep 45;
 
 # SCAP data
 su gvm -c "/usr/local/sbin/greenbone-feed-sync --type scap";
 /usr/bin/logger ''Scapdata Feed Version \$(su gvm -c "greenbone-feed-sync --type scap --feedversion")'' -t gse;
-sleep 10;
+sleep 45;
 
 # GVMD data
 su gvm -c "/usr/local/sbin/greenbone-feed-sync --type gvmd_data";
@@ -543,7 +542,7 @@ EOF'
 sync;
 chmod +x /usr/local/var/lib/gse-updater/gse-updater.sh;
 /usr/bin/logger 'configure_greenbone_updates finished' -t 'gse';
-}
+}   
 
 start_services() {
     /usr/bin/logger 'start_services' -t 'gse';
@@ -715,8 +714,54 @@ with Gmp(connection, transform=transform) as gmp:
     pretty_print(task_names)
 EOF"
     sync;
-/usr/bin/logger 'create_gvm_python_script finished' -t 'gse';
+    /usr/bin/logger 'create_gvm_python_script finished' -t 'gse';
 }
+
+create_gsecerts() {
+    /usr/bin/logger 'create_gsecerts' -t 'gse';
+    cd /root/
+    mkdir sec_certs;
+    cd /root/sec_certs;
+    #Set required variables
+    export GVM_CERTIFICATE_LIFETIME=3650
+    export GVM_CERTIFICATE_COUNTRY="DK"
+    export GVM_CERTIFICATE_LOCALITY="Denmark"
+    export GVM_CERTIFICATE_ORG="bsecure.dk"
+    export GVM_CERTIFICATE_ORG_UNIT="Security"
+    export GVM_CERTIFICATE_HOSTNAME=*  
+    export GVM_CA_CERTIFICATE_LIFETIME=3652
+    export GVM_CA_CERTIFICATE_COUNTRY="$GVM_CERTIFICATE_COUNTRY"
+    export GVM_CA_CERTIFICATE_STATE="$GVM_CERTIFICATE_STATE"
+    export GVM_CA_CERTIFICATE_LOCALITY="$GVM_CERTIFICATE_LOCALITY"
+    export GVM_CA_CERTIFICATE_ORG="$GVM_CERTIFICATE_ORG"
+    export GVM_CA_CERTIFICATE_ORG_UNIT="Certificate Authority for $GVM_CERTIFICATE_HOSTNAME"
+    export GVM_CERTIFICATE_SIGNALG="SHA256"
+    export GVM_KEY_LOCATION="/usr/local/var/lib/gvm/private/CA"
+    export GVM_CERT_LOCATION="/usr/local/var/lib/gvm/CA"
+    export GVM_CERT_PREFIX="secondary"
+    export GVM_CERT_DIR="/root/sec_certs"
+    export GVM_KEY_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}key.pem"
+    export GVM_CERT_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}cert.pem"
+    export GVM_CERT_REQUEST_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}request.pem"
+    export GVM_CERT_TEMPLATE_FILENAME="gsecert-finished.cfg"
+    export GVM_SIGNING_CA_KEY_FILENAME="$GVM_KEY_LOCATION/cakey.pem"
+    export GVM_SIGNING_CA_CERT_FILENAME="$GVM_CERT_LOCATION/cacert.pem"
+    # Create Certs
+    /usr/bin/logger 'Creating certificates for secondary' -t 'gse';
+    gvm-manage-certs -v -d -c;
+    cp /usr/local/var/lib/gvm/CA/cacert.pem ./;
+    sync;
+    # Check certificate creation
+    if test -f $GVM_CERT_FILENAME; then
+        /usr/bin/logger 'certificates for secondary created' -t 'gse';
+        echo "$GVM_CERT_FILENAME available"
+    else
+        /usr/bin/logger 'Certificates for secondary not created' -t 'gse';
+        echo "$GVM_CERT_FILENAME not found, certificates not created"
+    fi;
+    /usr/bin/logger 'create_gsecerts finished' -t 'gse';
+}
+
 
 ##################################################################################################################
 ## Main                                                                                                          #
@@ -756,6 +801,7 @@ main() {
     configure_gsa;
     configure_redis;
     #configure_openvas_smb;
+    create_gsecerts;
     create_gvm_python_script;
 
     # Prestage only works on the specific Vagrant lab where I've copied the scan-data to the Host. 
@@ -808,4 +854,4 @@ exit 0;
 # too, but by ospd-openvas.
 #
 # When running a - tail -f /usr/local/var/log/openvas.log - is useful in following on during the scanning.
-#
+#/usr/local/var/lib/gvm/private/CA/
