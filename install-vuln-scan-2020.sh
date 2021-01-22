@@ -191,7 +191,7 @@ install_ospd() {
     cd /usr/local/src/greenbone
     # Configure and build scanner
     cd ospd;
-    /usr/bin/python3 -m pip install . >> /usr/local/var/log/ospd-openvas-install-log
+    /usr/bin/python3 -m pip install . 
     # The poetry install part will fail if poetry is not installed
     # so left here for use when testing (just comment uncomment install_poetry in "main")
     /usr/poetry/bin/poetry install;
@@ -206,7 +206,7 @@ install_ospd_openvas() {
     # Configure and build scanner
     # Uncomment below for install from source
     cd ospd-openvas;
-    /usr/bin/python3 -m pip install . >> /usr/local/var/log/ospd-openvas-install-log
+    /usr/bin/python3 -m pip install . 
     # The poetry install part will fail if poetry is not installed
     # so left here for use when testing (just comment uncomment poetry install in "main")
     /usr/poetry/bin/poetry install;
@@ -326,10 +326,10 @@ configure_openvas() {
     /usr/bin/logger 'configure_openvas' -t 'gse';
     # Create dir for ospd run files
     mkdir /run/ospd;
-    chown -R ospd:ospd /run/ospd;
+    chown -R ospd:gvm /run/ospd;
     # Ensure it is recreated after reboot
     sudo sh -c 'cat << EOF > /etc/tmpfiles.d/ospd-openvas.conf
-d /run/ospd 1777 ospd ospd
+d /run/ospd 1775 ospd gvm
 EOF'
     sudo sh -c 'cat << EOF > /usr/local/lib/systemd/system/ospd-openvas.service
 [Unit]
@@ -368,7 +368,7 @@ socket_mode = 0o766
 unix_socket = /run/ospd/ospd.sock
 pid_file = /run/ospd/ospd-openvas.pid
 ; default = /run/ospd
-lock_file_dir = /usr/local/var/run/
+lock_file_dir = /run/ospd
 
 ; max_scans, is the number of scan/task to be started before start to queuing.
 max_scans = 0
@@ -379,7 +379,7 @@ min_free_mem_scan_queue = 1500
 ; max_queued_scans is the maximum amount of queued scans before starting to reject the new task (will not be queued) and send an error message to gvmd
 ; This options are disabled with the value 0 (zero), all arriving tasks will be started without queuing.
 max_queued_scans = 0
-EOF'        
+EOF'
     sync;
     /usr/bin/logger 'configure_openvas finished' -t 'gse';
 }
@@ -392,7 +392,7 @@ configure_gvm() {
     chown -R gvm:gvm /run/gvmd;
     # Ensure it is recreated after reboot
     sudo sh -c 'cat << EOF > /etc/tmpfiles.d/gvmd.conf
-d /run/gvmd 1777 gvm ospd
+d /run/gvmd 1775 gvm ospd
 EOF'
     # Create Certificates
     # Certificate options
@@ -422,7 +422,7 @@ Group=gvm
 PIDFile=/usr/local/var/run/gvmd.pid
 EnvironmentFile=/usr/local/etc/default/gvmd
 # feed-update lock must be shared between ospd, gvmd, and greenbone-nvt-sync/greenbone-feed-sync
-ExecStart=-/usr/local/sbin/gvmd --unix-socket=/run/gvmd/gvmd.sock --feed-lock-path=/usr/local/var/run/feed-update.lock --listen-group=gvm --client-watch-interval=0 --osp-vt-update=/run/ospd/ospd.sock
+ExecStart=-/usr/local/sbin/gvmd --unix-socket=/run/gvmd/gvmd.sock --feed-lock-path=/run/ospd/feed-update.lock --listen-group=gvm --client-watch-interval=0 --osp-vt-update=/run/ospd/ospd.sock
 Restart=always
 TimeoutStopSec=20
 
@@ -447,7 +447,7 @@ ConditionKernelCommandLine=!recovery
 Environment=HOSTNAME=$HOSTNAME
 Type=forking
 User=gvm
-Group=gvm
+Group=ospd
 PIDFile=/usr/local/var/run/gsad.pid
 ExecStart=/usr/local/sbin/gsad --port=8443 --unix-socket=/run/gvmd/gsad.sock --munix-socket=/run/gvmd/gvmd.sock --gnutls-priorities=SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2 --no-redirect --secure-cookie --http-sts --timeout=60 --http-cors="https://%H:8443/"
 Restart=always
@@ -488,8 +488,8 @@ configure_greenbone_updates() {
 Description=Daily job to update all Greenbone feeds
 
 [Timer]
-# Do not run for the first 37 minutes after boot
-OnBootSec=37min
+# Do not run for the first 57 minutes after boot
+OnBootSec=57min
 # Run Daily
 OnCalendar=daily
 # Specify service
@@ -520,7 +520,7 @@ EOF'
 # updates feeds for Greenbone Vulnerability Manager
 
 # NVT data
-su gvm -c "/usr/local/bin/greenbone-nvt-sync";
+su ospd -c "/usr/local/bin/greenbone-nvt-sync";
 /usr/bin/logger ''nvt data Feed Version \$(su gvm -c "greenbone-nvt-sync --feedversion")'' -t gse;
 sleep 45;
 
@@ -658,7 +658,7 @@ EOF'
     # Disable THP
     echo never > /sys/kernel/mm/transparent_hugepage/enabled;
     # at every boot too
-        sudo sh -c 'cat << EOF  > /etc/rc.local
+        sudo sh -c 'cat << EOF  >> /etc/rc.local
 #!/bin/bash
 echo never > /sys/kernel/mm/transparent_hugepage/enabled
 exit 0
@@ -676,10 +676,14 @@ configure_permissions() {
     # OpenVAS 
     chown -R gvm:gvm /usr/local/var/run;
     chown -R gvm:ospd /usr/local/var/lib/openvas;
-    chown -R ospd:ospd /run/ospd/;
+    chown -R ospd:gvm /run/ospd/;
+    chmod -R 1775 /run/ospd/;
     chown -R ospd:ospd /etc/ospd/;
-    chown -R gvm:gvm /run/gvmd/;
+    chown -R gvm:ospd /run/gvmd/;
+    chmod -R 1775 /run/gvmd/;
     chown -R ospd:ospd /usr/local/var/log/ospd;
+    touch /usr/local/var/log/gvm/openvas.log;
+    chown -R ospd:ospd /usr/local/var/log/gvm/openvas.log;
     # Home dirs
     chown -R gvm:gvm /home/gvm;
     chown -R ospd:ospd /home/ospd;
@@ -755,6 +759,7 @@ create_gsecerts() {
     if test -f $GVM_CERT_FILENAME; then
         /usr/bin/logger 'certificates for secondary created' -t 'gse';
         echo "$GVM_CERT_FILENAME available"
+        chown gvm:gvm *.pem;
     else
         /usr/bin/logger 'Certificates for secondary not created' -t 'gse';
         echo "$GVM_CERT_FILENAME not found, certificates not created"
@@ -809,8 +814,8 @@ main() {
     prestage_scan_data;
     configure_greenbone_updates;
     configure_permissions;
-    #update_scan_data;
-    /usr/local/sbin/openvas --update-vt-info;
+    update_scan_data;
+    su gvm -c '/usr/local/sbin/openvas --update-vt-info';
     start_services;
     configure_feed_owner;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gse';
@@ -837,15 +842,30 @@ exit 0;
 # tail -f /usr/local/var/log/gvm/openvas-log < This is very useful when scanning
 # tail -f /var/log/syslog | grep -i gse
 #
-# Creating a secondary sensor requires a backport for 20.08
 # Create required certs for secondary
-# su gvm
-# cd /home/gvm
+# # cd /root/sec_certs
 # gvm-manage-certs -e ./gsecert.cfg -v -d -c
 # copy secondarycert.pem, secondarykey.pem, and /usr/local/var/lib/gvm/CA/cacert.pem to the remote system to the correct locations. 
 # Then create the scanner in GVMD
-# gvmd --create-scanner="OSP Scanner secondary hostname" --scanner-host=hostname --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/usr/local/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem
-# The gsecert.cfg file supplied creates a wildcard cert, so can be used on all the secondaries you wish. 
+# chown gvm:gvm *
+# su gvm -c 'gvmd --create-scanner="OSP Scanner secondary hostname" --scanner-host=hostname --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/usr/local/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem'
+# Example:
+#   su gvm -c 'gvmd --create-scanner="OSP Scanner aboleth" --scanner-host=aboleth --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/usr/local/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem'
+#       Scanner created.
+# 
+# Don't forget to install the certs on the secondary as discussed further down, then return and do these verification steps on the primary:
+#   
+#   su gvm -c 'gvmd --get-scanners'
+#       08b69003-5fc2-4037-a479-93b440211c73  OpenVAS  /var/run/ospd/ospd.sock  0  OpenVAS Default
+#       6acd0832-df90-11e4-b9d5-28d24461215b  CVE    0  CVE
+#       3e2232e3-b819-41bc-b5be-db52bfb06588  OpenVAS  mysecondary  9390  OSP Scanner mysecondary
+#
+#   su gvm -c 'gvmd --verify-scanner=3e2232e3-b819-41bc-b5be-db52bfb06588'
+#       Scanner version: OpenVAS 20.8.0.
+#
+#
+#The gsecert.cfg file supplied creates a wildcard cert, so can be used on all the secondaries you wish. 
+# 
 # On Secondary:
 # copy certificate files to correct locations. When copied locally use the script install-vuln-secondary-certs.sh
 # The script also restarts the unit.

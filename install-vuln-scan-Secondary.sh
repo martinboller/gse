@@ -262,8 +262,8 @@ configure_greenbone_updates() {
 Description=Daily job to update nvt feed
 
 [Timer]
-# Do not run for the first 37 minutes after boot
-OnBootSec=37min
+# Do not run for the first 57 minutes after boot
+OnBootSec=57min
 # Run Daily
 OnCalendar=daily
 # Specify service
@@ -413,7 +413,6 @@ configure_permissions() {
     chown -R ospd:ospd /usr/local/var/log/gvm;
     chown -R ospd:ospd /usr/local/var/run;
     # OpenVAS 
-    chown -R ospd:ospd /usr/local/var/run;
     chown -R ospd:ospd /usr/local/var/lib/openvas;
     chown -R ospd:ospd /run/ospd/;
     chown -R ospd:ospd /usr/local/var/log/ospd;
@@ -449,8 +448,8 @@ main() {
     prestage_scan_data;
     configure_greenbone_updates;
     configure_permissions;
-    #update_scan_data;
-    /usr/local/sbin/openvas --update-vt-info;
+    update_scan_data;
+    su ospd -c '/usr/local/sbin/openvas --update-vt-info';
     start_services;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gse';
 }
