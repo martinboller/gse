@@ -5,8 +5,8 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Email:        martin                                                      #
-# Last Update:  2021-01-19                                                  #
-# Version:      1.20                                                        #
+# Last Update:  2021-01-27                                                  #
+# Version:      1.30                                                        #
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
 #                                                                           #
@@ -329,7 +329,7 @@ configure_openvas() {
     chown -R ospd:gvm /run/ospd;
     # Ensure it is recreated after reboot
     sudo sh -c 'cat << EOF > /etc/tmpfiles.d/ospd-openvas.conf
-d /run/ospd 1775 ospd gvm
+d /run/ospd 1774 ospd gvm
 EOF'
     sudo sh -c 'cat << EOF > /usr/local/lib/systemd/system/ospd-openvas.service
 [Unit]
@@ -392,7 +392,7 @@ configure_gvm() {
     chown -R gvm:gvm /run/gvmd;
     # Ensure it is recreated after reboot
     sudo sh -c 'cat << EOF > /etc/tmpfiles.d/gvmd.conf
-d /run/gvmd 1775 gvm ospd
+d /run/gvmd 1774 gvm ospd
 EOF'
     # Create Certificates
     # Certificate options
@@ -406,6 +406,9 @@ EOF'
     export GVM_CERTIFICATE_ORG="bsecure.dk"
     # (Organization unit)
     export GVM_CERTIFICATE_ORG_UNIT="Security"
+    GVM_CERTIFICATE_SECPARAM="high"
+    GVM_CERTIFICATE_SIGNALG="SHA512"
+
     /usr/local/bin/gvm-manage-certs -a;
     sudo sh -c 'cat << EOF > /usr/local/lib/systemd/system/gvmd.service
 [Unit]
@@ -491,7 +494,7 @@ Description=Daily job to update all Greenbone feeds
 # Do not run for the first 57 minutes after boot
 OnBootSec=57min
 # Run Daily
-OnCalendar=daily
+OnUnitActiveSec=12h
 # Specify service
 Unit=gse-update.service
 
@@ -518,21 +521,21 @@ EOF'
     sudo sh -c 'cat << EOF  > /usr/local/var/lib/gse-updater/gse-updater.sh;
 #! /bin/bash
 # updates feeds for Greenbone Vulnerability Manager
-
+# Using the Community feed require some good sleep, as only one session at a time is allowed
 # NVT data
-su ospd -c "/usr/local/bin/greenbone-nvt-sync";
+su gvm -c "/usr/local/bin/greenbone-nvt-sync";
 /usr/bin/logger ''nvt data Feed Version \$(su gvm -c "greenbone-nvt-sync --feedversion")'' -t gse;
-sleep 45;
+sleep 30;
 
 # CERT data
 su gvm -c "/usr/local/sbin/greenbone-feed-sync --type cert";
 /usr/bin/logger ''Certdata Feed Version \$(su gvm -c "greenbone-feed-sync --type cert --feedversion")'' -t gse;
-sleep 45;
+sleep 30;
 
 # SCAP data
 su gvm -c "/usr/local/sbin/greenbone-feed-sync --type scap";
 /usr/bin/logger ''Scapdata Feed Version \$(su gvm -c "greenbone-feed-sync --type scap --feedversion")'' -t gse;
-sleep 45;
+sleep 30;
 
 # GVMD data
 su gvm -c "/usr/local/sbin/greenbone-feed-sync --type gvmd_data";
@@ -677,13 +680,17 @@ configure_permissions() {
     chown -R gvm:gvm /usr/local/var/run;
     chown -R gvm:ospd /usr/local/var/lib/openvas;
     chown -R ospd:gvm /run/ospd/;
-    chmod -R 1775 /run/ospd/;
+    # configure broader permissions as defined by tmpfiles.d/ to avoid a rebootsudo 
+    chmod -R 1777 /run/ospd/;
     chown -R ospd:ospd /etc/ospd/;
     chown -R gvm:ospd /run/gvmd/;
-    chmod -R 1775 /run/gvmd/;
+    # configure broader permissions as defined by tmpfiles.d/ to avoid a reboot
+    chmod -R 1777 /run/gvmd/;
     chown -R ospd:ospd /usr/local/var/log/ospd;
+    chmod -R 1777 /usr/local/var/log/ospd;
     touch /usr/local/var/log/gvm/openvas.log;
-    chown -R ospd:ospd /usr/local/var/log/gvm/openvas.log;
+    chown -R ospd:gvm /usr/local/var/log/gvm/openvas.log;
+    chmod -R 1777 /usr/local/var/log/gvm/openvas.log;
     # Home dirs
     chown -R gvm:gvm /home/gvm;
     chown -R ospd:ospd /home/ospd;
@@ -739,7 +746,8 @@ create_gsecerts() {
     export GVM_CA_CERTIFICATE_LOCALITY="$GVM_CERTIFICATE_LOCALITY"
     export GVM_CA_CERTIFICATE_ORG="$GVM_CERTIFICATE_ORG"
     export GVM_CA_CERTIFICATE_ORG_UNIT="Certificate Authority for $GVM_CERTIFICATE_HOSTNAME"
-    export GVM_CERTIFICATE_SIGNALG="SHA256"
+    export GVM_CERTIFICATE_SECPARAM="high"
+    export GVM_CERTIFICATE_SIGNALG="SHA512"
     export GVM_KEY_LOCATION="/usr/local/var/lib/gvm/private/CA"
     export GVM_CERT_LOCATION="/usr/local/var/lib/gvm/CA"
     export GVM_CERT_PREFIX="secondary"

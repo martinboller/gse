@@ -295,6 +295,7 @@ EOF'
 
 # NVT data
 su ospd -c "/usr/local/bin/greenbone-nvt-sync";
+sleep 30;
 /usr/bin/logger ''nvt data Feed Version \$(su ospd -c "greenbone-nvt-sync --feedversion")'' -t gse;
 exit 0
 EOF'
