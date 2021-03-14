@@ -90,7 +90,7 @@ prepare_source() {
     # Naming of directories w/o version
     mv /usr/local/src/greenbone/gvm-libs-20.8.0 /usr/local/src/greenbone/gvm-libs-20.8.0;
     mv /usr/local/src/greenbone/ospd-openvas-20.8.0 /usr/local/src/greenbone/ospd-openvas;
-    mv /usr/local/src/greenbone/openvas-20.8.0 /usr/local/src/greenbone/openvas;
+    mv /usr/local/src/greenbone/openvas-scanner-20.8.0 /usr/local/src/greenbone/openvas;
     mv /usr/local/src/greenbone/gvmd-20.8.0 /usr/local/src/greenbone/gvmd;
     mv /usr/local/src/greenbone/gsa-20.8.0 /usr/local/src/greenbone/gsa;
     mv /usr/local/src/greenbone/openvas-smb-1.0.5 /usr/local/src/greenbone/openvas-smb;
