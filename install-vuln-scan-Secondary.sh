@@ -94,7 +94,7 @@ prepare_source() {
     # Naming of directories w/o version
     mv gvm-libs-20.8.0 gvm-libs;
     mv ospd-openvas-20.8.0 ospd-openvas;
-    mv openvas-20.8.0 openvas;
+    mv openvas-scanner-20.8.0 openvas;
     mv gvmd-20.8.0 gvmd;
     mv gsa-20.8.0 gsa;
     mv openvas-smb-1.0.5 openvas-smb;
