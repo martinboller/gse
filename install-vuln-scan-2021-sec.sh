@@ -5,13 +5,13 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Email:        martin                                                      #
-# Last Update:  2021-01-16                                                  #
-# Version:      1.00                                                        #
+# Last Update:  2021-05-07                                                  #
+# Version:      1.50                                                        #
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
+#               2021-05-07 Update to 21.4.0 (1.50)                          #
 #                                                                           #
-#                                                                           #
-# Info:        https://sadsloth.net/post/install-gvm-20_08-src-on-debian/   #
+# Info:         https://sadsloth.net/post/install-gvm-20_08-src-on-debian/  #
 #                                                                           #
 #                                                                           #
 # Instruction:  Run this script as root on a fully updated                  #
@@ -30,7 +30,7 @@ install_prerequisites() {
     apt-get -y install adduser wget whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 software-properties-common \
         sudo dnsutils dirmngr --install-recommends;
     # Install pre-requisites for gvmd
-    apt-get -y install gcc cmake libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all postgresql-server-dev-11 \
+    apt-get -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all postgresql-server-dev-11 \
         pkg-config libical-dev xsltproc doxygen;
     # For development
     #apt-get -y install libcgreen1;
@@ -72,38 +72,38 @@ EOF"
 prepare_source() {    
     /usr/bin/logger 'prepare_source' -t 'gse';
     mkdir -p /usr/local/src/greenbone
-    chown -R ospd:ospd /usr/local/src/greenbone;
+    chown -R gvm:gvm /usr/local/src/greenbone;
     cd /usr/local/src/greenbone;
 
     # Get all packages (the python elements can be installed w/o, but downloaded and used for install anyway)
-    wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/v20.8.1.tar.gz;
-    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/v20.8.0.tar.gz;
-    wget -O openvas.tar.gz https://github.com/greenbone/openvas/archive/v20.8.0.tar.gz;
-    #wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/v20.8.0.tar.gz;
-    #wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/v20.8.0.tar.gz;
-    wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/v1.0.5.tar.gz;
-    #wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/v20.8.1.tar.gz;
-    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/v20.8.0.tar.gz;
-    #wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/v20.12.1.tar.gz;
-    #wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/v1.4.0.tar.gz;
-   
-    # open the tarballs
+    wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v21.4.0.tar.gz;
+    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v21.4.0.tar.gz;
+    wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v21.4.0.tar.gz;
+    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v21.4.0.tar.gz;
+    wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/refs/tags/v21.4.0.tar.gz;
+    wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v21.4.0.tar.gz;
+    wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/refs/tags/v21.4.0.tar.gz;
+    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v21.4.0.tar.gz;
+    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v21.4.0.tar.gz;
+    wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v21.1.0.tar.gz;
+    
+    # open and extract the tarballs
     find *.gz | xargs -n1 tar zxvfp;
     sync;
 
     # Naming of directories w/o version
-    mv gvm-libs-20.8.1 gvm-libs;
-    mv ospd-openvas-20.8.0 ospd-openvas;
-    mv openvas-scanner-20.8.0 openvas;
-    mv gvmd-20.8.0 gvmd;
-    mv gsa-20.8.0 gsa;
-    mv openvas-smb-1.0.5 openvas-smb;
-    mv ospd-20.8.1 ospd;
-    mv ospd-openvas-20.8.0 ospd-openvas;
-    mv python-gvm-20.8.0 python-gvm;
-    mv gvm-tools-1.4.0 gvm-tools;
+    mv /usr/local/src/greenbone/gvm-libs-21.4.0 /usr/local/src/greenbone/gvm-libs;
+    mv /usr/local/src/greenbone/ospd-openvas-21.4.0 /usr/local/src/greenbone/ospd-openvas;
+    mv /usr/local/src/greenbone/openvas-scanner-21.4.0 /usr/local/src/greenbone/openvas;
+    mv /usr/local/src/greenbone/gvmd-21.4.0 /usr/local/src/greenbone/gvmd;
+    mv /usr/local/src/greenbone/gsa-21.4.0 /usr/local/src/greenbone/gsa;
+    mv /usr/local/src/greenbone/openvas-smb-21.4.0 /usr/local/src/greenbone/openvas-smb;
+    mv /usr/local/src/greenbone/ospd-21.4.0 /usr/local/src/greenbone/ospd;
+    mv /usr/local/src/greenbone/ospd-openvas-21.4.0 /usr/local/src/greenbone/ospd-openvas;
+    mv /usr/local/src/greenbone/python-gvm-21.4.0 /usr/local/src/greenbone/python-gvm;
+    mv /usr/local/src/greenbone/gvm-tools-21.1.0 /usr/local/src/greenbone/gvm-tools;
     sync;
-    chown -R ospd:ospd /usr/local/src/greenbone;
+    chown -R gvm:gvm /usr/local/src/greenbone;
     /usr/bin/logger 'prepare_source finished' -t 'gse';
 }
 
