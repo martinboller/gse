@@ -1,6 +1,6 @@
-# Greenbone Vulnerability Manager 20.08.0 Source Code Edition Installation script
+# Greenbone Vulnerability Manager 21.4.0 Source Code Edition Installation script
 
-## Bash script automating the installation of Greenbone Vulnerability Manager 20.08.0 on Debian 10
+## Bash script automating the installation of Greenbone Vulnerability Manager 21.4.0 on Debian 10 (20.8.0 will eol end of 2021)
 
 Installation will be located in /usr/local/, which is the default for GVM SCE.
 
@@ -19,11 +19,13 @@ A BIG Thank You to Greenbone Networks GmbH for supporting the security community
   - ~~ospd-openvas running as root (it needs that for openvas scanning) however that should be changed to a specific account~~
   - ~~Not tested with separate scanner systems~~
 
-### Latest changes 2020-01-16 - now working with secondary ospd-openvas scanner.
-This requires a few manual steps, specifically:
+### Latest changes 2021-05-08 - updated to 21.4.0.
+Changed to 21.4.0 versions
+
+Runnning a secondary requires a few manual steps, specifically:
  - Copying the already created certificates to the secondary and running the helper script install-secondary-certs
  - Configure GVMD to use this scanner.
- This is all described in the comments at the end of the install-vuln-scan-2020.sh script.
+ This is all described in the comments at the end of the install-vuln-scan-2021.sh script.
 
 All feedback is welcome and the plan is to maintain this one, contrary to the older GVM10 install-script on my GitHub.
 
