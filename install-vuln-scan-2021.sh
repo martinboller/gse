@@ -144,20 +144,6 @@ install_gvm_libs() {
     /usr/bin/logger 'install_gvmlibs finished' -t 'gse';
 }
 
-install_gvm_libs_bp() {
-    /usr/bin/logger 'install_gvmlibs_bp' -t 'gse';
-    cd /usr/local/src/greenbone/;
-    git clone https://github.com/greenbone/gvm-libs;
-    cd gvm-libs/;
-    cmake .;
-    make                # build the libraries
-    make doc-full       # build more developer-oriented documentation
-    make install;
-    sync;
-    ldconfig;
-    /usr/bin/logger 'install_gvmlibs_bp finished' -t 'gse';
-}
-
 install_python_gvm() {
     /usr/bin/logger 'install_python_gvm' -t 'gse';
     # Installing from repo
@@ -256,8 +242,8 @@ prestage_scan_data() {
     # change this to copy from cloned repo
     cd /tmp/configfiles/;
     tar -xzf /tmp/configfiles/scandata.tar.gz; 
-    /bin/cp -r /tmp/configfiles/GVM/lib/openvas/plugins/* /usr/local/var/lib/openvas/plugins/;
-    /bin/cp -r /tmp/configfiles/GVM/lib/gvm/* /usr/local/var/lib/gvm/;
+    /bin/cp -r /tmp/configfiles/GVM/openvas/plugins/* /usr/local/var/lib/openvas/plugins/;
+    /bin/cp -r /tmp/configfiles/GVM/gvm/* /usr/local/var/lib/gvm/;
     /usr/bin/logger 'prestage_scan_data finished' -t 'gse';
 }
 
@@ -805,10 +791,6 @@ main() {
     install_ospd_openvas;
     install_gvm_tools;        
     install_python_gvm;
-    ## Dirty workaround to install backported changes to allow remote scanner
-    install_gvm_libs_bp;
-    # Need to reinstall gvm with the new backported libs
-    install_gvm;    
     # Configuration of installed components
     prepare_postgresql;
     configure_gvm;

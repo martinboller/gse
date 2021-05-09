@@ -128,20 +128,6 @@ install_gvm_libs() {
     /usr/bin/logger 'install_gvmlibs finished' -t 'gse';
 }
 
-install_gvm_libs_bp() {
-    /usr/bin/logger 'install_gvmlibs_bp' -t 'gse';
-    cd /usr/local/src/greenbone/;
-    git clone https://github.com/greenbone/gvm-libs;
-    cd gvm-libs/;
-    cmake .;
-    make                # build the libraries
-    make doc-full       # build more developer-oriented documentation
-    make install;
-    sync;
-    ldconfig;
-    /usr/bin/logger 'install_gvmlibs_bp finished' -t 'gse';
-}
-
 install_openvas_smb() {
     /usr/bin/logger 'install_openvas_smb' -t 'gse';
     cd /usr/local/src/greenbone;
@@ -206,7 +192,7 @@ prestage_scan_data() {
     # change this to copy from cloned repo
     cd /tmp/configfiles/;
     tar -xzf /tmp/configfiles/scandata.tar.gz; 
-    /bin/cp -r /tmp/configfiles/GVM/lib/openvas/plugins/* /usr/local/var/lib/openvas/plugins/;
+    /bin/cp -r /tmp/configfiles/GVM/openvas/plugins/* /usr/local/var/lib/openvas/plugins/;
     /usr/bin/logger 'prestage_scan_data finished' -t 'gse';
 }
 
@@ -438,7 +424,6 @@ main() {
     # Only install poetry when testing
     #install_poetry;
     install_gvm_libs;
-    install_gvm_libs_bp;
     install_openvas_smb;
     install_openvas;
     install_ospd;
