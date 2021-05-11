@@ -44,7 +44,7 @@ install_prerequisites() {
         bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
         sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
         xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-        python3-defusedxml python3-pip python3-psutil virtualenv texlive-latex-extra texlive-fonts-recommended python-impacket;
+        python3-defusedxml python3-pip python3-psutil virtualenv tex-common texlive-latex-extra texlive-fonts-recommended python-impacket;
     # Install my preferences
     apt-get -y install bash-completion;
     apt-get update;
@@ -52,6 +52,13 @@ install_prerequisites() {
     apt-get -y auto-remove --purge -y;
     # Python pip packages
     #python3 -m pip install setuptools wrapt psutil packaging;
+    mkdir -p /usr/local/var/lib/gvm/private/CA;
+    mkdir -p /usr/local/var/lib/gvm/CA;
+    mkdir -p /usr/local/var/lib/openvas/plugins;
+    mkdir -p /usr/local/var/lib/gvm/private/CA;
+    mkdir -p /usr/local/var/log/ospd/;
+    mkdir -p /usr/local/var/log/gvm/;
+    mkdir -p /usr/local/var/run/;
     /usr/bin/logger 'install_prerequisites finished' -t 'gse';
 }
 
@@ -473,13 +480,17 @@ configure_greenbone_updates() {
     # Timer
     sudo sh -c 'cat << EOF > /usr/local/lib/systemd/system/gse-update.timer
 [Unit]
-Description=Daily job to update all Greenbone feeds
+[Unit]
+Description=Daily job to update nvt feed
 
 [Timer]
 # Do not run for the first 57 minutes after boot
 OnBootSec=57min
+# Run at 18:00 with a random delay of up-to 2 hours before nightly scans  
+OnCalendar=*-*-* 18:00:00
+RandomizedDelaySec=7200
 # Run Daily
-OnUnitActiveSec=12h
+#OnCalendar=daily
 # Specify service
 Unit=gse-update.service
 

@@ -30,21 +30,20 @@ install_prerequisites() {
     apt-get -y install adduser wget whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 software-properties-common \
         sudo dnsutils dirmngr --install-recommends;
     # Install pre-requisites for gvmd
-    apt-get -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all postgresql-server-dev-11 \
-        pkg-config libical-dev xsltproc doxygen;
+    apt-get -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc doxygen;
     # For development
     #apt-get -y install libcgreen1;
     # Install pre-requisites for openvas
     apt-get -y install gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
         libgcrypt20-dev redis-server;
     # Install pre-requisites for gsad
-    apt-get -y install libmicrohttpd-dev libxml2-dev;
+    #apt-get -y install libmicrohttpd-dev libxml2-dev;
     # Other pre-requisites for GSE
     apt-get -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
         bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
         sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
         xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-        python3-defusedxml python3-pip python3-psutil virtualenv texlive-latex-extra texlive-fonts-recommended python-impacket;
+        python3-defusedxml python3-pip python3-psutil virtualenv tex-common texlive-latex-extra texlive-fonts-recommended python-impacket;
     # Install my preferences
     apt-get -y install bash-completion;
     apt-get update;
@@ -245,13 +244,17 @@ configure_greenbone_updates() {
     # Timer
     sudo sh -c 'cat << EOF > /lib/systemd/system/gse-update.timer
 [Unit]
+[Unit]
 Description=Daily job to update nvt feed
 
 [Timer]
 # Do not run for the first 57 minutes after boot
 OnBootSec=57min
+# Run at 16:00 with a random delay of up-to 2 hours before nightly scans  
+OnCalendar=*-*-* 16:00:00
+RandomizedDelaySec=7200
 # Run Daily
-OnCalendar=daily
+#OnCalendar=daily
 # Specify service
 Unit=gse-update.service
 
