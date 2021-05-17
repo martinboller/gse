@@ -29,6 +29,9 @@ install_prerequisites() {
     apt-get -y install --fix-policy;
     apt-get -y install adduser wget whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 software-properties-common \
         sudo dnsutils dirmngr --install-recommends;
+    # Set correct locale
+    locale-gen;
+    update-locale;
     # Install pre-requisites for gvmd
     apt-get -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all postgresql-server-dev-11 \
         pkg-config libical-dev xsltproc doxygen;
@@ -44,7 +47,11 @@ install_prerequisites() {
         bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
         sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
         xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-        python3-defusedxml python3-pip python3-psutil virtualenv tex-common texlive-latex-extra texlive-fonts-recommended python-impacket;
+        python3-defusedxml python3-pip python3-psutil virtualenv python-impacket;
+    # Required for PDF report generation
+        apt-get -y install texlive-latex-extra --no-install-recommends;
+        apt-get -y install texlive-fonts-recommended;
+        #sudo apt install texlive texlive-full imagemagi
     # Install my preferences
     apt-get -y install bash-completion;
     apt-get update;
