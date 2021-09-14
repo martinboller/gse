@@ -19,8 +19,11 @@ A BIG Thank You to Greenbone Networks GmbH for supporting the security community
   - ~~ospd-openvas running as root (it needs that for openvas scanning) however that should be changed to a specific account~~
   - ~~Not tested with separate scanner systems~~
 
-### Latest changes 2021-05-08 - updated to 21.4.0.
-Changed to 21.4.0 versions
+### Latest changes 
+#### 2021-09-14 - Debian 10 and 11 support
+  Works with Debian 10 (Buster) and Debian 11 (Bullseye). Likely to work with most Debian based distros, but some checks in the scripts expect Debian 10 or 11.
+#### 2021-05-08 - updated to 21.4.0.
+  Changed to 21.4.0 versions
 
 Runnning a secondary requires a few manual steps, specifically:
  - Copying the already created certificates to the secondary and running the helper script install-secondary-certs

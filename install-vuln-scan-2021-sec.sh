@@ -5,24 +5,31 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Email:        martin                                                      #
-# Last Update:  2021-05-07                                                  #
-# Version:      1.50                                                        #
+# Last Update:  2021-09-13                                                  #
+# Version:      1.60                                                        #
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
 #               2021-05-07 Update to 21.4.0 (1.50)                          #
+#               2021-09-13 Updated to run on Debian 10 and 11               #
 #                                                                           #
 # Info:         https://sadsloth.net/post/install-gvm-20_08-src-on-debian/  #
 #                                                                           #
 #                                                                           #
 # Instruction:  Run this script as root on a fully updated                  #
-#               Debian 10 (Buster)                                          #
+#               Debian 10 (Buster) & Debian 11 (Bullseye)                   #
 #                                                                           #
 #############################################################################
 
 
 install_prerequisites() {
-    /usr/bin/logger 'install_prerequisites' -t 'gse';
+    /usr/bin/logger 'install_prerequisites' -t 'gse-21.4';
     export DEBIAN_FRONTEND=noninteractive;
+        # OS Version
+    # freedesktop.org and systemd
+    . /etc/os-release
+    OS=$NAME
+    VER=$VERSION_ID
+    
     # Install prerequisites
     apt-get update;
     # Install some basic tools on a Debian net install
@@ -41,18 +48,40 @@ install_prerequisites() {
         libgcrypt20-dev redis-server;
     # Install pre-requisites for gsad
     #apt-get -y install libmicrohttpd-dev libxml2-dev;
-    # Other pre-requisites for GSE
-    apt-get -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
-        bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
-        sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
-        xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-        python3-defusedxml python3-pip python3-psutil virtualenv python-impacket libxml2-dev;
+    if [ $VER -eq "11" ] 
+        then
+            # Other pre-requisites for GSE
+            apt-get -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
+                bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
+                sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
+                xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
+                python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy libxml2-dev;
+        elif [ $VER -eq "10" ]
+        then
+            /usr/bin/logger 'install_prerequisites_debian_10_buster' -t 'gse-21.4';
+            # Other pre-requisites for GSE - Buster / Debian 10
+            apt-get -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
+                bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
+                sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
+                xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
+                python3-defusedxml python3-pip python3-psutil virtualenv python-impacket python-scapy libxml2-dev;
+        
+        else
+            /usr/bin/logger 'install_prerequisites_debian_Untested' -t 'gse-21.4';
+            # Untested but let's try like it is buster (debian 10)
+            apt-get -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
+                bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
+                sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
+                xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
+                python3-defusedxml python3-pip python3-psutil virtualenv python-impacket python-scapy libxml2-dev;
+        fi
     # Install my preferences
     apt-get -y install bash-completion;
     apt-get update;
     apt-get -y full-upgrade;
     apt-get -y auto-remove --purge -y;
     # Python pip packages
+    python3 -m pip install --upgrade pip
     #python3 -m pip install setuptools wrapt psutil packaging;
     mkdir -p /usr/local/var/lib/gvm/private/CA;
     mkdir -p /usr/local/var/lib/gvm/CA;
@@ -61,7 +90,7 @@ install_prerequisites() {
     mkdir -p /usr/local/var/log/ospd/;
     mkdir -p /usr/local/var/log/gvm/;
     mkdir -p /usr/local/var/run/;
-    /usr/bin/logger 'install_prerequisites finished' -t 'gse';
+    /usr/bin/logger 'install_prerequisites finished' -t 'gse-21.4';
 }
 
 prepare_nix_users() {
@@ -72,7 +101,7 @@ EOF"
 }
 
 prepare_source() {    
-    /usr/bin/logger 'prepare_source' -t 'gse';
+    /usr/bin/logger 'prepare_source' -t 'gse-21.4';
     mkdir -p /usr/local/src/greenbone
     chown -R gvm:gvm /usr/local/src/greenbone;
     cd /usr/local/src/greenbone;
@@ -106,19 +135,19 @@ prepare_source() {
     mv /usr/local/src/greenbone/gvm-tools-21.1.0 /usr/local/src/greenbone/gvm-tools;
     sync;
     chown -R gvm:gvm /usr/local/src/greenbone;
-    /usr/bin/logger 'prepare_source finished' -t 'gse';
+    /usr/bin/logger 'prepare_source finished' -t 'gse-21.4';
 }
 
 install_poetry() {
-    /usr/bin/logger 'install_poetry' -t 'gse';
+    /usr/bin/logger 'install_poetry' -t 'gse-21.4';
     export POETRY_HOME=/usr/poetry;
     # https://python-poetry.org/docs/
     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 -;
-    /usr/bin/logger 'install_poetry finished' -t 'gse';
+    /usr/bin/logger 'install_poetry finished' -t 'gse-21.4';
 }
 
 install_gvm_libs() {
-    /usr/bin/logger 'install_gvmlibs' -t 'gse';
+    /usr/bin/logger 'install_gvmlibs' -t 'gse-21.4';
     cd /usr/local/src/greenbone/;
     cd gvm-libs/;
     cmake .;
@@ -127,11 +156,11 @@ install_gvm_libs() {
     make install;
     sync;
     ldconfig;
-    /usr/bin/logger 'install_gvmlibs finished' -t 'gse';
+    /usr/bin/logger 'install_gvmlibs finished' -t 'gse-21.4';
 }
 
 install_openvas_smb() {
-    /usr/bin/logger 'install_openvas_smb' -t 'gse';
+    /usr/bin/logger 'install_openvas_smb' -t 'gse-21.4';
     cd /usr/local/src/greenbone;
     #config and build openvas-smb
     cd openvas-smb;
@@ -140,11 +169,11 @@ install_openvas_smb() {
     make install;
     sync;
     ldconfig;
-    /usr/bin/logger 'install_openvas_smb finished' -t 'gse';
+    /usr/bin/logger 'install_openvas_smb finished' -t 'gse-21.4';
 }
 
 install_ospd() {
-    /usr/bin/logger 'install_ospd' -t 'gse';
+    /usr/bin/logger 'install_ospd' -t 'gse-21.4';
     # Install from repo
     #/usr/bin/python3 -m pip install ospd;
     # Uncomment below for install from source
@@ -155,11 +184,11 @@ install_ospd() {
     # The poetry install part will fail if poetry is not installed
     # so left here for use when testing (just comment uncomment install_poetry in "main")
     /usr/poetry/bin/poetry install;
-    /usr/bin/logger 'install_ospd finished' -t 'gse';
+    /usr/bin/logger 'install_ospd finished' -t 'gse-21.4';
 }
 
 install_ospd_openvas() {
-    /usr/bin/logger 'install_ospd_openvas' -t 'gse';
+    /usr/bin/logger 'install_ospd_openvas' -t 'gse-21.4';
     # Install from repo
     #/usr/bin/python3 -m pip install ospd-openvas
     cd /usr/local/src/greenbone;
@@ -170,11 +199,11 @@ install_ospd_openvas() {
     # The poetry install part will fail if poetry is not installed
     # so left here for use when testing (just comment uncomment poetry install in "main")
     /usr/poetry/bin/poetry install;
-    /usr/bin/logger 'install_ospd_openvas finished' -t 'gse';
+    /usr/bin/logger 'install_ospd_openvas finished' -t 'gse-21.4';
 }
 
 install_openvas() {
-    /usr/bin/logger 'install_openvas' -t 'gse';
+    /usr/bin/logger 'install_openvas' -t 'gse-21.4';
     cd /usr/local/src/greenbone;
     # Configure and build scanner
     cd openvas;
@@ -185,28 +214,28 @@ install_openvas() {
     sync;
     # Reload all modules
     ldconfig;
-    /usr/bin/logger 'install_openvas finished' -t 'gse';
+    /usr/bin/logger 'install_openvas finished' -t 'gse-21.4';
 }
 
 prestage_scan_data() {
-    /usr/bin/logger 'prestage_scan_data' -t 'gse';
+    /usr/bin/logger 'prestage_scan_data' -t 'gse-21.4';
     # copy scan data from 2020-12-29 to prestage athe ~1.5 Gib required otherwise
     # change this to copy from cloned repo
     cd /tmp/configfiles/;
     tar -xzf /tmp/configfiles/scandata.tar.gz; 
     /bin/cp -r /tmp/configfiles/GVM/openvas/plugins/* /usr/local/var/lib/openvas/plugins/;
-    /usr/bin/logger 'prestage_scan_data finished' -t 'gse';
+    /usr/bin/logger 'prestage_scan_data finished' -t 'gse-21.4';
 }
 
 update_scan_data() {
-    /usr/bin/logger 'update_scan_data' -t 'gse';
+    /usr/bin/logger 'update_scan_data' -t 'gse-21.4';
     ## This relies on the configure_greenbone_updates
     /usr/local/var/lib/gse-updater/gse-updater.sh;
-    /usr/bin/logger 'update_scan_data finished' -t 'gse';
+    /usr/bin/logger 'update_scan_data finished' -t 'gse-21.4';
 }
 
 configure_openvas() {
-    /usr/bin/logger 'configure_openvas' -t 'gse';
+    /usr/bin/logger 'configure_openvas' -t 'gse-21.4';
     # Create dir for ospd run files
     mkdir /run/ospd;
     chown -R ospd:ospd /run/ospd;
@@ -237,11 +266,11 @@ WantedBy=multi-user.target
 Alias=ospd-openvas.service
 EOF'
     sync;
-    /usr/bin/logger 'configure_openvas finished' -t 'gse';
+    /usr/bin/logger 'configure_openvas finished' -t 'gse-21.4';
 }
 
 configure_greenbone_updates() {
-/usr/bin/logger 'configure_greenbone_updates' -t 'gse';
+/usr/bin/logger 'configure_greenbone_updates' -t 'gse-21.4';
     # Configure daily greenbone-nvt-syn updates timer and service
     mkdir -p /usr/local/var/lib/gse-updater;
     # Timer
@@ -296,11 +325,11 @@ exit 0
 EOF'
 sync;
 chmod +x /usr/local/var/lib/gse-updater/gse-updater.sh;
-/usr/bin/logger 'configure_greenbone_updates finished' -t 'gse';
+/usr/bin/logger 'configure_greenbone_updates finished' -t 'gse-21.4';
 }
 
 start_services() {
-    /usr/bin/logger 'start_services' -t 'gse';
+    /usr/bin/logger 'start_services' -t 'gse-21.4';
     # Load new/changed systemd-unitfiles
     systemctl daemon-reload;
     # Restart Redis with new config
@@ -317,21 +346,21 @@ start_services() {
     # ospd-openvas.service
     if systemctl is-active --quiet ospd-openvas.service;
     then
-        /usr/bin/logger 'ospd-openvas.service started successfully' -t 'gse';
+        /usr/bin/logger 'ospd-openvas.service started successfully' -t 'gse-21.4';
     else
-        /usr/bin/logger 'ospd-openvas.service FAILED!' -t 'gse';
+        /usr/bin/logger 'ospd-openvas.service FAILED!' -t 'gse-21.4';
     fi
     if systemctl is-active --quiet gse-update.timer;
     then
-        /usr/bin/logger 'gse-update.timer started successfully' -t 'gse';
+        /usr/bin/logger 'gse-update.timer started successfully' -t 'gse-21.4';
     else
-        /usr/bin/logger 'gse-update.timer FAILED! Updates will not be automated' -t 'gse';
+        /usr/bin/logger 'gse-update.timer FAILED! Updates will not be automated' -t 'gse-21.4';
     fi
-    /usr/bin/logger 'start_services finished' -t 'gse';
+    /usr/bin/logger 'start_services finished' -t 'gse-21.4';
 }
 
 configure_redis() {
-    /usr/bin/logger 'configure_redis' -t 'gse';
+    /usr/bin/logger 'configure_redis' -t 'gse-21.4';
         sudo sh -c 'cat << EOF > /etc/tmpfiles.d/redis.conf
 d /run/redis 0755 redis redis
 EOF'
@@ -400,7 +429,7 @@ exit 0
 EOF'
     chmod +x /etc/rc.local;
     sync;
-    /usr/bin/logger 'configure_redis finished' -t 'gse';
+    /usr/bin/logger 'configure_redis finished' -t 'gse-21.4';
 }
 
 configure_permissions() {
@@ -446,7 +475,7 @@ main() {
     update_scan_data;
     su ospd -c '/usr/local/sbin/openvas --update-vt-info';
     start_services;
-    /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gse';
+    /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gse-21.4';
 }
 
 main;
