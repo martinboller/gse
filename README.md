@@ -1,6 +1,6 @@
-# Greenbone Vulnerability Manager 21.4.0 Source Code Edition Installation script
+# Greenbone Vulnerability Manager 21.4.x Source Code Edition Installation script
 
-## Bash script automating the installation of Greenbone Vulnerability Manager 21.4.0 on Debian 10 (20.8.0 will eol end of 2021)
+## Bash script automating the installation of Greenbone Vulnerability Manager 21.4.2 (August 2021 releases) on Debian 10 or 11 (20.8.0 will eol end of 2021)
 
 Installation will be located in /usr/local/, which is the default for GVM SCE.
 
@@ -20,6 +20,8 @@ A BIG Thank You to Greenbone Networks GmbH for supporting the security community
   - ~~Not tested with separate scanner systems~~
 
 ### Latest changes 
+#### 2021-09-24 - August Greenbone releases
+  Modified to work with the latest releases from Greenbone
 #### 2021-09-14 - Debian 10 and 11 support
   Works with Debian 10 (Buster) and Debian 11 (Bullseye). Likely to work with most Debian based distros, but some checks in the scripts expect Debian 10 or 11.
 #### 2021-05-08 - updated to 21.4.0.
