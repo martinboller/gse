@@ -128,15 +128,14 @@ prepare_source() {
     cd /usr/local/src/greenbone;
 
     #Get all packages (the python elements can be installed w/o, but downloaded and used for install anyway)
-    wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v21.4.2.tar.gz;
-    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v21.4.2.tar.gz;
-    wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v21.4.2.tar.gz;
-    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v21.4.3.tar.gz;
-    wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/refs/tags/v21.4.2.tar.gz;
+    wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v21.4.3.tar.gz;
+    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v21.4.3.tar.gz;
+    wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v21.4.3.tar.gz;
+    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v21.4.4.tar.gz;
+    wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/refs/tags/v21.4.3.tar.gz;
     wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v21.4.0.tar.gz;
-    wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/refs/tags/v21.4.3.tar.gz;
-    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v21.4.2.tar.gz;
-    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v21.6.0.tar.gz;
+    wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/refs/tags/v21.4.4.tar.gz;
+    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v21.10.0.tar.gz;
     wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v21.6.1.tar.gz;
     
     # open and extract the tarballs
@@ -144,15 +143,14 @@ prepare_source() {
     sync;
 
     # Naming of directories w/o version
-    mv /usr/local/src/greenbone/gvm-libs-21.4.2 /usr/local/src/greenbone/gvm-libs;
-    mv /usr/local/src/greenbone/ospd-openvas-21.4.2 /usr/local/src/greenbone/ospd-openvas;
-    mv /usr/local/src/greenbone/openvas-scanner-21.4.2 /usr/local/src/greenbone/openvas;
-    mv /usr/local/src/greenbone/gvmd-21.4.3 /usr/local/src/greenbone/gvmd;
-    mv /usr/local/src/greenbone/gsa-21.4.2 /usr/local/src/greenbone/gsa;
+    mv /usr/local/src/greenbone/gvm-libs-21.4.3 /usr/local/src/greenbone/gvm-libs;
+    mv /usr/local/src/greenbone/ospd-openvas-21.4.3 /usr/local/src/greenbone/ospd-openvas;
+    mv /usr/local/src/greenbone/openvas-scanner-21.4.3 /usr/local/src/greenbone/openvas;
+    mv /usr/local/src/greenbone/gvmd-21.4.4 /usr/local/src/greenbone/gvmd;
+    mv /usr/local/src/greenbone/gsa-21.4.3 /usr/local/src/greenbone/gsa;
     mv /usr/local/src/greenbone/openvas-smb-21.4.0 /usr/local/src/greenbone/openvas-smb;
     mv /usr/local/src/greenbone/ospd-21.4.3 /usr/local/src/greenbone/ospd;
-    mv /usr/local/src/greenbone/ospd-openvas-21.4.2 /usr/local/src/greenbone/ospd-openvas;
-    mv /usr/local/src/greenbone/python-gvm-21.6.0 /usr/local/src/greenbone/python-gvm;
+    mv /usr/local/src/greenbone/python-gvm-21.10.0 /usr/local/src/greenbone/python-gvm;
     mv /usr/local/src/greenbone/gvm-tools-21.6.1 /usr/local/src/greenbone/gvm-tools;
     sync;
     chown -R gvm:gvm /usr/local/src/greenbone;
