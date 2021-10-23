@@ -26,7 +26,7 @@ A BIG Thank You to Greenbone Networks GmbH for supporting the security community
   Works with Debian 10 (Buster) and Debian 11 (Bullseye). Likely to work with most Debian based distros, but some checks in the scripts expect Debian 10 or 11.
 #### 2021-05-08 - updated to 21.4.0.
   Changed to 21.4.0 versions
-#### 2021-10-19 - oct 13 bugfixes
+#### 2021-10-23 - oct 13 bugfixes, moved install to /opt/gvm instead of /usr/local/ and use yarn from Deb repo
   https://community.greenbone.net/t/new-releases-for-gvm-20-08-and-gvm-21-04/10385
 
 Runnning a secondary requires a few manual steps, specifically:

@@ -5,10 +5,11 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Email:        martin                                                      #
-# Last Update:  2021-01-20                                                  #
-# Version:      1.10                                                        #
+# Last Update:  2021-10-23                                                  #
+# Version:      2.00                                                        #
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
+#               2021-10-23 Latest GSE release                               #
 #                                                                           #
 #                                                                           #
 # Info:        https://sadsloth.net/post/install-gvm-20_08-src-on-debian/   #
@@ -24,10 +25,10 @@ install_certs() {
     /usr/bin/logger 'install_certs' -t 'gse';
      if test -f ./secondarycert.pem; then
         echo "Certificates for secondary found, now copying to correct locations";
-        cp ./secondarycert.pem /usr/local/var/lib/gvm/CA/;
-        cp ./cacert.pem /usr/local/var/lib/gvm/CA/;
-        cp ./secondarykey.pem /usr/local/var/lib/gvm/private/CA/;
-        chown -R ospd:ospd /usr/local/var/lib/gvm/;
+        cp ./secondarycert.pem /var/lib/gvm/CA/;
+        cp ./cacert.pem /var/lib/gvm/CA/;
+        cp ./secondarykey.pem /var/lib/gvm/private/CA/;
+        chown -R gvm:gvm /var/lib/gvm/;
         sync;
         /usr/bin/logger 'Certificates for secondary installed' -t 'gse';
     else
