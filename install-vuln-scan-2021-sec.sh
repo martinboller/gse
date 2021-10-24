@@ -35,7 +35,7 @@ install_prerequisites() {
     # Install some basic tools on a Debian net install
     /usr/bin/logger '..Install some basic tools on a Debian net install' -t 'gse-21.4';
     apt-get -y install --fix-policy;
-    apt-get -y install adduser wget whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 software-properties-common sudo dnsutils dirmngr --install-recommends;
+    apt-get -y install adduser wget whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 software-properties-common dnsutils dirmngr --install-recommends;
     # Set correct locale
     locale-gen;
     update-locale;
@@ -96,11 +96,11 @@ install_prerequisites() {
         fi
 
     # Required for PDF report generation
-    /usr/bin/logger '....Required for PDF report generation' -t 'gse-21.4';
+    /usr/bin/logger '....rerequisites for PDF report generation' -t 'gse-21.4';
     apt-get -y install texlive-latex-extra --no-install-recommends;
     apt-get -y install texlive-fonts-recommended;
-    # Install my preferences
-    /usr/bin/logger '....Install my preferences on Debian' -t 'gse-21.4';
+    # Install other preferences and cleanup APT
+    /usr/bin/logger '....Install preferences on Debian' -t 'gse-21.4';
     apt-get -y install bash-completion;
     apt-get update;
     apt-get -y full-upgrade;
@@ -111,7 +111,7 @@ install_prerequisites() {
     apt-get -y install sudo;
     # Python pip packages
     python3 -m pip install --upgrade pip
-    #python3 -m pip install setuptools wrapt psutil packaging;
+    # Prepare folders for scan data
     mkdir -p /var/lib/gvm/private/CA;
     mkdir -p /var/lib/gvm/CA;
     mkdir -p /var/lib/openvas/plugins;
@@ -124,11 +124,10 @@ install_prerequisites() {
 prepare_nix_users() {
     # Create gvm user
     /usr/sbin/useradd --system --create-home -c "gvm User" --shell /bin/bash gvm;
-#    /usr/sbin/useradd --system --create-home -c "ospd-openvas User" --shell /bin/bash ospd;
     mkdir /opt/gvm;
     chown gvm:gvm /opt/gvm/;
     # Update the PATH environment variable
-    echo "PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/ospd-openvas/bin:/opt/gvm/ospd/bin" > /etc/profile.d/gvm.sh;
+    echo "PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin" > /etc/profile.d/gvm.sh;
     # Add GVM library path to /etc/ld.so.conf.d
     sh -c 'cat << EOF > /etc/ld.so.conf.d/gvm.conf;
 # Greenbone libraries
@@ -144,8 +143,8 @@ d /run/gvm/gse 1775 root
 EOF'
 }
 
-prepare_source() {    
-    /usr/bin/logger 'prepare_source' -t 'gse-21.4';
+prepare_source_secondary() {    
+    /usr/bin/logger 'prepare_source_secondary' -t 'gse-21.4';
     mkdir -p /opt/gvm/src/greenbone
     chown -R gvm:gvm /opt/gvm/src/greenbone;
     cd /opt/gvm/src/greenbone;
@@ -154,8 +153,6 @@ prepare_source() {
     wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v21.4.3.tar.gz;
     wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v21.4.3.tar.gz;
     wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v21.4.3.tar.gz;
-    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v21.4.4.tar.gz;
-    wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/refs/tags/v21.4.3.tar.gz;
     wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v21.4.0.tar.gz;
     wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/refs/tags/v21.4.4.tar.gz;
     wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v21.10.0.tar.gz;
@@ -169,8 +166,6 @@ prepare_source() {
     mv /opt/gvm/src/greenbone/gvm-libs-21.4.3 /opt/gvm/src/greenbone/gvm-libs;
     mv /opt/gvm/src/greenbone/ospd-openvas-21.4.3 /opt/gvm/src/greenbone/ospd-openvas;
     mv /opt/gvm/src/greenbone/openvas-scanner-21.4.3 /opt/gvm/src/greenbone/openvas;
-    mv /opt/gvm/src/greenbone/gvmd-21.4.4 /opt/gvm/src/greenbone/gvmd;
-    mv /opt/gvm/src/greenbone/gsa-21.4.3 /opt/gvm/src/greenbone/gsa;
     mv /opt/gvm/src/greenbone/openvas-smb-21.4.0 /opt/gvm/src/greenbone/openvas-smb;
     mv /opt/gvm/src/greenbone/ospd-21.4.4 /opt/gvm/src/greenbone/ospd;
     mv /opt/gvm/src/greenbone/python-gvm-21.10.0 /opt/gvm/src/greenbone/python-gvm;
@@ -181,7 +176,7 @@ prepare_source() {
     mkdir /run/gvm/gse;
     touch /run/gvm/gvmd.sock;
     chown -R gvm:gvm /run/gvm;
-    /usr/bin/logger 'prepare_source finished' -t 'gse-21.4';
+    /usr/bin/logger 'prepare_source_secondary finished' -t 'gse-21.4';
 }
 
 install_poetry() {
@@ -275,7 +270,6 @@ install_openvas() {
     make doc-full;       # build more developer-oriented documentation
     make install;        # install the build
     sync;
-    # Reload all modules
     ldconfig;
     /usr/bin/logger 'install_openvas finished' -t 'gse-21.4';
 }
@@ -344,7 +338,6 @@ User=gvm
 Group=gvm
 # Change log-level to info before production
 ExecStart=/usr/local/bin/ospd-openvas --port=9390 --bind-address=0.0.0.0 --pid-file=/run/gvm/ospd-openvas.pid --lock-file-dir=/run/gvm/ --key-file=/var/lib/gvm/private/CA/secondarykey.pem --cert-file=/var/lib/gvm/CA/secondarycert.pem --ca-file=/var/lib/gvm/CA/cacert.pem --log-file=/var/log/gvm/ospd-openvas.log --log-level=debug
-#ExecStart=/usr/local/bin/ospd-openvas --port=9390 --bind-address=0.0.0.0 --config=/etc/ospd/ospd-openvas.conf --log-file=/var/log/gvm/ospd-openvas.log --log-level=info
 # log level can be debug too, info is default
 # This works asynchronously, but does not take the daemon down during the reload so it is ok.
 Restart=always
@@ -352,7 +345,6 @@ RestartSec=60
 
 [Install]
 WantedBy=multi-user.target
-Alias=ospd-openvas-secondary.service
 EOF'
 
     ## Configure ospd
@@ -395,13 +387,11 @@ configure_greenbone_updates() {
 Description=Daily job to update nvt feed
 
 [Timer]
-# Do not run for the first 57 minutes after boot
-OnBootSec=57min
+# Do not run for the first 37 minutes after boot
+OnBootSec=37min
 # Run at 18:00 with a random delay of up-to 2 hours before nightly scans  
 OnCalendar=*-*-* 18:00:00
 RandomizedDelaySec=7200
-# Run Daily
-#OnCalendar=daily
 # Specify service
 Unit=gse-update.service
 
@@ -429,7 +419,7 @@ EOF'
 #! /bin/bash
 # updates feeds for openvas on secondary server
 # NVT data
-su gvm -c "/opt/gvm/bin/greenbone-nvt-sync --rsync";
+su gvm -c "/opt/gvm/bin/greenbone-nvt-sync";
 /usr/bin/logger ''nvt data Feed Version \$(su gvm -c "/opt/gvm/bin/greenbone-nvt-sync --feedversion")'' -t gse;
 EOF'
 sync;
@@ -439,7 +429,6 @@ chmod +x /opt/gvm/gse-updater/gse-updater.sh;
 
 start_services() {
     /usr/bin/logger 'start_services' -t 'gse-21.4';
-    # GVMD
     # Load new/changed systemd-unitfiles
     systemctl daemon-reload;
     # Restart Redis with new config
@@ -615,7 +604,7 @@ main() {
    # Shared components
     install_prerequisites;
     prepare_nix_users;
-    prepare_source;
+    prepare_source_secondary;
     
     # Installation of specific components
     # Only install poetry when testing

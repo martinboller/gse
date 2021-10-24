@@ -35,13 +35,14 @@ install_prerequisites() {
     # Install some basic tools on a Debian net install
     /usr/bin/logger '..Install some basic tools on a Debian net install' -t 'gse-21.4';
     apt-get -y install --fix-policy;
-    apt-get -y install adduser wget whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 software-properties-common sudo dnsutils dirmngr --install-recommends;
+    apt-get -y install adduser wget whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 software-properties-common dnsutils dirmngr --install-recommends;
     # Set correct locale
     locale-gen;
     update-locale;
     # For development
     #apt-get -y install libcgreen1;
-    # Install pre-requisites for openvas
+    # Install pre-requisites for 
+    # libunistring is a new requirement from oct-13 updates
     /usr/bin/logger '..Tools for Development' -t 'gse-21.4';
     apt-get -y install gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
         libgcrypt20-dev redis-server libunistring-dev;
@@ -96,11 +97,11 @@ install_prerequisites() {
         fi
 
     # Required for PDF report generation
-    /usr/bin/logger '....Required for PDF report generation' -t 'gse-21.4';
+    /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gse-21.4';
     apt-get -y install texlive-latex-extra --no-install-recommends;
     apt-get -y install texlive-fonts-recommended;
-    # Install my preferences
-    /usr/bin/logger '....Install my preferences on Debian' -t 'gse-21.4';
+    # Install other preferences and clean up APT
+    /usr/bin/logger '....Install some preferences on Debian and clean up APT' -t 'gse-21.4';
     apt-get -y install bash-completion;
     apt-get update;
     apt-get -y full-upgrade;
@@ -111,7 +112,7 @@ install_prerequisites() {
     apt-get -y install sudo;
     # Python pip packages
     python3 -m pip install --upgrade pip
-    #python3 -m pip install setuptools wrapt psutil packaging;
+    # Prepare folders for scan data
     mkdir -p /var/lib/gvm/private/CA;
     mkdir -p /var/lib/gvm/CA;
     mkdir -p /var/lib/openvas/plugins;
@@ -127,11 +128,10 @@ install_prerequisites() {
 prepare_nix_users() {
     # Create gvm user
     /usr/sbin/useradd --system --create-home -c "gvm User" --shell /bin/bash gvm;
-    #/usr/sbin/useradd --system --create-home -c "ospd-openvas User" --shell /bin/bash ospd;
     mkdir /opt/gvm;
     chown gvm:gvm /opt/gvm;
     # Update the PATH environment variable
-    echo "PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/ospd-openvas/bin:/opt/gvm/ospd/bin" > /etc/profile.d/gvm.sh;
+    echo "PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin" > /etc/profile.d/gvm.sh;
     # Add GVM library path to /etc/ld.so.conf.d
     sh -c 'cat << EOF > /etc/ld.so.conf.d/gvm.conf;
 # Greenbone libraries
@@ -221,7 +221,6 @@ install_gvm_libs() {
     make;
     make doc-full;
     make install;
-    ldconfig;
     sync;
     ldconfig;
     /usr/bin/logger 'install_gvmlibs finished' -t 'gse-21.4';
@@ -294,7 +293,6 @@ install_openvas() {
     make doc-full;       # build more developer-oriented documentation
     make install;        # install the build
     sync;
-    # Reload all modules
     ldconfig;
     /usr/bin/logger 'install_openvas finished' -t 'gse-21.4';
 }
@@ -311,7 +309,6 @@ install_gvm() {
     make doc-full;
     make install;
     sync;
-    ldconfig;
     /usr/bin/logger 'install_gvm finished' -t 'gse-21.4';
 }
 
@@ -349,10 +346,6 @@ install_gsa() {
     cd /opt/gvm/src/greenbone
     chown -R gvm:gvm /opt/gvm;
     # GSA prerequisites
-    #curl --silent --show-error https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -;
-    #echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list;
-    #apt-get update;
-    #apt-get -y install --no-install-recommends yarn;
     apt-get -y install yarnpkg;
     # GSA Install
     cd gsa/;
@@ -421,7 +414,6 @@ RestartSec=60
 
 [Install]
 WantedBy=multi-user.target
-Alias=ospd-openvas.service
 EOF'
 
     ## Configure ospd
@@ -458,6 +450,7 @@ configure_gvm() {
     touch /run/gvm/gvmd.sock;
     chown -R gvm:gvm /run/gvm;
     # Ensure it is recreated after reboot
+    # It appears that GVMD sometimes delete /run/gvm so added a subfolder (/gse) to prevent this
     sh -c 'cat << EOF > /etc/tmpfiles.d/greenbone.conf
 d /run/gvm 1775 gvm gvm
 d /run/gvm/gse 1775 root root
@@ -559,13 +552,11 @@ configure_greenbone_updates() {
 Description=Daily job to update nvt feed
 
 [Timer]
-# Do not run for the first 57 minutes after boot
-OnBootSec=57min
+# Do not run for the first 37 minutes after boot
+OnBootSec=37min
 # Run at 18:00 with a random delay of up-to 2 hours before nightly scans  
 OnCalendar=*-*-* 18:00:00
 RandomizedDelaySec=7200
-# Run Daily
-#OnCalendar=daily
 # Specify service
 Unit=gse-update.service
 
@@ -592,7 +583,7 @@ EOF'
     sh -c 'cat << EOF  > /opt/gvm/gse-updater/gse-updater.sh;
 #! /bin/bash
 # updates feeds for Greenbone Vulnerability Manager
-# Using the Community feed require some good sleep, as only one session at a time is allowed
+# Using the Community feed require some significant delays between syncs, as only one session at a time is allowed for community feed
 # NVT data
 su gvm -c "/opt/gvm/bin/greenbone-nvt-sync --rsync";
 /usr/bin/logger ''nvt data Feed Version \$(su gvm -c "/opt/gvm/bin/greenbone-nvt-sync --feedversion")'' -t gse;
@@ -623,7 +614,6 @@ chmod +x /opt/gvm/gse-updater/gse-updater.sh;
 
 start_services() {
     /usr/bin/logger 'start_services' -t 'gse-21.4';
-    # GVMD
     # Load new/changed systemd-unitfiles
     systemctl daemon-reload;
     # Restart Redis with new config
@@ -873,7 +863,7 @@ main() {
     #prepare_source_latest;
     
     # Installation of specific components
-        # This is the master server so install GSAD
+    # This is the master server so install GSAD
     # Only install poetry when testing
     #install_poetry;
     #install_nmap;
