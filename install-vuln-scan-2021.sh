@@ -12,6 +12,7 @@
 #               2021-05-07 Update to 21.4.0 (1.50)                          #
 #               2021-09-13 Updated to run on Debian 10 and 11               #
 #               2021-10-23 Latest GSE release                               #
+#               2021-10-25 Correct ospd.sock path                           #
 #                                                                           #
 # Info:         https://sadsloth.net/post/install-gvm-20_08-src-on-debian/  #
 #                                                                           #
@@ -179,6 +180,8 @@ prepare_source() {
     mkdir /run/gvm;
     touch /run/gvm/gvmd.sock;
     chown -R gvm:gvm /run/gvm;
+    mkdir /run/ospd;
+    chown -R gvm:gvm /run/ospd;
     /usr/bin/logger 'prepare_source finished' -t 'gse-21.4';
 }
 
@@ -423,8 +426,8 @@ EOF'
 [OSPD - openvas]
 log_level = INFO
 socket_mode = 0o766
-unix_socket = /run/gvm/ospd.sock
-pid_file = /run/gvm/ospd-openvas.pid
+unix_socket = /run/ospd/ospd.sock
+pid_file = /run/ospd/ospd-openvas.pid
 ; default = /run/ospd
 lock_file_dir = /run/gvm
 
@@ -454,7 +457,11 @@ configure_gvm() {
     sh -c 'cat << EOF > /etc/tmpfiles.d/greenbone.conf
 d /run/gvm 1775 gvm gvm
 d /run/gvm/gse 1775 root root
+d /run/ospd 1775 gvm gvm
+d /run/ospd/gse 1775 gvm gvm
 EOF'
+    # start systemd-tmpfiles to create directories
+    systemd-tmpfiles --create;
     # Create Certificates
     # Certificate options
     # Lifetime in days
@@ -512,7 +519,7 @@ Type=forking
 User=gvm
 Group=gvm
 PIDFile=/run/gvm/gsad.pid
-ExecStart=/opt/gvm/sbin/gsad --port=8443 --ssl-private-key=/var/lib/gvm/private/CA/serverkey.pem --ssl-certificate=/var/lib/gvm/CA/servercert.pem --munix-socket=/run/gvm/gvmd.sock --no-redirect --secure-cookie --http-sts --timeout=60 --http-cors="https://%H:8443/"
+ExecStart=/opt/gvm/sbin/gsad --port=8443 --ssl-private-key=/var/lib/gvm/private/CA/serverkey.pem --ssl-certificate=/var/lib/gvm/CA/servercert.pem --munix-socket=/run/gvm/gvmd.sock --no-redirect --secure-cookie --http-sts --timeout=60 --http-cors="https://%H:8443/" --gnutls-priorities=SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2
 Restart=always
 TimeoutStopSec=10
 
@@ -588,19 +595,19 @@ EOF'
 su gvm -c "/opt/gvm/bin/greenbone-nvt-sync --rsync";
 /usr/bin/logger ''nvt data Feed Version \$(su gvm -c "/opt/gvm/bin/greenbone-nvt-sync --feedversion")'' -t gse;
 # Debian keeps TCP sessions open for 60 seconds
-sleep 67;
+sleep 62;
 
 # CERT data
 su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type cert";
 /usr/bin/logger ''Certdata Feed Version \$(su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type cert --feedversion")'' -t gse;
 # Debian keeps TCP sessions open for 60 seconds
-sleep 67;
+sleep 62;
 
 # SCAP data
 su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type scap";
 /usr/bin/logger ''Scapdata Feed Version \$(su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type scap --feedversion")'' -t gse;
 # Debian keeps TCP sessions open for 60 seconds
-sleep 67;
+sleep 62;
 
 # GVMD data
 su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type gvmd_data";
@@ -667,8 +674,8 @@ configure_redis() {
         sh -c 'cat << EOF > /etc/tmpfiles.d/redis.conf
 d /run/redis 0755 redis redis
 EOF'
-    mkdir -p /run/redis;
-    chown -R redis:redis /run/redis;
+    # start systemd-tmpfiles to create directories
+    systemd-tmpfiles --create;
     sh -c 'cat << EOF  > /etc/redis/redis.conf
 daemonize yes
 pidfile /run/redis/redis-server.pid
@@ -736,27 +743,17 @@ EOF'
 }
 
 configure_permissions() {
-    mkdir /run/gvm;
-    chown -R gvm:gvm /run/gvm;
-    chown -R gvm:gvm /opt/gvm/src/;
-    chown -R gvm:gvm /var/log/gvm;
-    chown -R root:root /run/gvm/gse;
-    chown -R gvm:gvm /var/run/gvm;
-    chown -R gvm:gvm /var/lib/gvm;
-    # OpenVAS 
+    # Once more to ensure that GVM owns all files in /opt/gvm
+    chown -R gvm:gvm /opt/gvm/;
+    # GSE log files
+    chown -R gvm:gvm /var/log/gvm/;
+    # Openvas feed
     chown -R gvm:gvm /var/lib/openvas;
-    # configure broader permissions as defined by tmpfiles.d/ to avoid a reboot
-    chmod -R 1777 /run/gvm;
+    # GVM Feed
+    chown -R gvm:gvm /var/lib/gvm;
+    # OSPD Configuration file
     chown -R gvm:gvm /etc/ospd/;
-    # configure broader permissions as defined by tmpfiles.d/ to avoid a reboot
-    chmod -R 1777 /run/gvm/;
-    touch /var/log/gvm/openvas.log;
-    chown -R gvm:gvm /var/log/gvm/openvas.log;
-    chmod -R 1777 /var/log/gvm/openvas.log;
-    touch /var/log/gvm/gvmd.log;
-    chown -R gvm:gvm /var/log/gvm/gvmd.log;
-    chmod -R 1777 /var/log/gvm/gvmd.log;
-    # Home dirs
+    # # Home dirs
     chown -R gvm:gvm /home/gvm;
 }
 
@@ -915,39 +912,40 @@ exit 0;
 ######################################################################################################################################
 # Post install 
 # 
+# Feedowner/admin account is automatically created during installation.x
 # The admin account is import feed owner: https://community.greenbone.net/t/gvm-20-08-missing-report-formats-and-scan-configs/6397/2
-# gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value UUID of admin account 
-# Get the uuid using gvmd --get-users --verbose
-# The first OpenVas scanner is always this UUID gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73
+# /opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value UUID of admin account 
+# Get the uuid using /opt/gvm/sbin/gvmd --get-users --verbose
+# The first OpenVas scanner is always this UUID /opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73
 #
 # Admin user:   cat /opt/gvm/lib/adminuser.
-#               You should change this: gvmd --user admin --new-password 'Your new password'
+#               You should change this: /opt/gvm/sbin/gvmd --user admin --new-password 'Your new password'
 #
 # Check the logs:
-# tail -f /var/log/ospd/ospd-openvas.log
+# tail -f /var/log/gvm/ospd-openvas.log
 # tail -f /var/log/gvm/gvmd.log
 # tail -f /var/log/gvm/openvas-log < This is very useful when scanning
 # tail -f /var/log/syslog | grep -i gse
 #
 # Create required certs for secondary
 # # cd /root/sec_certs
-# gvm-manage-certs -e ./gsecert.cfg -v -d -c
+# /opt/gvm/sbin/gvm-manage-certs -e ./gsecert.cfg -v -d -c
 # copy secondarycert.pem, secondarykey.pem, and /var/lib/gvm/CA/cacert.pem to the remote system to the correct locations. 
 # Then create the scanner in GVMD
 # chown gvm:gvm *
-# su gvm -c 'gvmd --create-scanner="OSP Scanner secondary hostname" --scanner-host=hostname --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem'
+# su gvm -c '/opt/gvm/sbin/gvmd --create-scanner="OSP Scanner secondary hostname" --scanner-host=hostname --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem'
 # Example:
-#   su gvm -c 'gvmd --create-scanner="OSP Scanner aboleth" --scanner-host=aboleth --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem'
+#   su gvm -c '/opt/gvm/sbin/gvmd --create-scanner="OSP Scanner aboleth" --scanner-host=aboleth --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem'
 #       Scanner created.
 # 
 # Don't forget to install the certs on the secondary as discussed further down, then return and do these verification steps on the primary:
 #   
-#   su gvm -c 'gvmd --get-scanners'
+#   su gvm -c '/opt/gvm/sbin/gvmd --get-scanners'
 #       08b69003-5fc2-4037-a479-93b440211c73  OpenVAS  /var/run/ospd/ospd.sock  0  OpenVAS Default
 #       6acd0832-df90-11e4-b9d5-28d24461215b  CVE    0  CVE
 #       3e2232e3-b819-41bc-b5be-db52bfb06588  OpenVAS  mysecondary  9390  OSP Scanner mysecondary
 #
-#   su gvm -c 'gvmd --verify-scanner=3e2232e3-b819-41bc-b5be-db52bfb06588'
+#   su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner=3e2232e3-b819-41bc-b5be-db52bfb06588'
 #       Scanner version: OpenVAS 20.8.0.
 #
 #
@@ -960,5 +958,5 @@ exit 0;
 # Using ps or top, You'll notice that postgres is being hammered by gvmd and that redis are
 # too, but by ospd-openvas.
 #
-# When running a - tail -f /var/log/openvas.log - is useful in following on during the scanning.
-#/var/lib/gvm/private/CA/
+# When running a - tail -f /var/log/openvas.log - is useful in following progress during the scanning.
+# /var/lib/gvm/private/CA/

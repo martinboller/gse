@@ -6,12 +6,13 @@
 #                                                                           #
 # Email:        martin                                                      #
 # Last Update:  2021-10-23                                                  #
-# Version:      2.00                                                        #
+# Version:      2.10                                                        #
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
 #               2021-05-07 Update to 21.4.0 (1.50)                          #
 #               2021-09-13 Updated to run on Debian 10 and 11               #
 #               2021-10-23 Latest GSE release                               #
+#               2021-10-25 Correct ospd.sock path                           #
 #                                                                           #
 # Info:         https://sadsloth.net/post/install-gvm-20_08-src-on-debian/  #
 #                                                                           #
@@ -96,7 +97,7 @@ install_prerequisites() {
         fi
 
     # Required for PDF report generation
-    /usr/bin/logger '....rerequisites for PDF report generation' -t 'gse-21.4';
+    /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gse-21.4';
     apt-get -y install texlive-latex-extra --no-install-recommends;
     apt-get -y install texlive-fonts-recommended;
     # Install other preferences and cleanup APT
@@ -116,8 +117,6 @@ install_prerequisites() {
     mkdir -p /var/lib/gvm/CA;
     mkdir -p /var/lib/openvas/plugins;
     mkdir -p /var/lib/gvm/private/CA;
-    mkdir -p /var/log/gvm/;
-    chown -R gvm:gvm /opt/gvm;
     /usr/bin/logger 'install_prerequisites finished' -t 'gse-21.4';
 }
 
@@ -125,7 +124,7 @@ prepare_nix_users() {
     # Create gvm user
     /usr/sbin/useradd --system --create-home -c "gvm User" --shell /bin/bash gvm;
     mkdir /opt/gvm;
-    chown gvm:gvm /opt/gvm/;
+    chown -R gvm:gvm /opt/gvm/;
     # Update the PATH environment variable
     echo "PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin" > /etc/profile.d/gvm.sh;
     # Add GVM library path to /etc/ld.so.conf.d
@@ -140,7 +139,12 @@ EOF'
     sh -c 'cat << EOF > /etc/tmpfiles.d/greenbone.conf
 d /run/gvm 1775 gvm gvm
 d /run/gvm/gse 1775 root
+d /run/ospd 1775 gvm gvm
+d /run/ospd/gse 1775 root
+d /var/log/gvm 1775 gvm gvm
 EOF'
+    # start systemd-tmpfiles to create directories
+    systemd-tmpfiles --create;
 }
 
 prepare_source_secondary() {    
@@ -172,10 +176,13 @@ prepare_source_secondary() {
     mv /opt/gvm/src/greenbone/gvm-tools-21.6.1 /opt/gvm/src/greenbone/gvm-tools;
     sync;
     chown -R gvm:gvm /opt/gvm/src/greenbone;
-    mkdir /run/gvm;
-    mkdir /run/gvm/gse;
-    touch /run/gvm/gvmd.sock;
-    chown -R gvm:gvm /run/gvm;
+    # mkdir /run/gvm;
+    # mkdir /run/gvm/gse;
+    # touch /run/gvm/gvmd.sock;
+    # chown -R gvm:gvm /run/gvm;
+    # mkdir /run/ospd;
+    # mkdir /run/ospd/gse;
+    # chown -R gvm:gvm /run/ospd;
     /usr/bin/logger 'prepare_source_secondary finished' -t 'gse-21.4';
 }
 
@@ -322,8 +329,8 @@ install_impacket() {
 configure_openvas() {
     /usr/bin/logger 'configure_openvas' -t 'gse-21.4';
     # Create dir for ospd run files
-    mkdir /run/gvm;
-    chown -R gvm:gvm /run/gvm;
+    # mkdir /run/gvm;
+    # chown -R gvm:gvm /run/gvm;
     # Create OSPD Openvas service
     sh -c 'cat << EOF > /lib/systemd/system/ospd-openvas.service
 [Unit]
@@ -337,7 +344,7 @@ Environment="PATH=/opt/gvm/sbin:/opt/gvm/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 User=gvm
 Group=gvm
 # Change log-level to info before production
-ExecStart=/usr/local/bin/ospd-openvas --port=9390 --bind-address=0.0.0.0 --pid-file=/run/gvm/ospd-openvas.pid --lock-file-dir=/run/gvm/ --key-file=/var/lib/gvm/private/CA/secondarykey.pem --cert-file=/var/lib/gvm/CA/secondarycert.pem --ca-file=/var/lib/gvm/CA/cacert.pem --log-file=/var/log/gvm/ospd-openvas.log --log-level=debug
+ExecStart=/usr/local/bin/ospd-openvas --port=9390 --bind-address=0.0.0.0 --pid-file=/run/gvm/ospd-openvas.pid --lock-file-dir=/run/gvm/ --key-file=/var/lib/gvm/private/CA/secondarykey.pem --cert-file=/var/lib/gvm/CA/secondarycert.pem --ca-file=/var/lib/gvm/CA/cacert.pem --log-file=/var/log/gvm/ospd-openvas.log --log-level=info
 # log level can be debug too, info is default
 # This works asynchronously, but does not take the daemon down during the reload so it is ok.
 Restart=always
@@ -350,16 +357,12 @@ EOF'
     ## Configure ospd
     # Directory for ospd configuration file
     mkdir -p /etc/ospd;
-    # Directory for ospd pid file
-    mkdir -p /run/gvm;
-    # Directory for ospd configuration file
-    mkdir -p /var/log/gvm;
     sh -c 'cat << EOF > /etc/ospd/ospd-openvas.conf
 [OSPD - openvas]
 log_level = INFO
 socket_mode = 0o766
-unix_socket = /run/gvm/ospd.sock
-pid_file = /run/gvm/ospd-openvas.pid
+unix_socket = /run/ospd/ospd.sock
+pid_file = /run/ospd/ospd-openvas.pid
 ; default = /run/ospd
 lock_file_dir = /run/gvm
 
@@ -463,8 +466,8 @@ configure_redis() {
         sh -c 'cat << EOF > /etc/tmpfiles.d/redis.conf
 d /run/redis 0755 redis redis
 EOF'
-    mkdir -p /run/redis;
-    chown -R redis:redis /run/redis;
+    # start systemd-tmpfiles to create directories
+    systemd-tmpfiles --create;
     sh -c 'cat << EOF  > /etc/redis/redis.conf
 daemonize yes
 pidfile /run/redis/redis-server.pid
@@ -532,27 +535,28 @@ EOF'
 }
 
 configure_permissions() {
-    mkdir /run/gvm;
-    chown -R gvm:gvm /run/gvm;
-    chown -R gvm:gvm /opt/gvm/src/;
-    chown -R gvm:gvm /var/log/gvm;
-    chown -R root:root /run/gvm/gse;
-    chown -R gvm:gvm /var/run/gvm;
-    chown -R gvm:gvm /var/lib/gvm;
+    # mkdir /run/gvm;
+    # chown -R gvm:gvm /run/gvm;
+    chown -R gvm:gvm /opt/gvm/;
+    chown -R gvm:gvm /var/log/gvm/;
+    # chown -R root:root /run/gvm/gse;
+    # chown -R gvm:gvm /var/run/gvm;
+    # chown -R gvm:gvm /var/lib/gvm;
     # OpenVAS 
     chown -R gvm:gvm /var/lib/openvas;
+    chown -R gvm:gvm /var/lib/gvm;
     # configure broader permissions as defined by tmpfiles.d/ to avoid a reboot
-    chmod -R 1777 /run/gvm;
+    # chmod -R 1777 /run/gvm;
     chown -R gvm:gvm /etc/ospd/;
     # configure broader permissions as defined by tmpfiles.d/ to avoid a reboot
-    chmod -R 1777 /run/gvm/;
-    touch /var/log/gvm/openvas.log;
-    chown -R gvm:gvm /var/log/gvm/openvas.log;
-    chmod -R 1777 /var/log/gvm/openvas.log;
-    touch /var/log/gvm/gvmd.log;
-    chown -R gvm:gvm /var/log/gvm/gvmd.log;
-    chmod -R 1777 /var/log/gvm/gvmd.log;
-    # Home dirs
+    # chmod -R 1777 /run/gvm/;
+    # touch /var/log/gvm/openvas.log;
+    # chown -R gvm:gvm /var/log/gvm/openvas.log;
+    # chmod -R 1777 /var/log/gvm/openvas.log;
+    # touch /var/log/gvm/gvmd.log;
+    # chown -R gvm:gvm /var/log/gvm/gvmd.log;
+    # chmod -R 1777 /var/log/gvm/gvmd.log;
+    # # Home dirs
     chown -R gvm:gvm /home/gvm;
 }
 
@@ -625,6 +629,9 @@ main() {
     update_scan_data;
     su ospd -c '/usr/local/sbin/openvas --update-vt-info';
     start_services;
+    echo -e;
+    echo 'Copy the required certificates from the primary server (/root/sec_certs) and run install-vuln-secondary-certs.sh';
+    echo -e;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of Openvas feed data into Redis, then reboot' -t 'gse-21.4';
 }
 
@@ -635,25 +642,25 @@ exit 0;
 
 ######################################################################################################################################
 # Post install 
-# 
+#
+# The feedowner/admin account is created as part of the script.
 # The admin account is import feed owner: https://community.greenbone.net/t/gvm-20-08-missing-report-formats-and-scan-configs/6397/2
-# gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value UUID of admin account 
-# Get the uuid using gvmd --get-users --verbose
+# /opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value UUID of admin account 
+# Get the uuid using /opt/gvm/sbin/gvmd --get-users --verbose
 # The first OpenVas scanner is always this UUID gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73
 #
-# Admin user:   cat /usr/local/lib/adminuser.
-#               You should change this: gvmd --user admin --new-password 'Your new password'
+# Admin user:   cat /var/lib/gvm/adminuser.
+#               You should change this: /opt/gvm/sbin/gvmd --user admin --new-password 'Your new password'
 #
 # Check the logs:
-# tail -f /usr/local/var/log/ospd/ospd-openvas.log
-# tail -f /usr/local/var/log/gvm/gvmd.log
-# tail -f /usr/local/var/log/gvm/openvas-log < This is very useful when scanning
+# tail -f /var/log/gvm/ospd-openvas.log
+# tail -f /var/log/gvm/gvmd.log
+# tail -f /var/log/gvm/openvas-log < This is very useful when scanning
 # tail -f /var/log/syslog | grep -i gse
 #
-# Creating a secondary sensor requires a backport for 20.08
-# Create required certs for secondary on primary run gvm-manage-certs -e ./gsecert.cfg  -v -d -c
+# Create required certs for secondary on primary run /opt/gvm/sbin/gvm-manage-certs -e ./gsecert.cfg  -v -d -c
 #
 # Using ps or top, You'll notice that redis is being hammered by ospd-openvas.
 #
-# When running a - tail -f /usr/local/var/log/openvas.log - is useful in following on during the scanning.
+# When running a - tail -f /var/log/gvm/openvas.log - is useful in following progress during scanning.
 #
