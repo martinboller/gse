@@ -12,7 +12,7 @@
 #               2021-05-07 Update to 21.4.0 (1.50)                          #
 #               2021-09-13 Updated to run on Debian 10 and 11               #
 #               2021-10-23 Latest GSE release                               #
-#               2021-10-25 Correct ospd.sock path                           #
+#               2021-10-25 Correct ospd-openvas.sock path/openvas --update-vt-info  #
 #                                                                           #
 # Info:         https://sadsloth.net/post/install-gvm-20_08-src-on-debian/  #
 #                                                                           #
@@ -122,19 +122,21 @@ install_prerequisites() {
 
 prepare_nix_users() {
     # Create gvm user
-    /usr/sbin/useradd --system --create-home -c "gvm User" --shell /bin/bash gvm;
+    /usr/sbin/useradd --system --create-home --home-dir /opt/gvm/ -c "gvm User" --shell /bin/bash gvm;
     mkdir /opt/gvm;
     chown -R gvm:gvm /opt/gvm/;
     # Update the PATH environment variable
     echo "PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin" > /etc/profile.d/gvm.sh;
     # Add GVM library path to /etc/ld.so.conf.d
-    sh -c 'cat << EOF > /etc/ld.so.conf.d/gvm.conf;
+    sh -c 'cat << EOF > /etc/ld.so.conf.d/greenbone.conf;
 # Greenbone libraries
 /opt/gvm/lib
 /opt/gvm/include
 EOF'
-    sh -c 'cat << EOF > /etc/sudoers.d/gvmd
+    sh -c 'cat << EOF > /etc/sudoers.d/greenbone
 gvm     ALL = NOPASSWD: /opt/gvm/sbin/gsad, /opt/gvm/sbin/gvmd, /opt/gvm/sbin/openvas
+
+Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/gvm/sbin"
 EOF'
     sh -c 'cat << EOF > /etc/tmpfiles.d/greenbone.conf
 d /run/gvm 1775 gvm gvm
@@ -274,8 +276,9 @@ install_openvas() {
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .;
     make;                # build the libraries
-    make doc-full;       # build more developer-oriented documentation
+    #make doc-full;       # build more developer-oriented documentation
     make install;        # install the build
+    make rebuild_cache;
     sync;
     ldconfig;
     /usr/bin/logger 'install_openvas finished' -t 'gse-21.4';
@@ -331,6 +334,40 @@ configure_openvas() {
     # Create dir for ospd run files
     # mkdir /run/gvm;
     # chown -R gvm:gvm /run/gvm;
+    # Create openvas configuration file
+    sh -c 'cat << EOF > /etc/openvas/openvas.conf
+cgi_path = /cgi-bin:/scripts
+checks_read_timeout = 5
+nasl_no_signature_check = yes
+max_checks = 10
+time_between_request = 0
+safe_checks = yes
+optimize_test = yes
+allow_simultaneous_ips = yes
+unscanned_closed = yes
+debug_tls = 0
+test_empty_vhost = no
+open_sock_max_attempts = 10
+plugins_timeout = 320
+scanner_plugins_timeout = 36000
+timeout_retry = 3
+vendor_version = 
+plugins_folder = /var/lib/openvas/plugins
+config_file = /etc/openvas/openvas.conf
+max_hosts = 30
+db_address = /run/redis/redis.sock
+report_host_details = yes
+expand_vhosts = yes
+log_plugins_name_at_load = no
+log_whole_attack = no
+include_folders = /var/lib/openvas/plugins
+auto_enable_dependencies = yes
+drop_privileges = no
+test_alive_hosts_only = yes
+unscanned_closed_udp = yes
+non_simult_ports = 139, 445, 3389, Services/irc
+EOF'
+
     # Create OSPD Openvas service
     sh -c 'cat << EOF > /lib/systemd/system/ospd-openvas.service
 [Unit]
@@ -344,7 +381,7 @@ Environment="PATH=/opt/gvm/sbin:/opt/gvm/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 User=gvm
 Group=gvm
 # Change log-level to info before production
-ExecStart=/usr/local/bin/ospd-openvas --port=9390 --bind-address=0.0.0.0 --pid-file=/run/gvm/ospd-openvas.pid --lock-file-dir=/run/gvm/ --key-file=/var/lib/gvm/private/CA/secondarykey.pem --cert-file=/var/lib/gvm/CA/secondarycert.pem --ca-file=/var/lib/gvm/CA/cacert.pem --log-file=/var/log/gvm/ospd-openvas.log --log-level=info
+ExecStart=/usr/local/bin/ospd-openvas --port=9390 --bind-address=0.0.0.0 --pid-file=/run/gvm/ospd-openvas.pid --lock-file-dir=/run/gvm/ --key-file=/var/lib/gvm/private/CA/secondarykey.pem --cert-file=/var/lib/gvm/CA/secondarycert.pem --ca-file=/var/lib/gvm/CA/cacert.pem --log-file=/var/log/gvm/ospd-openvas.log
 # log level can be debug too, info is default
 # This works asynchronously, but does not take the daemon down during the reload so it is ok.
 Restart=always
@@ -361,7 +398,7 @@ EOF'
 [OSPD - openvas]
 log_level = INFO
 socket_mode = 0o766
-unix_socket = /run/ospd/ospd.sock
+unix_socket = /run/ospd/ospd-openvas.sock
 pid_file = /run/ospd/ospd-openvas.pid
 ; default = /run/ospd
 lock_file_dir = /run/gvm
@@ -535,27 +572,16 @@ EOF'
 }
 
 configure_permissions() {
-    # mkdir /run/gvm;
-    # chown -R gvm:gvm /run/gvm;
+    # Once more to ensure that GVM owns all files in /opt/gvm
     chown -R gvm:gvm /opt/gvm/;
+    # GSE log files
     chown -R gvm:gvm /var/log/gvm/;
-    # chown -R root:root /run/gvm/gse;
-    # chown -R gvm:gvm /var/run/gvm;
-    # chown -R gvm:gvm /var/lib/gvm;
-    # OpenVAS 
+    # Openvas feed
     chown -R gvm:gvm /var/lib/openvas;
+    # GVM Feed
     chown -R gvm:gvm /var/lib/gvm;
-    # configure broader permissions as defined by tmpfiles.d/ to avoid a reboot
-    # chmod -R 1777 /run/gvm;
+    # OSPD Configuration file
     chown -R gvm:gvm /etc/ospd/;
-    # configure broader permissions as defined by tmpfiles.d/ to avoid a reboot
-    # chmod -R 1777 /run/gvm/;
-    # touch /var/log/gvm/openvas.log;
-    # chown -R gvm:gvm /var/log/gvm/openvas.log;
-    # chmod -R 1777 /var/log/gvm/openvas.log;
-    # touch /var/log/gvm/gvmd.log;
-    # chown -R gvm:gvm /var/log/gvm/gvmd.log;
-    # chmod -R 1777 /var/log/gvm/gvmd.log;
     # # Home dirs
     chown -R gvm:gvm /home/gvm;
 }
@@ -627,7 +653,7 @@ main() {
     configure_greenbone_updates;
     configure_permissions;
     update_scan_data;
-    su ospd -c '/usr/local/sbin/openvas --update-vt-info';
+    su gvm -c '/usr/local/sbin/openvas --update-vt-info';
     start_services;
     echo -e;
     echo 'Copy the required certificates from the primary server (/root/sec_certs) and run install-vuln-secondary-certs.sh';

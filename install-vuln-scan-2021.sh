@@ -12,7 +12,7 @@
 #               2021-05-07 Update to 21.4.0 (1.50)                          #
 #               2021-09-13 Updated to run on Debian 10 and 11               #
 #               2021-10-23 Latest GSE release                               #
-#               2021-10-25 Correct ospd.sock path                           #
+#               2021-10-25 Correct ospd-openvas.sock path                           #
 #                                                                           #
 # Info:         https://sadsloth.net/post/install-gvm-20_08-src-on-debian/  #
 #                                                                           #
@@ -128,19 +128,24 @@ install_prerequisites() {
 
 prepare_nix_users() {
     # Create gvm user
-    /usr/sbin/useradd --system --create-home -c "gvm User" --shell /bin/bash gvm;
+    /usr/sbin/useradd --system --create-home --home-dir /opt/gvm/ -c "gvm User" --shell /bin/bash gvm;
     mkdir /opt/gvm;
     chown gvm:gvm /opt/gvm;
     # Update the PATH environment variable
     echo "PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin" > /etc/profile.d/gvm.sh;
     # Add GVM library path to /etc/ld.so.conf.d
-    sh -c 'cat << EOF > /etc/ld.so.conf.d/gvm.conf;
+
+    sh -c 'cat << EOF > /etc/ld.so.conf.d/greenbone.conf;
 # Greenbone libraries
 /opt/gvm/lib
 /opt/gvm/include
 EOF'
-    sh -c 'cat << EOF > /etc/sudoers.d/gvmd
-gvm     ALL = NOPASSWD: /opt/gvm/sbin/*
+
+# sudoers.d to run openvas as root
+    sh -c 'cat << EOF > /etc/sudoers.d/greenbone
+gvm     ALL = NOPASSWD: /opt/gvm/sbin/gsad, /opt/gvm/sbin/gvmd, /opt/gvm/sbin/openvas
+
+Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/gvm/sbin"
 EOF'
 }
 
@@ -176,12 +181,7 @@ prepare_source() {
     mv /opt/gvm/src/greenbone/python-gvm-21.10.0 /opt/gvm/src/greenbone/python-gvm;
     mv /opt/gvm/src/greenbone/gvm-tools-21.6.1 /opt/gvm/src/greenbone/gvm-tools;
     sync;
-    chown -R gvm:gvm /opt/gvm/src/greenbone;
-    mkdir /run/gvm;
-    touch /run/gvm/gvmd.sock;
-    chown -R gvm:gvm /run/gvm;
-    mkdir /run/ospd;
-    chown -R gvm:gvm /run/ospd;
+    chown -R gvm:gvm /opt/gvm;
     /usr/bin/logger 'prepare_source finished' -t 'gse-21.4';
 }
 
@@ -218,7 +218,6 @@ install_gvm_libs() {
     /usr/bin/logger 'install_gvmlibs' -t 'gse-21.4';
     cd /opt/gvm/src/greenbone/;
     cd gvm-libs/;
-    chown -R gvm:gvm /opt/gvm/
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .
     make;
@@ -261,7 +260,7 @@ install_ospd() {
     # Uncomment below for install from source
     cd /opt/gvm/src/greenbone;
     # Configure and build scanner
-    cd ospd;
+    cd ospd/;
     /usr/bin/python3 -m pip install . 
     # The poetry install part will fail if poetry is not installed
     # so left here for use when testing (just comment uncomment install_poetry in "main")
@@ -276,7 +275,7 @@ install_ospd_openvas() {
     cd /opt/gvm/src/greenbone;
     # Configure and build scanner
     # Uncomment below for install from source
-    cd ospd-openvas;
+    cd ospd-openvas/;
     /usr/bin/python3 -m pip install . 
     # The poetry install part will fail if poetry is not installed
     # so left here for use when testing (just comment uncomment poetry install in "main")
@@ -289,12 +288,12 @@ install_openvas() {
     cd /opt/gvm/src/greenbone;
     # Configure and build scanner
     cd openvas;
-    chown -R gvm:gvm /opt/gvm;
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .;
     make;                # build the libraries
     make doc-full;       # build more developer-oriented documentation
     make install;        # install the build
+    make rebuild_cache;
     sync;
     ldconfig;
     /usr/bin/logger 'install_openvas finished' -t 'gse-21.4';
@@ -305,13 +304,12 @@ install_gvm() {
     cd /opt/gvm/src/greenbone;
     # Build Manager
     cd gvmd/;
-    chown -R gvm:gvm /opt/gvm;
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
-    cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .;
-    make;
-    make doc-full;
-    make install;
-    sync;
+        cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .;
+        make;
+        make doc-full;
+        make install;
+        sync;
     /usr/bin/logger 'install_gvm finished' -t 'gse-21.4';
 }
 
@@ -396,6 +394,39 @@ prepare_postgresql() {
 
 configure_openvas() {
     /usr/bin/logger 'configure_openvas' -t 'gse-21.4';
+    # Create openvas.conf file
+    sh -c 'cat << EOF > /etc/openvas/openvas.conf
+cgi_path = /cgi-bin:/scripts
+checks_read_timeout = 5
+nasl_no_signature_check = yes
+max_checks = 10
+time_between_request = 0
+safe_checks = yes
+optimize_test = yes
+allow_simultaneous_ips = yes
+unscanned_closed = yes
+debug_tls = 0
+test_empty_vhost = no
+open_sock_max_attempts = 10
+plugins_timeout = 320
+scanner_plugins_timeout = 36000
+timeout_retry = 3
+vendor_version = 
+plugins_folder = /var/lib/openvas/plugins
+config_file = /etc/openvas/openvas.conf
+max_hosts = 30
+db_address = /run/redis/redis.sock
+report_host_details = yes
+expand_vhosts = yes
+log_plugins_name_at_load = no
+log_whole_attack = no
+include_folders = /var/lib/openvas/plugins
+auto_enable_dependencies = yes
+drop_privileges = no
+test_alive_hosts_only = yes
+unscanned_closed_udp = yes
+non_simult_ports = 139, 445, 3389, Services/irc
+EOF'
     # Create OSPD-OPENVAS service
     sh -c 'cat << EOF > /lib/systemd/system/ospd-openvas.service
 [Unit]
@@ -409,7 +440,7 @@ Environment="PATH=/opt/gvm/sbin:/opt/gvm/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 User=gvm
 Group=gvm
 # Change log-level to info before production
-ExecStart=/usr/local/bin/ospd-openvas --config=/etc/ospd/ospd-openvas.conf --log-file=/var/log/gvm/ospd-openvas.log --log-level=info
+ExecStart=/usr/local/bin/ospd-openvas --config=/etc/ospd/ospd-openvas.conf --log-file=/var/log/gvm/ospd-openvas.log
 # log level can be debug too, info is default
 # This works asynchronously, but does not take the daemon down during the reload so it is ok.
 Restart=always
@@ -426,7 +457,7 @@ EOF'
 [OSPD - openvas]
 log_level = INFO
 socket_mode = 0o766
-unix_socket = /run/ospd/ospd.sock
+unix_socket = /run/ospd/ospd-openvas.sock
 pid_file = /run/ospd/ospd-openvas.pid
 ; default = /run/ospd
 lock_file_dir = /run/gvm
@@ -492,7 +523,7 @@ User=gvm
 Group=gvm
 PIDFile=/run/gvm/gvmd.pid
 # feed-update lock must be shared between ospd, gvmd, and greenbone-nvt-sync/greenbone-feed-sync
-ExecStart=-/opt/gvm/sbin/gvmd --unix-socket=/run/gvm/gvmd.sock --feed-lock-path=/run/gvm/feed-update.lock --listen-group=gvm --client-watch-interval=0 --osp-vt-update=/run/ospd/ospd.sock
+ExecStart=-/opt/gvm/sbin/gvmd --unix-socket=/run/gvm/gvmd.sock --feed-lock-path=/run/gvm/feed-update.lock --listen-group=gvm --client-watch-interval=0 --osp-vt-update=/run/ospd/ospd-openvas.sock
 Restart=always
 TimeoutStopSec=20
 
@@ -941,7 +972,7 @@ exit 0;
 # Don't forget to install the certs on the secondary as discussed further down, then return and do these verification steps on the primary:
 #   
 #   su gvm -c '/opt/gvm/sbin/gvmd --get-scanners'
-#       08b69003-5fc2-4037-a479-93b440211c73  OpenVAS  /var/run/ospd/ospd.sock  0  OpenVAS Default
+#       08b69003-5fc2-4037-a479-93b440211c73  OpenVAS  /var/run/ospd/ospd-openvas.sock  0  OpenVAS Default
 #       6acd0832-df90-11e4-b9d5-28d24461215b  CVE    0  CVE
 #       3e2232e3-b819-41bc-b5be-db52bfb06588  OpenVAS  mysecondary  9390  OSP Scanner mysecondary
 #
