@@ -45,10 +45,10 @@ install_prerequisites() {
     # Install pre-requisites for openvas
     /usr/bin/logger '..Tools for Development' -t 'gse-21.4';
     apt-get -y install gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
-        libgcrypt20-dev redis-server libunistring-dev;
+        libgcrypt20-dev redis-server libunistring-dev libxml2-dev;
     # Install pre-requisites for gsad
-    /usr/bin/logger '..Prerequisites for GSAD' -t 'gse-21.4';
-    apt-get -y install libmicrohttpd-dev libxml2-dev;
+    #/usr/bin/logger '..Prerequisites for GSAD' -t 'gse-21.4';
+    #apt-get -y install libmicrohttpd-dev;
     
     # Other pre-requisites for GSE
     if [ $VER -eq "11" ] 
@@ -97,30 +97,33 @@ install_prerequisites() {
         fi
 
     # Required for PDF report generation
-    /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gse-21.4';
-    apt-get -y install texlive-latex-extra --no-install-recommends;
-    apt-get -y install texlive-fonts-recommended;
+    # /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gse-21.4';
+    # apt-get -y install texlive-latex-extra --no-install-recommends;
+    # apt-get -y install texlive-fonts-recommended;
     # Install other preferences and cleanup APT
     /usr/bin/logger '....Install preferences on Debian' -t 'gse-21.4';
     apt-get -y install bash-completion;
-    apt-get update;
-    apt-get -y full-upgrade;
-    apt-get -y auto-remove;
-    apt-get -y auto-clean;
-    apt-get -y clean;
     # Install SUDO
     apt-get -y install sudo;
+    # A little apt cleanup
+    apt-get update;
+    apt-get -y full-upgrade;
+    apt-get -y autoremove --purge;
+    apt-get -y autoclean;
+    apt-get -y clean;    
     # Python pip packages
     python3 -m pip install --upgrade pip
     # Prepare folders for scan data
     mkdir -p /var/lib/gvm/private/CA;
     mkdir -p /var/lib/gvm/CA;
     mkdir -p /var/lib/openvas/plugins;
-    mkdir -p /var/lib/gvm/private/CA;
+    # logging
+    mkdir -p /var/log/gvm/;
+    chown -R gvm:gvm /var/log/gvm/;
     /usr/bin/logger 'install_prerequisites finished' -t 'gse-21.4';
 }
 
-prepare_nix_users() {
+prepare_nix() {
     # Create gvm user
     /usr/sbin/useradd --system --create-home --home-dir /opt/gvm/ -c "gvm User" --shell /bin/bash gvm;
     mkdir /opt/gvm;
@@ -246,8 +249,7 @@ install_ospd() {
     # Configure and build scanner
     cd ospd;
     /usr/bin/python3 -m pip install . 
-    # The poetry install part will fail if poetry is not installed
-    # so left here for use when testing (just comment uncomment install_poetry in "main")
+    # For use when testing (just comment uncomment poetry install in "main" and here)
     #/usr/poetry/bin/poetry install;
     /usr/bin/logger 'install_ospd finished' -t 'gse-21.4';
 }
@@ -258,11 +260,10 @@ install_ospd_openvas() {
     #/usr/bin/python3 -m pip install ospd-openvas
     cd /opt/gvm/src/greenbone;
     # Configure and build scanner
-    # Uncomment below for install from source
+    # install from source
     cd ospd-openvas;
     /usr/bin/python3 -m pip install . 
-    # The poetry install part will fail if poetry is not installed
-    # so left here for use when testing (just comment uncomment poetry install in "main")
+    # For use when testing (just comment uncomment poetry install in "main" and here)
     #/usr/poetry/bin/poetry install;
     /usr/bin/logger 'install_ospd_openvas finished' -t 'gse-21.4';
 }
@@ -331,9 +332,6 @@ install_impacket() {
 
 configure_openvas() {
     /usr/bin/logger 'configure_openvas' -t 'gse-21.4';
-    # Create dir for ospd run files
-    # mkdir /run/gvm;
-    # chown -R gvm:gvm /run/gvm;
     # Create openvas configuration file
     sh -c 'cat << EOF > /etc/openvas/openvas.conf
 cgi_path = /cgi-bin:/scripts
@@ -392,7 +390,7 @@ WantedBy=multi-user.target
 EOF'
 
     ## Configure ospd
-    # Directory for ospd configuration file
+    # Directory for ospd-openvas configuration file
     mkdir -p /etc/ospd;
     sh -c 'cat << EOF > /etc/ospd/ospd-openvas.conf
 [OSPD - openvas]
@@ -582,13 +580,13 @@ configure_permissions() {
     chown -R gvm:gvm /var/lib/gvm;
     # OSPD Configuration file
     chown -R gvm:gvm /etc/ospd/;
-    # # Home dirs
-    chown -R gvm:gvm /home/gvm;
 }
 
 create_gvm_python_script() {
     /usr/bin/logger 'create_gvm_python_script' -t 'gse-21.4';
-    sh -c "cat << EOF  > /home/gvm/gvm-tasks.py
+    mkdir /opt/gvm/scripts;
+    chown -R gvm:gvm /opt/gvm/scripts/;
+    sh -c "cat << EOF  > /opt/gvm/scripts/gvm-tasks.py
 from gvm.connections import UnixSocketConnection
 from gvm.protocols.gmp import Gmp
 from gvm.transforms import EtreeTransform
@@ -633,7 +631,7 @@ configure_cmake() {
 main() {
    # Shared components
     install_prerequisites;
-    prepare_nix_users;
+    prepare_nix;
     prepare_source_secondary;
     
     # Installation of specific components
@@ -647,7 +645,7 @@ main() {
     # Configuration of installed components
     configure_openvas;
     configure_redis;
-    # Prestage only works on the specific Vagrant lab where I've copied the scan-data to the Host. 
+    # Prestage only works on the specific Vagrant lab where a scan-data tar-ball is copied to the Host. 
     # Update scan-data only from greenbone when used everywhere else 
     prestage_scan_data;
     configure_greenbone_updates;

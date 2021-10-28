@@ -46,10 +46,10 @@ install_prerequisites() {
     # libunistring is a new requirement from oct-13 updates
     /usr/bin/logger '..Tools for Development' -t 'gse-21.4';
     apt-get -y install gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
-        libgcrypt20-dev redis-server libunistring-dev;
+        libgcrypt20-dev redis-server libunistring-dev libxml2-dev;
     # Install pre-requisites for gsad
     /usr/bin/logger '..Prerequisites for GSAD' -t 'gse-21.4';
-    apt-get -y install libmicrohttpd-dev libxml2-dev;
+    apt-get -y install libmicrohttpd-dev;
     
     # Other pre-requisites for GSE
     if [ $VER -eq "11" ] 
@@ -99,34 +99,32 @@ install_prerequisites() {
 
     # Required for PDF report generation
     /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gse-21.4';
-    apt-get -y install texlive-latex-extra --no-install-recommends;
+    apt-get -y install tex-common texlive-latex-extra;
     apt-get -y install texlive-fonts-recommended;
     # Install other preferences and clean up APT
     /usr/bin/logger '....Install some preferences on Debian and clean up APT' -t 'gse-21.4';
     apt-get -y install bash-completion;
-    apt-get update;
-    apt-get -y full-upgrade;
-    apt-get -y auto-remove;
-    apt-get -y auto-clean;
-    apt-get -y clean;
     # Install SUDO
     apt-get -y install sudo;
+    # A little apt cleanup
+    apt-get update;
+    apt-get -y full-upgrade;
+    apt-get -y autoremove --purge;
+    apt-get -y autoclean;
+    apt-get -y clean;
     # Python pip packages
     python3 -m pip install --upgrade pip
     # Prepare folders for scan data
     mkdir -p /var/lib/gvm/private/CA;
     mkdir -p /var/lib/gvm/CA;
     mkdir -p /var/lib/openvas/plugins;
-    mkdir -p /var/lib/gvm/private/CA;
+    # logging
     mkdir -p /var/log/gvm/;
-    mkdir /run/gvm/;
-    chown -R gvm:gvm /opt/gvm/;
     chown -R gvm:gvm /var/log/gvm/;
-    chown -R gvm:gvm /run/gvm/;
     /usr/bin/logger 'install_prerequisites finished' -t 'gse-21.4';
 }
 
-prepare_nix_users() {
+prepare_nix() {
     # Create gvm user
     /usr/sbin/useradd --system --create-home --home-dir /opt/gvm/ -c "gvm User" --shell /bin/bash gvm;
     mkdir /opt/gvm;
@@ -147,6 +145,15 @@ gvm     ALL = NOPASSWD: /opt/gvm/sbin/gsad, /opt/gvm/sbin/gvmd, /opt/gvm/sbin/op
 
 Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/gvm/sbin"
 EOF'
+    # It appears that GVMD sometimes delete /run/gvm so added a subfolder (/gse) to prevent this
+    sh -c 'cat << EOF > /etc/tmpfiles.d/greenbone.conf
+d /run/gvm 1775 gvm gvm
+d /run/gvm/gse 1775 root root
+d /run/ospd 1775 gvm gvm
+d /run/ospd/gse 1775 root root
+EOF'
+    # start systemd-tmpfiles to create directories
+    systemd-tmpfiles --create;
 }
 
 prepare_source() {    
@@ -260,10 +267,9 @@ install_ospd() {
     # Uncomment below for install from source
     cd /opt/gvm/src/greenbone;
     # Configure and build scanner
-    cd ospd/;
+    cd ospd;
     /usr/bin/python3 -m pip install . 
-    # The poetry install part will fail if poetry is not installed
-    # so left here for use when testing (just comment uncomment install_poetry in "main")
+    # For use when testing (just comment uncomment poetry install in "main" and here)
     #/usr/poetry/bin/poetry install;
     /usr/bin/logger 'install_ospd finished' -t 'gse-21.4';
 }
@@ -274,11 +280,10 @@ install_ospd_openvas() {
     #/usr/bin/python3 -m pip install ospd-openvas
     cd /opt/gvm/src/greenbone;
     # Configure and build scanner
-    # Uncomment below for install from source
-    cd ospd-openvas/;
+    # install from source
+    cd ospd-openvas;
     /usr/bin/python3 -m pip install . 
-    # The poetry install part will fail if poetry is not installed
-    # so left here for use when testing (just comment uncomment poetry install in "main")
+    # For use when testing (just comment uncomment poetry install in "main" and here)
     #/usr/poetry/bin/poetry install;
     /usr/bin/logger 'install_ospd_openvas finished' -t 'gse-21.4';
 }
@@ -293,7 +298,7 @@ install_openvas() {
     make;                # build the libraries
     make doc-full;       # build more developer-oriented documentation
     make install;        # install the build
-    make rebuild_cache;
+    make rebuild_cache;  # Rebuild cache
     sync;
     ldconfig;
     /usr/bin/logger 'install_openvas finished' -t 'gse-21.4';
@@ -324,7 +329,7 @@ install_nmap() {
 
 prestage_scan_data() {
     /usr/bin/logger 'prestage_scan_data' -t 'gse-21.4';
-    # copy scan data from 2020-12-29 to prestage athe ~1.5 Gib required otherwise
+    # copy scan data to prestage ~1.5 Gib required otherwise
     # change this to copy from cloned repo
     cd /tmp/configfiles/;
     tar -xzf /tmp/configfiles/scandata.tar.gz; 
@@ -395,6 +400,7 @@ prepare_postgresql() {
 configure_openvas() {
     /usr/bin/logger 'configure_openvas' -t 'gse-21.4';
     # Create openvas.conf file
+    mkdir /etc/openvas/;
     sh -c 'cat << EOF > /etc/openvas/openvas.conf
 cgi_path = /cgi-bin:/scripts
 checks_read_timeout = 5
@@ -451,7 +457,7 @@ WantedBy=multi-user.target
 EOF'
 
     ## Configure ospd
-    # Directory for ospd configuration file
+    # Directory for ospd-openvas configuration file
     mkdir -p /etc/ospd;
     sh -c 'cat << EOF > /etc/ospd/ospd-openvas.conf
 [OSPD - openvas]
@@ -478,21 +484,6 @@ EOF'
 
 configure_gvm() {
     /usr/bin/logger 'configure_gvm' -t 'gse-21.4';
-    # Prepare sock file for gvmd
-    mkdir /run/gvm;
-    mkdir /run/gvm/gse;
-    touch /run/gvm/gvmd.sock;
-    chown -R gvm:gvm /run/gvm;
-    # Ensure it is recreated after reboot
-    # It appears that GVMD sometimes delete /run/gvm so added a subfolder (/gse) to prevent this
-    sh -c 'cat << EOF > /etc/tmpfiles.d/greenbone.conf
-d /run/gvm 1775 gvm gvm
-d /run/gvm/gse 1775 root root
-d /run/ospd 1775 gvm gvm
-d /run/ospd/gse 1775 gvm gvm
-EOF'
-    # start systemd-tmpfiles to create directories
-    systemd-tmpfiles --create;
     # Create Certificates
     # Certificate options
     # Lifetime in days
@@ -635,8 +626,7 @@ su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type cert";
 sleep 62;
 
 # SCAP data
-su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type scap";
-/usr/bin/logger ''Scapdata Feed Version \$(su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type scap --feedversion")'' -t gse;
+su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type scap";/usr/bin/logger ''Scapdata Feed Version \$(su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type scap --feedversion")'' -t gse;
 # Debian keeps TCP sessions open for 60 seconds
 sleep 62;
 
@@ -784,13 +774,22 @@ configure_permissions() {
     chown -R gvm:gvm /var/lib/gvm;
     # OSPD Configuration file
     chown -R gvm:gvm /etc/ospd/;
-    # # Home dirs
-    chown -R gvm:gvm /home/gvm;
+}
+
+show_default_scanner_status() {
+    echo -e;
+
+    su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73';
+    su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner 6acd0832-df90-11e4-b9d5-28d24461215b';
+    /usr/bin/logger ''Default OpenVAS $(su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73")'' -t 'gse-21.4';    
+    /usr/bin/logger ''Default CVE $(su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner 6acd0832-df90-11e4-b9d5-28d24461215b")'' -t 'gse-21.4';
 }
 
 create_gvm_python_script() {
     /usr/bin/logger 'create_gvm_python_script' -t 'gse-21.4';
-    sh -c "cat << EOF  > /home/gvm/gvm-tasks.py
+    mkdir /opt/gvm/scripts;
+    chown -R gvm:gvm /opt/gvm/scripts/;
+    sh -c "cat << EOF  > /opt/gvm/scripts/gvm-tasks.py
 from gvm.connections import UnixSocketConnection
 from gvm.protocols.gmp import Gmp
 from gvm.transforms import EtreeTransform
@@ -882,7 +881,7 @@ configure_cmake() {
 main() {
     # Shared components
     install_prerequisites;
-    prepare_nix_users;
+    prepare_nix;
     prepare_source;
     configure_cmake;
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH
@@ -895,36 +894,27 @@ main() {
     # Only install poetry when testing
     #install_poetry;
     #install_nmap;
-    #read  -n 1 -p "Install gvm_libs?" dummy;
-    install_gvm_libs;
-    #read  -n 1 -p "Install gvm?" dummy;
-    install_gvm;
-    #read  -n 1 -p "Install gsa?" dummy;
-    install_gsa;
-    #read  -n 1 -p "Install openvas-smb?" dummy;
-    install_openvas_smb;
-    #read  -n 1 -p "Install openvas?" dummy;
-    install_openvas;
-    #read  -n 1 -p "Install ospd?" dummy;
-    install_ospd;
-    #read  -n 1 -p "Install ospd-openvas?" dummy;
-    install_ospd_openvas;
-    #read  -n 1 -p "Install gvm-tools?" dummy;
-    install_gvm_tools;
-    #read  -n 1 -p "Install Python-GVM?" dummy;        
-    install_python_gvm;
-    #read  -n 1 -p "Configure Everything?" dummy;
-    # Configuration of installed components
+
+    # Prepare postgresql for GVMD and redis for OpenVAS
     prepare_postgresql;
+    configure_redis;
+    # Install everything needed for Greenbone Source Edition
+    install_gvm_libs;
+    install_gvm;
+    install_openvas_smb;
+    install_openvas;
+    install_ospd;
+    install_ospd_openvas;
+    install_gvm_tools;
+    install_python_gvm;
+    install_gsa;
+    # Configuration of installed components
     configure_gvm;
     configure_openvas;
     configure_gsa;
-    configure_redis;
-    #configure_openvas_smb;
     create_gsecerts;
     create_gvm_python_script;
-
-    # Prestage only works on the specific Vagrant lab where I've copied the scan-data to the Host. 
+    # Prestage only works on the specific Vagrant lab where a scan-data tar-ball is copied to the Host. 
     # Update scan-data only from greenbone when used everywhere else 
     prestage_scan_data;
     configure_greenbone_updates;
@@ -933,6 +923,7 @@ main() {
     su gvm -c '/opt/gvm/sbin/openvas --update-vt-info';
     start_services;
     configure_feed_owner;
+    show_default_scanner_status;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gse-21.4';
 }
 
@@ -948,6 +939,10 @@ exit 0;
 # /opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value UUID of admin account 
 # Get the uuid using /opt/gvm/sbin/gvmd --get-users --verbose
 # The first OpenVas scanner is always this UUID /opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73
+#
+# 08b69003-5fc2-4037-a479-93b440211c73  OpenVAS  /run/ospd/ospd-openvas.sock  0  OpenVAS Default
+# 6acd0832-df90-11e4-b9d5-28d24461215b  CVE    0  CVE
+#
 #
 # Admin user:   cat /opt/gvm/lib/adminuser.
 #               You should change this: /opt/gvm/sbin/gvmd --user admin --new-password 'Your new password'
@@ -966,7 +961,7 @@ exit 0;
 # chown gvm:gvm *
 # su gvm -c '/opt/gvm/sbin/gvmd --create-scanner="OSP Scanner secondary hostname" --scanner-host=hostname --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem'
 # Example:
-#   su gvm -c '/opt/gvm/sbin/gvmd --create-scanner="OSP Scanner aboleth" --scanner-host=aboleth --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem'
+#   su gvm -c '/opt/gvm/sbin/gvmd --create-scanner="OpenVAS Secondary host aboleth" --scanner-host=aboleth --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem'
 #       Scanner created.
 # 
 # Don't forget to install the certs on the secondary as discussed further down, then return and do these verification steps on the primary:
