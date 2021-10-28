@@ -541,7 +541,7 @@ Type=forking
 User=gvm
 Group=gvm
 PIDFile=/run/gvm/gsad.pid
-ExecStart=/opt/gvm/sbin/gsad --port=8443 --ssl-private-key=/var/lib/gvm/private/CA/serverkey.pem --ssl-certificate=/var/lib/gvm/CA/servercert.pem --munix-socket=/run/gvm/gvmd.sock --no-redirect --secure-cookie --http-sts --timeout=60 --http-cors="https://%H:8443/" --gnutls-priorities=SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2
+ExecStart=/opt/gvm/sbin/gsad --port=8443 --ssl-private-key=/var/lib/gvm/private/CA/serverkey.pem --ssl-certificate=/var/lib/gvm/CA/servercert.pem --munix-socket=/run/gvm/gvmd.sock --no-redirect --secure-cookie --http-sts --timeout=60 --http-cors="https://%H:8443/" --gnutls-priorities=SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2 --vendor-version=Greenbone Source Edition 21.4.10
 Restart=always
 TimeoutStopSec=10
 
@@ -661,30 +661,40 @@ start_services() {
     systemctl start gse-update.timer;
     # Check status of critical services
     # gvmd.service
+    echo -e
+    echo 'Checking core daemons.....';
     if systemctl is-active --quiet gvmd.service;
     then
+        echo 'gvmd.service started successfully';
         /usr/bin/logger 'gvmd.service started successfully' -t 'gse-21.4';
     else
+        echo 'gvmd.service FAILED!';
         /usr/bin/logger 'gvmd.service FAILED!' -t 'gse-21.4';
     fi
     # gsad.service
     if systemctl is-active --quiet gsad.service;
     then
+        echo 'gsad.service started successfully';
         /usr/bin/logger 'gsad.service started successfully' -t 'gse-21.4';
     else
+        echo 'gsad.service FAILED!'
         /usr/bin/logger 'gsad.service FAILED!' -t 'gse-21.4';
     fi
     # ospd-openvas.service
     if systemctl is-active --quiet ospd-openvas.service;
     then
+        echo 'ospd-openvas.service started successfully';
         /usr/bin/logger 'ospd-openvas.service started successfully' -t 'gse-21.4';
     else
+        echo 'ospd-openvas.service FAILED!';
         /usr/bin/logger 'ospd-openvas.service FAILED!' -t 'gse-21.4';
     fi
     if systemctl is-active --quiet gse-update.timer;
     then
+        echo 'gse-update.timer started successfully'
         /usr/bin/logger 'gse-update.timer started successfully' -t 'gse-21.4';
     else
+        echo 'gse-update.timer FAILED! Updates will not be automated';
         /usr/bin/logger 'gse-update.timer FAILED! Updates will not be automated' -t 'gse-21.4';
     fi
     /usr/bin/logger 'start_services finished' -t 'gse-21.4';
@@ -752,13 +762,11 @@ EOF'
     echo "net.core.somaxconn=1024" >> /etc/sysctl.d/60-gse-redis.conf;
     # Disable THP
     echo never > /sys/kernel/mm/transparent_hugepage/enabled;
-    # at every boot too
-        sh -c 'cat << EOF  >> /etc/rc.local
-#!/bin/bash
-echo never > /sys/kernel/mm/transparent_hugepage/enabled
-exit 0
+    sh -c 'cat << EOF  > /etc/default/grub.d/99-transparent-huge-page.cfg
+# Turns off Transparent Huge Page functionality as required by redis
+GRUB_CMDLINE_LINUX_DEFAULT="$GRUB_CMDLINE_LINUX_DEFAULT transparent_hugepage=never"
 EOF'
-    chmod +x /etc/rc.local;
+update-grub;
     sync;
     /usr/bin/logger 'configure_redis finished' -t 'gse-21.4';
 }
@@ -777,10 +785,14 @@ configure_permissions() {
 }
 
 show_default_scanner_status() {
+    # Check status of Default scanners (Openvas and CVE).
+    # If returning "Failed to verify scanner" most likely GVMD cannot communicate with ospd-openvas.sock
     echo -e;
-
+    echo 'Checking default scanner connectivity.......'
     su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73';
     su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner 6acd0832-df90-11e4-b9d5-28d24461215b';
+    echo -e;
+    # Write status to syslog too
     /usr/bin/logger ''Default OpenVAS $(su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73")'' -t 'gse-21.4';    
     /usr/bin/logger ''Default CVE $(su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner 6acd0832-df90-11e4-b9d5-28d24461215b")'' -t 'gse-21.4';
 }

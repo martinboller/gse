@@ -481,16 +481,14 @@ start_services() {
     # Will start after next reboot - may disturb the initial update
     systemctl start gse-update.timer;
     # Check status of critical service ospd-openvas.service and gse-update
-    if systemctl is-active --quiet ospd-openvas.service;
-    then
-        /usr/bin/logger 'ospd-openvas.service started successfully' -t 'gse-21.4';
-    else
-        /usr/bin/logger 'ospd-openvas.service FAILED!' -t 'gse-21.4';
-    fi
+    echo -e
+    echo 'Checking core daemons.....';
     if systemctl is-active --quiet gse-update.timer;
     then
+        echo 'gse-update.timer started successfully';
         /usr/bin/logger 'gse-update.timer started successfully' -t 'gse-21.4';
     else
+        echo 'gse-update.timer FAILED! Updates will not be automated';
         /usr/bin/logger 'gse-update.timer FAILED! Updates will not be automated' -t 'gse-21.4';
     fi
     /usr/bin/logger 'start_services finished' -t 'gse-21.4';
@@ -558,13 +556,11 @@ EOF'
     echo "net.core.somaxconn=1024" >> /etc/sysctl.d/60-gse-redis.conf;
     # Disable THP
     echo never > /sys/kernel/mm/transparent_hugepage/enabled;
-    # at every boot too
-        sh -c 'cat << EOF  >> /etc/rc.local
-#!/bin/bash
-echo never > /sys/kernel/mm/transparent_hugepage/enabled
-exit 0
+    sh -c 'cat << EOF  > /etc/default/grub.d/99-transparent-huge-page.cfg
+# Turns off Transparent Huge Page functionality as required by redis
+GRUB_CMDLINE_LINUX_DEFAULT="\$GRUB_CMDLINE_LINUX_DEFAULT transparent_hugepage=never"
 EOF'
-    chmod +x /etc/rc.local;
+update-grub;
     sync;
     /usr/bin/logger 'configure_redis finished' -t 'gse-21.4';
 }
