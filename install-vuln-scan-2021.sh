@@ -400,7 +400,6 @@ prepare_postgresql() {
 configure_openvas() {
     /usr/bin/logger 'configure_openvas' -t 'gse-21.4';
     # Create openvas.conf file
-    mkdir /etc/openvas/;
     sh -c 'cat << EOF > /etc/openvas/openvas.conf
 cgi_path = /cgi-bin:/scripts
 checks_read_timeout = 5
@@ -417,7 +416,7 @@ open_sock_max_attempts = 10
 plugins_timeout = 320
 scanner_plugins_timeout = 36000
 timeout_retry = 3
-vendor_version = 
+vendor_version = Greenbone Source Edition 21.4.10
 plugins_folder = /var/lib/openvas/plugins
 config_file = /etc/openvas/openvas.conf
 max_hosts = 30
@@ -541,7 +540,7 @@ Type=forking
 User=gvm
 Group=gvm
 PIDFile=/run/gvm/gsad.pid
-ExecStart=/opt/gvm/sbin/gsad --port=8443 --ssl-private-key=/var/lib/gvm/private/CA/serverkey.pem --ssl-certificate=/var/lib/gvm/CA/servercert.pem --munix-socket=/run/gvm/gvmd.sock --no-redirect --secure-cookie --http-sts --timeout=60 --http-cors="https://%H:8443/" --gnutls-priorities=SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2 --vendor-version=Greenbone Source Edition 21.4.10
+ExecStart=/opt/gvm/sbin/gsad --port=8443 --ssl-private-key=/var/lib/gvm/private/CA/serverkey.pem --ssl-certificate=/var/lib/gvm/CA/servercert.pem --munix-socket=/run/gvm/gvmd.sock --no-redirect --secure-cookie --http-sts --timeout=60 --http-cors="https://%H:8443/" --gnutls-priorities=SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2
 Restart=always
 TimeoutStopSec=10
 
@@ -886,6 +885,12 @@ configure_cmake() {
    /usr/bin/logger 'configure_cmake finished' -t 'gse-21.4';
 }
 
+update_openvas_feed () {
+    /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gse';
+    su gvm -c '/opt/gvm/sbin/openvas --update-vt-info';
+    /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gse';
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -932,11 +937,13 @@ main() {
     configure_greenbone_updates;
     configure_permissions;
     update_scan_data;
-    su gvm -c '/opt/gvm/sbin/openvas --update-vt-info';
+    update_openvas_feed;
     start_services;
     configure_feed_owner;
     show_default_scanner_status;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gse-21.4';
+    echo -e;
+    echo 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot';
 }
 
 main;

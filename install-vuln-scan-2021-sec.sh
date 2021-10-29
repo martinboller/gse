@@ -380,7 +380,7 @@ User=gvm
 Group=gvm
 # Change log-level to info before production
 ExecStart=/usr/local/bin/ospd-openvas --port=9390 --bind-address=0.0.0.0 --pid-file=/run/gvm/ospd-openvas.pid --lock-file-dir=/run/gvm/ --key-file=/var/lib/gvm/private/CA/secondarykey.pem --cert-file=/var/lib/gvm/CA/secondarycert.pem --ca-file=/var/lib/gvm/CA/cacert.pem --log-file=/var/log/gvm/ospd-openvas.log
-# log level can be debug too, info is default
+# --log-level in ospd-openvas.conf can be debug too, info is default
 # This works asynchronously, but does not take the daemon down during the reload so it is ok.
 Restart=always
 RestartSec=60
@@ -620,6 +620,12 @@ configure_cmake() {
    /usr/bin/logger 'configure_cmake finished' -t 'gse-21.4';
 }
 
+update_openvas_feed () {
+    /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gse';
+    su gvm -c '/opt/gvm/sbin/openvas --update-vt-info';
+    /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gse';
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -647,7 +653,7 @@ main() {
     configure_greenbone_updates;
     configure_permissions;
     update_scan_data;
-    su gvm -c '/usr/local/sbin/openvas --update-vt-info';
+    update_openvas_feed;
     start_services;
     echo -e;
     echo 'Copy the required certificates from the primary server (/root/sec_certs) and run install-vuln-secondary-certs.sh';

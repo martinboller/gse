@@ -54,14 +54,21 @@ start_services() {
     /usr/bin/logger 'start_services finished' -t 'gse';
 }
 
+update_openvas_feed () {
+    /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gse';
+    su gvm -c '/opt/gvm/sbin/openvas --update-vt-info';
+    /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gse';
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
 
 main() {
-    /usr/local/sbin/openvas --update-vt-info;
     install_certs;
     start_services;
+    update_openvas_feed;
+    /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gse';
     /usr/bin/logger 'Certificate installation completed, check for errors in logs' -t 'gse';
 }
 
