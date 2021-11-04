@@ -25,13 +25,17 @@
 
 install_prerequisites() {
     /usr/bin/logger 'install_prerequisites' -t 'gse-21.4';
+    echo -e "\e[1;32m--------------------------------------------\e[0m";
+    echo -e "\e[1;32mInstalling Prerequisite packages\e[0m";
     export DEBIAN_FRONTEND=noninteractive;
     # OS Version
     # freedesktop.org and systemd
     . /etc/os-release
     OS=$NAME
     VER=$VERSION_ID
-    # Install prerequisites
+    /usr/bin/logger "Operating System: $OS Version: $VER" -t 'gse-21.4';
+    echo -e "\e[1;32mOperating System: $OS Version: $VER\e[0m";
+  # Install prerequisites
     apt-get update;
     # Install some basic tools on a Debian net install
     /usr/bin/logger '..Install some basic tools on a Debian net install' -t 'gse-21.4';
@@ -60,7 +64,7 @@ install_prerequisites() {
             pkg-config libical-dev xsltproc doxygen;        
             
             # Other pre-requisites for GSE - Bullseye / Debian 11
-            /usr/bin/logger '....Other prequisites for GSE on Debian 11' -t 'gse-21.4';
+            /usr/bin/logger '....Other prerequisites for GSE on Debian 11' -t 'gse-21.4';
             apt-get -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
             bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
             sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
@@ -75,7 +79,7 @@ install_prerequisites() {
             pkg-config libical-dev xsltproc doxygen;
             
             # Other pre-requisites for GSE - Buster / Debian 10
-            /usr/bin/logger '....Other prequisites for GSE on Debian 10' -t 'gse-21.4';
+            /usr/bin/logger '....Other prerequisites for GSE on Debian 10' -t 'gse-21.4';
             apt-get -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
@@ -89,7 +93,7 @@ install_prerequisites() {
             pkg-config libical-dev xsltproc doxygen;
             
             # Other pre-requisites for GSE - Buster / Debian 10
-            /usr/bin/logger '....Other prequisites for GSE on unknown OS' -t 'gse-21.4';
+            /usr/bin/logger '....Other prerequisites for GSE on unknown OS' -t 'gse-21.4';
             apt-get -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
@@ -99,14 +103,15 @@ install_prerequisites() {
 
     # Required for PDF report generation
     /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gse-21.4';
-    apt-get -y install tex-common texlive-latex-extra;
+    echo -e "\e[1;32mRequired for PDF report generation\e[0m";
     apt-get -y install texlive-fonts-recommended;
     # Install other preferences and clean up APT
     /usr/bin/logger '....Install some preferences on Debian and clean up APT' -t 'gse-21.4';
     apt-get -y install bash-completion;
     # Install SUDO
     apt-get -y install sudo;
-    # A little apt cleanup
+    # A little apt 
+    apt-get -y install --fix-missing;
     apt-get update;
     apt-get -y full-upgrade;
     apt-get -y autoremove --purge;
@@ -125,6 +130,10 @@ install_prerequisites() {
 }
 
 prepare_nix() {
+    /usr/bin/logger 'prepare_nix()' -t 'gse-21.4';
+    echo -e "\e[1;32mCreating Users, configuring sudoers, and setting locale\e[0m";
+    # set desired locale
+    localectl set-locale en_US.UTF-8;
     # Create gvm user
     /usr/sbin/useradd --system --create-home --home-dir /opt/gvm/ -c "gvm User" --shell /bin/bash gvm;
     mkdir /opt/gvm;
@@ -154,30 +163,44 @@ d /run/ospd/gse 1775 root root
 EOF'
     # start systemd-tmpfiles to create directories
     systemd-tmpfiles --create;
+        /usr/bin/logger 'prepare_nix() finished' -t 'gse-21.4';
+
 }
 
 prepare_source() {    
     /usr/bin/logger 'prepare_source' -t 'gse-21.4';
+    echo -e "\e[1;32mPreparing GSE Source files\e[0m";
     mkdir -p /opt/gvm/src/greenbone
     chown -R gvm:gvm /opt/gvm/src/greenbone;
     cd /opt/gvm/src/greenbone;
 
     #Get all packages (the python elements can be installed w/o, but downloaded and used for install anyway)
+    /usr/bin/logger '..gvm libraries' -t 'gse-21.4';
     wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v21.4.3.tar.gz;
+    /usr/bin/logger '..ospd-openvas' -t 'gse-21.4';
     wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v21.4.3.tar.gz;
+    /usr/bin/logger '..openvas-scanner' -t 'gse-21.4';
     wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v21.4.3.tar.gz;
+    /usr/bin/logger '..gvm daemon' -t 'gse-21.4';
     wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v21.4.4.tar.gz;
+    /usr/bin/logger '..gsa daemon' -t 'gse-21.4';
     wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/refs/tags/v21.4.3.tar.gz;
+    /usr/bin/logger '..openvas-smb' -t 'gse-21.4';
     wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v21.4.0.tar.gz;
+    /usr/bin/logger '..ospd' -t 'gse-21.4';
     wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/refs/tags/v21.4.4.tar.gz;
+    /usr/bin/logger '..python-gvm' -t 'gse-21.4';
     wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v21.10.0.tar.gz;
+    /usr/bin/logger '..gvm-tools' -t 'gse-21.4';
     wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v21.6.1.tar.gz;
   
     # open and extract the tarballs
+    /usr/bin/logger '..open and extract the tarballs' -t 'gse-21.4';
     find *.gz | xargs -n1 tar zxvfp;
     sync;
 
     # Naming of directories w/o version
+    /usr/bin/logger '..rename directories' -t 'gse-21.4';    
     mv /opt/gvm/src/greenbone/gvm-libs-21.4.3 /opt/gvm/src/greenbone/gvm-libs;
     mv /opt/gvm/src/greenbone/ospd-openvas-21.4.3 /opt/gvm/src/greenbone/ospd-openvas;
     mv /opt/gvm/src/greenbone/openvas-scanner-21.4.3 /opt/gvm/src/greenbone/openvas;
@@ -194,6 +217,7 @@ prepare_source() {
 
 prepare_source_latest() {    
     /usr/bin/logger 'prepare_source_latest' -t 'gse-21.4';
+    echo -e "\e[1;32mPreparing GSE Source for latest versions\e[0m";
     mkdir -p /opt/gvm/src/greenbone
     chown -R gvm:gvm /opt/gvm/src/greenbone;
     cd /opt/gvm/src/greenbone;
@@ -225,10 +249,14 @@ install_gvm_libs() {
     /usr/bin/logger 'install_gvmlibs' -t 'gse-21.4';
     cd /opt/gvm/src/greenbone/;
     cd gvm-libs/;
+    chown -R gvm:gvm /opt/gvm/
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .
+    /usr/bin/logger '..make gvm libraries' -t 'gse-21.4';
     make;
+    /usr/bin/logger '..make gvm libraries Documentation' -t 'gse-21.4';
     make doc-full;
+    /usr/bin/logger '..make install gvm libraries' -t 'gse-21.4';
     make install;
     sync;
     ldconfig;
@@ -251,9 +279,12 @@ install_openvas_smb() {
     cd /opt/gvm/src/greenbone;
     #config and build openvas-smb
     cd openvas-smb;
+    /usr/bin/logger '..cmake OpenVAS SMB' -t 'gse-21.4';
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .;
+    /usr/bin/logger '..make OpenVAS SMB' -t 'gse-21.4';
     make;                
+    /usr/bin/logger '..make install OpenVAS SMB' -t 'gse-21.4';
     make install;
     sync;
     ldconfig;
@@ -293,12 +324,17 @@ install_openvas() {
     cd /opt/gvm/src/greenbone;
     # Configure and build scanner
     cd openvas;
+    chown -R gvm:gvm /opt/gvm;
+    /usr/bin/logger '..cmake OpenVAS Scanner' -t 'gse-21.4';
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .;
+    /usr/bin/logger '..make OpenVAS Scanner' -t 'gse-21.4';
     make;                # build the libraries
-    make doc-full;       # build more developer-oriented documentation
+    #make doc-full;       # build more developer-oriented documentation
+    /usr/bin/logger '..make install OpenVAS Scanner' -t 'gse-21.4';
     make install;        # install the build
-    make rebuild_cache;  # Rebuild cache
+    /usr/bin/logger '..Rebuild make cache, OpenVAS Scanner' -t 'gse-21.4';
+    make rebuild_cache;
     sync;
     ldconfig;
     /usr/bin/logger 'install_openvas finished' -t 'gse-21.4';
@@ -309,12 +345,16 @@ install_gvm() {
     cd /opt/gvm/src/greenbone;
     # Build Manager
     cd gvmd/;
+    /usr/bin/logger '..cmake GVM Daemon' -t 'gse-21.4';
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
-        cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .;
-        make;
-        make doc-full;
-        make install;
-        sync;
+    cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .;
+    /usr/bin/logger '..make GVM Daemon' -t 'gse-21.4';
+    make;
+    /usr/bin/logger '..make documentation for GVM Daemon' -t 'gse-21.4';
+    make doc-full;
+    /usr/bin/logger '..make install GVM Daemon' -t 'gse-21.4';
+    make install;
+    sync;
     /usr/bin/logger 'install_gvm finished' -t 'gse-21.4';
 }
 
@@ -332,7 +372,9 @@ prestage_scan_data() {
     # copy scan data to prestage ~1.5 Gib required otherwise
     # change this to copy from cloned repo
     cd /tmp/configfiles/;
+    /usr/bin/logger '..opening and extracting TAR Ball' -t 'gse-21.4';
     tar -xzf /tmp/configfiles/scandata.tar.gz; 
+    /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gse-21.4';
     /bin/cp -r /tmp/configfiles/GVM/openvas/plugins/* /var/lib/openvas/plugins/;
     /bin/cp -r /tmp/configfiles/GVM/gvm/* /var/lib/gvm/;
     chown -R gvm:gvm /opt/gvm;
@@ -352,13 +394,18 @@ install_gsa() {
     cd /opt/gvm/src/greenbone
     chown -R gvm:gvm /opt/gvm;
     # GSA prerequisites
+    /usr/bin/logger '..installing Yarn' -t 'gse-21.4';
     apt-get -y install yarnpkg;
     # GSA Install
     cd gsa/;
+    /usr/bin/logger '..cmake GSA Daemon' -t 'gse-21.4';
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .;
+    /usr/bin/logger '..make GSA Daemon' -t 'gse-21.4';
     make;                # build the libraries
+    /usr/bin/logger '..make documentation for GSA Daemon' -t 'gse-21.4';
     make doc-full;       # build more developer-oriented documentation
+    /usr/bin/logger '..make install GSA Daemon' -t 'gse-21.4';
     make install;        # install the build
     sync;
     /usr/bin/logger 'install_gsa finished' -t 'gse-21.4';
@@ -661,39 +708,40 @@ start_services() {
     # Check status of critical services
     # gvmd.service
     echo -e
-    echo 'Checking core daemons.....';
+    echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
+    echo -e "\e[1;32mChecking core daemons for GSE......\e[0m";
     if systemctl is-active --quiet gvmd.service;
     then
-        echo 'gvmd.service started successfully';
+        echo -e "\e[1;32mgvmd.service started successfully";
         /usr/bin/logger 'gvmd.service started successfully' -t 'gse-21.4';
     else
-        echo 'gvmd.service FAILED!';
-        /usr/bin/logger 'gvmd.service FAILED!' -t 'gse-21.4';
+        echo -e "\e[1;31mgvmd.service FAILED!\e[0m";
+        /usr/bin/logger 'gvmd.service FAILED' -t 'gse-21.4';
     fi
     # gsad.service
     if systemctl is-active --quiet gsad.service;
     then
-        echo 'gsad.service started successfully';
+        echo -e "\e[1;32mgsad.service started successfully";
         /usr/bin/logger 'gsad.service started successfully' -t 'gse-21.4';
     else
-        echo 'gsad.service FAILED!'
-        /usr/bin/logger 'gsad.service FAILED!' -t 'gse-21.4';
+        echo -e "\e[1;31mgsad.service FAILED!\e[0m";
+        /usr/bin/logger "gsad.service FAILED!" -t 'gse-21.4';
     fi
     # ospd-openvas.service
     if systemctl is-active --quiet ospd-openvas.service;
     then
-        echo 'ospd-openvas.service started successfully';
+        echo -e "\e[1;32mospd-openvas.service started successfully\e[0m";
         /usr/bin/logger 'ospd-openvas.service started successfully' -t 'gse-21.4';
     else
-        echo 'ospd-openvas.service FAILED!';
-        /usr/bin/logger 'ospd-openvas.service FAILED!' -t 'gse-21.4';
+        echo -e "\e[1;31mospd-openvas.service FAILED!";
+        /usr/bin/logger 'ospd-openvas.service FAILED!\e[0m' -t 'gse-21.4';
     fi
     if systemctl is-active --quiet gse-update.timer;
     then
-        echo 'gse-update.timer started successfully'
+        echo -e "\e[1;32mgse-update.timer started successfully\e[0m"
         /usr/bin/logger 'gse-update.timer started successfully' -t 'gse-21.4';
     else
-        echo 'gse-update.timer FAILED! Updates will not be automated';
+        echo -e "\e[1;31mgse-update.timer FAILED! Updates will not be automated\e[0m";
         /usr/bin/logger 'gse-update.timer FAILED! Updates will not be automated' -t 'gse-21.4';
     fi
     /usr/bin/logger 'start_services finished' -t 'gse-21.4';
@@ -701,7 +749,7 @@ start_services() {
 
 configure_redis() {
     /usr/bin/logger 'configure_redis' -t 'gse-21.4';
-        sh -c 'cat << EOF > /etc/tmpfiles.d/redis.conf
+    sh -c 'cat << EOF > /etc/tmpfiles.d/redis.conf
 d /run/redis 0755 redis redis
 EOF'
     # start systemd-tmpfiles to create directories
@@ -765,12 +813,14 @@ EOF'
 # Turns off Transparent Huge Page functionality as required by redis
 GRUB_CMDLINE_LINUX_DEFAULT="$GRUB_CMDLINE_LINUX_DEFAULT transparent_hugepage=never"
 EOF'
-update-grub;
+    update-grub;
     sync;
     /usr/bin/logger 'configure_redis finished' -t 'gse-21.4';
 }
 
 configure_permissions() {
+    /usr/bin/logger 'configure_permissions' -t 'gse-21.4';
+    /usr/bin/logger '..Setting correct ownership of files for user gvm' -t 'gse-21.4';
     # Once more to ensure that GVM owns all files in /opt/gvm
     chown -R gvm:gvm /opt/gvm/;
     # GSE log files
@@ -781,16 +831,18 @@ configure_permissions() {
     chown -R gvm:gvm /var/lib/gvm;
     # OSPD Configuration file
     chown -R gvm:gvm /etc/ospd/;
+    /usr/bin/logger 'configure_permissions finished' -t 'gse-21.4';
 }
 
 show_default_scanner_status() {
     # Check status of Default scanners (Openvas and CVE).
     # If returning "Failed to verify scanner" most likely GVMD cannot communicate with ospd-openvas.sock
-    echo -e;
-    echo 'Checking default scanner connectivity.......'
+    echo -e
+    echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
+    echo -e "\e[1;32mChecking default scanner connectivity.......\e[0m";
     su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73';
     su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner 6acd0832-df90-11e4-b9d5-28d24461215b';
-    echo -e;
+    echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
     # Write status to syslog too
     /usr/bin/logger ''Default OpenVAS $(su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73")'' -t 'gse-21.4';    
     /usr/bin/logger ''Default CVE $(su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner 6acd0832-df90-11e4-b9d5-28d24461215b")'' -t 'gse-21.4';
@@ -868,11 +920,11 @@ create_gsecerts() {
     # Check certificate creation
     if test -f $GVM_CERT_FILENAME; then
         /usr/bin/logger 'certificates for secondary created' -t 'gse-21.4';
-        echo "$GVM_CERT_FILENAME available"
+        echo -e "\e[1;32mSuccess; certificates and keys available. Copy $GVM_CERT_FILENAME, $GVM_KEY_FILENAME, and $GVM_SIGNING_CA_CERT_FILENAME to secondaries\\e[0m"
         chown gvm:gvm *.pem;
     else
         /usr/bin/logger 'Certificates for secondary not created' -t 'gse-21.4';
-        echo "$GVM_CERT_FILENAME not found, certificates not created"
+        echo -e "Failed: \e[1;31m$GVM_CERT_FILENAME not found, certificates not created\e[0m"
     fi;
     /usr/bin/logger 'create_gsecerts finished' -t 'gse-21.4';
 }
@@ -943,7 +995,7 @@ main() {
     show_default_scanner_status;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gse-21.4';
     echo -e;
-    echo 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot';
+    echo -e "\e[1;32mInstallation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot\e[0m";
 }
 
 main;

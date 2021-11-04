@@ -24,7 +24,7 @@
 install_certs() {
     /usr/bin/logger 'install_certs' -t 'gse';
      if test -f ./secondarycert.pem; then
-        echo "Certificates for secondary found, now copying to correct locations";
+        echo -e "\e[1;32mCertificates for secondary found, now copying to correct locations\e[0m";
         cp ./secondarycert.pem /var/lib/gvm/CA/;
         cp ./cacert.pem /var/lib/gvm/CA/;
         cp ./secondarykey.pem /var/lib/gvm/private/CA/;
@@ -33,7 +33,7 @@ install_certs() {
         /usr/bin/logger 'Certificates for secondary installed' -t 'gse';
     else
         /usr/bin/logger 'Certificates for secondary not found, have you copied them to the current directory?' -t 'gse';
-        echo "Certificates for secondary not found, have you copied them to the current directory?";
+        echo -e "\e[1;31mCertificates for secondary not found, have you copied them to the current directory?\e[0m";
     fi;
     /usr/bin/logger 'install_certs finished' -t 'gse';
 }
@@ -43,18 +43,20 @@ start_services() {
     # Load new/changed systemd-unitfiles
     systemctl daemon-reload;
     systemctl restart ospd-openvas;
+    echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
+    echo -e "\e[1;32mChecking core daemons for GSE Secondary......\e[0m";
     if systemctl is-active --quiet ospd-openvas.service;
     then
         /usr/bin/logger 'ospd-openvas.service started successfully' -t 'gse';
-        echo 'ospd-openvas.service started successfully';
+        echo -e "\e[1;32mospd-openvas.service started successfully\e[0m";
     else
         /usr/bin/logger 'ospd-openvas.service FAILED!' -t 'gse';
-        echo 'ospd-openvas.service FAILED! check logs and certificates';
+        echo -e "\e[1;32mospd-openvas.service FAILED! check logs and certificates\e[0m";
     fi
     /usr/bin/logger 'start_services finished' -t 'gse';
 }
 
-update_openvas_feed () {
+update_openvas_redis () {
     /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gse';
     su gvm -c '/opt/gvm/sbin/openvas --update-vt-info';
     /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gse';
@@ -67,7 +69,7 @@ update_openvas_feed () {
 main() {
     install_certs;
     start_services;
-    update_openvas_feed;
+    update_openvas_redis;
     /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gse';
     /usr/bin/logger 'Certificate installation completed, check for errors in logs' -t 'gse';
 }

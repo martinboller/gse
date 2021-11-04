@@ -31,6 +31,7 @@ install_prerequisites() {
     . /etc/os-release
     OS=$NAME
     VER=$VERSION_ID
+    /usr/bin/logger "Operating System: $OS Version: $VER" -t 'gse-21.4';
     # Install prerequisites
     apt-get update;
     # Install some basic tools on a Debian net install
@@ -59,7 +60,7 @@ install_prerequisites() {
             pkg-config libical-dev xsltproc doxygen;        
             
             # Other pre-requisites for GSE - Bullseye / Debian 11
-            /usr/bin/logger '....Other prequisites for GSE on Debian 11' -t 'gse-21.4';
+            /usr/bin/logger '....Other prerequisites for GSE on Debian 11' -t 'gse-21.4';
             apt-get -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
             bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
             sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
@@ -74,7 +75,7 @@ install_prerequisites() {
             pkg-config libical-dev xsltproc doxygen;
             
             # Other pre-requisites for GSE - Buster / Debian 10
-            /usr/bin/logger '....Other prequisites for GSE on Debian 10' -t 'gse-21.4';
+            /usr/bin/logger '....Other prerequisites for GSE on Debian 10' -t 'gse-21.4';
             apt-get -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
@@ -82,13 +83,14 @@ install_prerequisites() {
                 python3-defusedxml python3-pip python3-psutil virtualenv python-impacket python-scapy;
         
         else
-            /usr/bin/logger '..install_prerequisites_debian_Untested' -t 'gse-21.4';
+            /usr/bin/logger "Operating System: $OS Version: $VER" -t 'gse-21.4';
             # Untested but let's try like it is buster (debian 10)
+
             apt-get -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all postgresql-server-dev-11 \
             pkg-config libical-dev xsltproc doxygen;
             
             # Other pre-requisites for GSE - Buster / Debian 10
-            /usr/bin/logger '....Other prequisites for GSE on unknown OS' -t 'gse-21.4';
+            /usr/bin/logger '....Other prerequisites for GSE on unknown OS' -t 'gse-21.4';
             apt-get -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
@@ -124,6 +126,8 @@ install_prerequisites() {
 }
 
 prepare_nix() {
+    # set desired locale
+    localectl set-locale en_US.UTF-8;
     # Create gvm user
     /usr/sbin/useradd --system --create-home --home-dir /opt/gvm/ -c "gvm User" --shell /bin/bash gvm;
     mkdir /opt/gvm;
@@ -159,12 +163,19 @@ prepare_source_secondary() {
     cd /opt/gvm/src/greenbone;
 
     #Get all packages (the python elements can be installed w/o, but downloaded and used for install anyway)
+    /usr/bin/logger '..gvm libraries' -t 'gse-21.4';
     wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v21.4.3.tar.gz;
+    /usr/bin/logger '..ospd-openvas' -t 'gse-21.4';
     wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v21.4.3.tar.gz;
+    /usr/bin/logger '..openvas-scanner' -t 'gse-21.4';
     wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v21.4.3.tar.gz;
+    /usr/bin/logger '..openvas-smb' -t 'gse-21.4';
     wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v21.4.0.tar.gz;
+    /usr/bin/logger '..ospd' -t 'gse-21.4';
     wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/refs/tags/v21.4.4.tar.gz;
+    /usr/bin/logger '..python-gvm' -t 'gse-21.4';
     wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v21.10.0.tar.gz;
+    /usr/bin/logger '..gvm-tools' -t 'gse-21.4';
     wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v21.6.1.tar.gz;
   
     # open and extract the tarballs
@@ -172,6 +183,7 @@ prepare_source_secondary() {
     sync;
 
     # Naming of directories w/o version
+    /usr/bin/logger '..re-naming directories' -t 'gse-21.4';
     mv /opt/gvm/src/greenbone/gvm-libs-21.4.3 /opt/gvm/src/greenbone/gvm-libs;
     mv /opt/gvm/src/greenbone/ospd-openvas-21.4.3 /opt/gvm/src/greenbone/ospd-openvas;
     mv /opt/gvm/src/greenbone/openvas-scanner-21.4.3 /opt/gvm/src/greenbone/openvas;
@@ -181,13 +193,6 @@ prepare_source_secondary() {
     mv /opt/gvm/src/greenbone/gvm-tools-21.6.1 /opt/gvm/src/greenbone/gvm-tools;
     sync;
     chown -R gvm:gvm /opt/gvm/src/greenbone;
-    # mkdir /run/gvm;
-    # mkdir /run/gvm/gse;
-    # touch /run/gvm/gvmd.sock;
-    # chown -R gvm:gvm /run/gvm;
-    # mkdir /run/ospd;
-    # mkdir /run/ospd/gse;
-    # chown -R gvm:gvm /run/ospd;
     /usr/bin/logger 'prepare_source_secondary finished' -t 'gse-21.4';
 }
 
@@ -206,10 +211,12 @@ install_gvm_libs() {
     chown -R gvm:gvm /opt/gvm/
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .
+    /usr/bin/logger '..make gvm libraries' -t 'gse-21.4';
     make;
+    /usr/bin/logger '..make gvm libraries Documentation' -t 'gse-21.4';
     make doc-full;
+    /usr/bin/logger '..make install gvm libraries' -t 'gse-21.4';
     make install;
-    ldconfig;
     sync;
     ldconfig;
     /usr/bin/logger 'install_gvmlibs finished' -t 'gse-21.4';
@@ -231,9 +238,12 @@ install_openvas_smb() {
     cd /opt/gvm/src/greenbone;
     #config and build openvas-smb
     cd openvas-smb;
+    /usr/bin/logger '..cmake OpenVAS SMB' -t 'gse-21.4';
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .;
+    /usr/bin/logger '..make OpenVAS SMB' -t 'gse-21.4';
     make;                
+    /usr/bin/logger '..make install OpenVAS SMB' -t 'gse-21.4';
     make install;
     sync;
     ldconfig;
@@ -274,11 +284,15 @@ install_openvas() {
     # Configure and build scanner
     cd openvas;
     chown -R gvm:gvm /opt/gvm;
+    /usr/bin/logger '..cmake OpenVAS Scanner' -t 'gse-21.4';
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .;
+    /usr/bin/logger '..make OpenVAS Scanner' -t 'gse-21.4';
     make;                # build the libraries
     #make doc-full;       # build more developer-oriented documentation
+    /usr/bin/logger '..make install OpenVAS Scanner' -t 'gse-21.4';
     make install;        # install the build
+    /usr/bin/logger '..Rebuild make cache, OpenVAS Scanner' -t 'gse-21.4';
     make rebuild_cache;
     sync;
     ldconfig;
@@ -299,7 +313,9 @@ prestage_scan_data() {
     # copy scan data from 2020-12-29 to prestage athe ~1.5 Gib required otherwise
     # change this to copy from cloned repo
     cd /tmp/configfiles/;
+    /usr/bin/logger '..opening TAR Ball' -t 'gse-21.4';
     tar -xzf /tmp/configfiles/scandata.tar.gz; 
+    /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gse-21.4';
     /bin/cp -r /tmp/configfiles/GVM/openvas/plugins/* /var/lib/openvas/plugins/;
     chown -R gvm:gvm /opt/gvm;
     /usr/bin/logger 'prestage_scan_data finished' -t 'gse-21.4';
@@ -308,6 +324,7 @@ prestage_scan_data() {
 update_scan_data() {
     /usr/bin/logger 'update_scan_data' -t 'gse-21.4';
     ## This relies on the configure_greenbone_updates
+    /usr/bin/logger '..Running feed sync. This will take a while' -t 'gse-21.4';
     /opt/gvm/gse-updater/gse-updater.sh;
     /usr/bin/logger 'update_scan_data finished' -t 'gse-21.4';
 }
@@ -566,6 +583,8 @@ update-grub;
 }
 
 configure_permissions() {
+    /usr/bin/logger 'configure_permissions' -t 'gse-21.4';
+    /usr/bin/logger '..Setting correct ownership of files for user gvm' -t 'gse-21.4';
     # Once more to ensure that GVM owns all files in /opt/gvm
     chown -R gvm:gvm /opt/gvm/;
     # GSE log files
@@ -576,6 +595,7 @@ configure_permissions() {
     chown -R gvm:gvm /var/lib/gvm;
     # OSPD Configuration file
     chown -R gvm:gvm /etc/ospd/;
+    /usr/bin/logger 'configure_permissions finished' -t 'gse-21.4';
 }
 
 create_gvm_python_script() {
