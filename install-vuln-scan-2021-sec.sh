@@ -12,7 +12,7 @@
 #               2021-05-07 Update to 21.4.0 (1.50)                          #
 #               2021-09-13 Updated to run on Debian 10 and 11               #
 #               2021-10-23 Latest GSE release                               #
-#               2021-10-25 Correct ospd-openvas.sock path/openvas --update-vt-info  #
+#               2021-10-25 Correct ospd-openvas.sock                        #
 #                                                                           #
 # Info:         https://sadsloth.net/post/install-gvm-20_08-src-on-debian/  #
 #                                                                           #
