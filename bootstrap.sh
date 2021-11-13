@@ -8,7 +8,7 @@
 # Last Update:  2021-11-05                                          #
 # Version:      1.00                                                #
 #                                                                   #
-# Changes:      					            #
+# Changes:      					                                #
 #                                                                   #
 #                                                                   #
 #####################################################################
@@ -49,12 +49,8 @@ apt_install_prerequisites() {
         && sudo sync;
         /usr/bin/logger 'install_updates()' -t 'gse';
     sed -i '/dns-nameserver/d' /etc/network/interfaces;
-    ifdown eth0; ifup eth0;
-    # Remove memcached on vagrant box
-    apt-get -y purge memcached;
     # copy relevant scripts
     /bin/cp /tmp/configfiles/Servers/*.sh /root/;
-    /bin/cp /tmp/configfiles/Servers/*.cfg /root/;
     chmod +x /root/*.sh;
     /usr/bin/logger 'apt_install_prerequisites()' -t 'gse';
 }
@@ -68,54 +64,6 @@ install_ssh_keys() {
     sudo chmod 600 /root/.ssh/authorized_keys;
     /usr/bin/logger 'install_ssh_keys()' -t 'gse';
 }
-
-restart_wait() {
-    echo "Restarting Services";
-    export DEBIAN_FRONTEND=noninteractive;
-    # Stopping metricbeat until configured correctly
-    systemctl stop metricbeat.service;
-    # Restarting remaining elasticstack services
-    systemctl restart elasticsearch.service;
-    systemctl restart kibana.service;
-    systemctl restart cerebro.service;
-    systemctl restart nginx.service;
-    # Making absolutely sure elastic and other services are responding
-    sleep 20;
-    /usr/bin/logger 'restart_wait()' -t 'gse';
-}
-
-create_nginx_htpasswd_cerebro() {
-    export ht_passwd="$(< /dev/urandom tr -dc A-Za-z0-9 | head -c 20)"
-    htpasswd -cb /etc/nginx/.htpasswd alerta $HT_PASSWD;
-    echo "Created password for NGINX $HOSTNAME cerebro:$ht_passwd"  >> /mnt/backup/readme-users.txt;
-    echo "-------------------------------------------------------------------"  >> /mnt/backup/readme-users.txt;
-    /usr/bin/logger 'create_nginx_htpasswd()' -t 'gse';
-    systemctl restart nginx.service;
-}
-
-create_nginx_htpasswd_alerta() {
-    export ht_passwd="$(< /dev/urandom tr -dc A-Za-z0-9 | head -c 20)"
-    htpasswd -cb /etc/nginx/.htpasswd alerta $HT_PASSWD;
-    echo "Created password for NGINX $HOSTNAME alerta:$ht_passwd"  >> /mnt/backup/readme-users.txt;
-    echo "-------------------------------------------------------------------"  >> /mnt/backup/readme-users.txt;
-    /usr/bin/logger 'create_nginx_htpasswd()' -t 'gse';
-    systemctl restart nginx.service;
-}
-
-finish_restart() {
-    secs=$1
-    echo -e;
-    echo -e "\e[1;31m--------------------------------------------\e[0m";
-        while [ $secs -gt 0 ]; do
-            echo -ne "Finish setup on all nodes in: \e[1;31m$secs seconds\033[0K\r"
-            sleep 1
-            : $((secs--))
-        done;
-    echo -e
-    echo -e "\e[1;31mFinishing things\e[0m";
-    /usr/bin/logger 'Finishing things, then enabling SSL/TLS' -t 'gse';
-}
-
 
 ##################################################################################################################
 ## Main                                                                                                          #
