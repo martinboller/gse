@@ -30,6 +30,8 @@ A BIG Thank You to Greenbone Networks GmbH for supporting the security community
   https://community.greenbone.net/t/new-releases-for-gvm-20-08-and-gvm-21-04/10385
 #### 2021-10-25 - Correct ospd.sock patch. Without this NVTs, scan configs, and compliance policies do not sync
   Version 2.0 was borked with wrong path to the ospd socket causing NVT's, scan configs and policies to not synchronize across Openvas/Redis and GVMD/Postgres
+#### 2021-11-14 - Vagrantfile and bootstrap for testing with vagrant
+  Just added some files for use with VirtualBox and Vagrant
 
 
 Runnning a secondary requires a few manual steps, specifically:
