@@ -114,6 +114,7 @@ install_prerequisites() {
     apt-get -y autoclean;
     apt-get -y clean;    
     # Python pip packages
+    apt-get -y install python3-pip;
     python3 -m pip install --upgrade pip
     # Prepare folders for scan data
     mkdir -p /var/lib/gvm/private/CA;
