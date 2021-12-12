@@ -32,7 +32,9 @@ A BIG Thank You to Greenbone Networks GmbH for supporting the security community
   Version 2.0 was borked with wrong path to the ospd socket causing NVT's, scan configs and policies to not synchronize across Openvas/Redis and GVMD/Postgres
 #### 2021-11-14 - Vagrantfile and bootstrap for testing with vagrant
   Just added some files for use with VirtualBox and Vagrant
-
+#### 2021-12-12 - NodeJS 14 instead of 12.x with Buster and Bullseye
+  Add packages for nodesource to install node 14.x instead of the lower versions in the Debian repos
+  
 
 Runnning a secondary requires a few manual steps, specifically:
  - Copying the already created certificates to the secondary and running the helper script install-secondary-certs

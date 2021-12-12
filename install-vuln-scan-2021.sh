@@ -35,12 +35,21 @@ install_prerequisites() {
     VER=$VERSION_ID
     /usr/bin/logger "Operating System: $OS Version: $VER" -t 'gse-21.4';
     echo -e "\e[1;32mOperating System: $OS Version: $VER\e[0m";
-  # Install prerequisites
+     # Install prerequisites
+    # Prepare package sources for NODEJS 14
+    export VERSION=node_14.x
+    export KEYRING=/usr/share/keyrings/nodesource.gpg
+    export DISTRIBUTION="$(lsb_release -s -c)"
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$KEYRING" >/dev/null
+    gpg --no-default-keyring --keyring "$KEYRING" --list-keys
+    echo "deb [signed-by=$KEYRING] https://deb.nodesource.com/$VERSION $DISTRIBUTION main" | sudo tee /etc/apt/sources.list.d/nodesource.list
+    echo "deb-src [signed-by=$KEYRING] https://deb.nodesource.com/$VERSION $DISTRIBUTION main" | sudo tee -a /etc/apt/sources.list.d/nodesource.list
     apt-get update;
     # Install some basic tools on a Debian net install
     /usr/bin/logger '..Install some basic tools on a Debian net install' -t 'gse-21.4';
     apt-get -y install --fix-policy;
     apt-get -y install adduser wget whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 software-properties-common dnsutils dirmngr --install-recommends;
+
     # Set correct locale
     locale-gen;
     update-locale;
@@ -66,11 +75,11 @@ install_prerequisites() {
             # Other pre-requisites for GSE - Bullseye / Debian 11
             /usr/bin/logger '....Other prerequisites for GSE on Debian 11' -t 'gse-21.4';
             apt-get -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
-            bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
-            sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
-            xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-            python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy;
-        
+                bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
+                sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
+                xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
+                python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy;
+            npm install -g yarn --force;
     elif [ $VER -eq "10" ]
         then
             /usr/bin/logger '..install_prerequisites_debian_10_buster' -t 'gse-21.4';
@@ -85,7 +94,7 @@ install_prerequisites() {
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                 python3-defusedxml python3-pip python3-psutil virtualenv python-impacket python-scapy;
-        
+            npm install -g yarn --force;
         else
             /usr/bin/logger '..install_prerequisites_debian_Untested' -t 'gse-21.4';
             # Untested but let's try like it is buster (debian 10)
@@ -99,6 +108,7 @@ install_prerequisites() {
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                 python3-defusedxml python3-pip python3-psutil virtualenv python-impacket python-scapy;
+            npm install -g yarn --force;
         fi
 
     # Required for PDF report generation
@@ -129,6 +139,7 @@ install_prerequisites() {
     chown -R gvm:gvm /var/log/gvm/;
     /usr/bin/logger 'install_prerequisites finished' -t 'gse-21.4';
 }
+
 
 prepare_nix() {
     /usr/bin/logger 'prepare_nix()' -t 'gse-21.4';
