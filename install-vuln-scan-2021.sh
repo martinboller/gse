@@ -104,7 +104,7 @@ install_prerequisites() {
     # Required for PDF report generation
     /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gse-21.4';
     echo -e "\e[1;32mRequired for PDF report generation\e[0m";
-    apt-get -y install texlive-fonts-recommended;
+    apt-get -y install texlive-full texlive-fonts-recommended;
     # Install other preferences and clean up APT
     /usr/bin/logger '....Install some preferences on Debian and clean up APT' -t 'gse-21.4';
     apt-get -y install bash-completion;
