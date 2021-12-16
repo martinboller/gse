@@ -886,6 +886,7 @@ create_gsecerts() {
     mkdir sec_certs;
     cd /root/sec_certs;
     #Set required variables for secondary
+    export GVM_CERTIFICATE_HOSTNAME=* 
     export GVM_CERT_PREFIX="secondary"
     export GVM_CERT_DIR="/root/sec_certs/"
     export GVM_KEY_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}key.pem"
@@ -949,7 +950,7 @@ main() {
     GVM_CERTIFICATE_SECPARAM="high"
     GVM_CERTIFICATE_SIGNALG="SHA512"
     # Hostname
-    export GVM_CERTIFICATE_HOSTNAME=*  
+    export GVM_CERTIFICATE_HOSTNAME=$HOSTNAME  
     # CA Certificate Lifetime
     export GVM_CA_CERTIFICATE_LIFETIME=3652
     # Key & cert material locations
@@ -989,7 +990,7 @@ main() {
     configure_gvm;
     configure_openvas;
     configure_gsa;
-    create_gsecerts;
+    #create_gsecerts;
     create_gvm_python_script;
     # Prestage only works on the specific Vagrant lab where a scan-data tar-ball is copied to the Host. 
     # Update scan-data only from greenbone when used everywhere else 

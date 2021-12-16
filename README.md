@@ -37,7 +37,8 @@ A BIG Thank You to Greenbone Networks GmbH for supporting the security community
   
 
 Runnning a secondary requires a few manual steps, specifically:
- - Copying the already created certificates to the secondary and running the helper script install-secondary-certs
+ - On the Primary Server run the _create_secondary_cert.sh_ script. It will ask for the hostname of the secondary.
+ - Copying the created certificates to the secondary and running the helper script install-secondary-certs on there.
  - Configure GVMD to use this scanner.
  This is all described in the comments at the end of the install-vuln-scan-2021.sh script.
 
