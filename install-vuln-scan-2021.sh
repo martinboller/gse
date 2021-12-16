@@ -266,8 +266,8 @@ install_gvm_libs() {
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .
     /usr/bin/logger '..make gvm libraries' -t 'gse-21.4';
     make;
-    /usr/bin/logger '..make gvm libraries Documentation' -t 'gse-21.4';
-    make doc-full;
+    #/usr/bin/logger '..make gvm libraries Documentation' -t 'gse-21.4';
+    #make doc-full;
     /usr/bin/logger '..make install gvm libraries' -t 'gse-21.4';
     make install;
     sync;
@@ -362,8 +362,8 @@ install_gvm() {
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .;
     /usr/bin/logger '..make GVM Daemon' -t 'gse-21.4';
     make;
-    /usr/bin/logger '..make documentation for GVM Daemon' -t 'gse-21.4';
-    make doc-full;
+    #/usr/bin/logger '..make documentation for GVM Daemon' -t 'gse-21.4';
+    #make doc-full;
     /usr/bin/logger '..make install GVM Daemon' -t 'gse-21.4';
     make install;
     sync;
@@ -415,8 +415,8 @@ install_gsa() {
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm .;
     /usr/bin/logger '..make GSA Daemon' -t 'gse-21.4';
     make;                # build the libraries
-    /usr/bin/logger '..make documentation for GSA Daemon' -t 'gse-21.4';
-    make doc-full;       # build more developer-oriented documentation
+    #/usr/bin/logger '..make documentation for GSA Daemon' -t 'gse-21.4';
+    #make doc-full;       # build more developer-oriented documentation
     /usr/bin/logger '..make install GSA Daemon' -t 'gse-21.4';
     make install;        # install the build
     sync;
@@ -543,20 +543,6 @@ EOF'
 configure_gvm() {
     /usr/bin/logger 'configure_gvm' -t 'gse-21.4';
     # Create Certificates
-    # Certificate options
-    # Lifetime in days
-    export GVM_CERTIFICATE_LIFETIME=3650
-    # Country
-    export GVM_CERTIFICATE_COUNTRY="DK"
-    # Locality
-    export GVM_CERTIFICATE_LOCALITY="Denmark"
-    # Organization
-    export GVM_CERTIFICATE_ORG="bsecure.dk"
-    # (Organization unit)
-    export GVM_CERTIFICATE_ORG_UNIT="Security"
-    GVM_CERTIFICATE_SECPARAM="high"
-    GVM_CERTIFICATE_SIGNALG="SHA512"
-
     /opt/gvm/bin/gvm-manage-certs -a;
     sh -c 'cat << EOF > /lib/systemd/system/gvmd.service
 [Unit]
@@ -899,25 +885,9 @@ create_gsecerts() {
     cd /root/
     mkdir sec_certs;
     cd /root/sec_certs;
-    #Set required variables
-    export GVM_CERTIFICATE_LIFETIME=3650
-    export GVM_CERTIFICATE_COUNTRY="DK"
-    export GVM_CERTIFICATE_LOCALITY="Denmark"
-    export GVM_CERTIFICATE_ORG="bsecure.dk"
-    export GVM_CERTIFICATE_ORG_UNIT="Security"
-    export GVM_CERTIFICATE_HOSTNAME=*  
-    export GVM_CA_CERTIFICATE_LIFETIME=3652
-    export GVM_CA_CERTIFICATE_COUNTRY="$GVM_CERTIFICATE_COUNTRY"
-    export GVM_CA_CERTIFICATE_STATE="$GVM_CERTIFICATE_STATE"
-    export GVM_CA_CERTIFICATE_LOCALITY="$GVM_CERTIFICATE_LOCALITY"
-    export GVM_CA_CERTIFICATE_ORG="$GVM_CERTIFICATE_ORG"
-    export GVM_CA_CERTIFICATE_ORG_UNIT="Certificate Authority for $GVM_CERTIFICATE_HOSTNAME"
-    export GVM_CERTIFICATE_SECPARAM="high"
-    export GVM_CERTIFICATE_SIGNALG="SHA512"
-    export GVM_KEY_LOCATION="/var/lib/gvm/private/CA"
-    export GVM_CERT_LOCATION="/var/lib/gvm/CA"
+    #Set required variables for secondary
     export GVM_CERT_PREFIX="secondary"
-    export GVM_CERT_DIR="/root/sec_certs"
+    export GVM_CERT_DIR="/root/sec_certs/"
     export GVM_KEY_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}key.pem"
     export GVM_CERT_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}cert.pem"
     export GVM_CERT_REQUEST_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}request.pem"
@@ -960,6 +930,32 @@ update_openvas_feed () {
 ##################################################################################################################
 
 main() {
+    # Shared variables
+
+    # Certificate options
+    # Lifetime in days
+    export GVM_CERTIFICATE_LIFETIME=3650
+    # Country
+    export GVM_CERTIFICATE_COUNTRY="DE"
+    # Locality
+    export GVM_CERTIFICATE_LOCALITY="Germany"
+    # Organization
+    export GVM_CERTIFICATE_ORG="Greenbone Scanner"
+    # (Organization unit)
+    export GVM_CERTIFICATE_ORG_UNIT="Certificate Authority for Vulnerability Management"
+    # State
+    export GVM_CA_CERTIFICATE_STATE="Bavaria"
+    # Security Parameters
+    GVM_CERTIFICATE_SECPARAM="high"
+    GVM_CERTIFICATE_SIGNALG="SHA512"
+    # Hostname
+    export GVM_CERTIFICATE_HOSTNAME=*  
+    # CA Certificate Lifetime
+    export GVM_CA_CERTIFICATE_LIFETIME=3652
+    # Key & cert material locations
+    export GVM_KEY_LOCATION="/var/lib/gvm/private/CA"
+    export GVM_CERT_LOCATION="/var/lib/gvm/CA"
+
     # Shared components
     install_prerequisites;
     prepare_nix;
