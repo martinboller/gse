@@ -5,7 +5,7 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Email:        martin                                                      #
-# Last Update:  2021-11-16                                                  #
+# Last Update:  2021-12-16                                                  #
 # Version:      1.00                                                        #
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
@@ -22,11 +22,11 @@ create_gsecerts() {
     cd /root/sec_certs/$SECHOST/;
     #Set required variables for secondary
     export GVM_CERTIFICATE_HOSTNAME=$SECHOST
-    export GVM_CERT_PREFIX="$SECHOST"
+    export GVM_CERT_PREFIX="secondary"
     export GVM_CERT_DIR="/root/sec_certs/$SECHOST"
-    export GVM_KEY_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}key.pem"
-    export GVM_CERT_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}cert.pem"
-    export GVM_CERT_REQUEST_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}request.pem"
+    export GVM_KEY_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}-key.pem"
+    export GVM_CERT_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}-cert.pem"
+    export GVM_CERT_REQUEST_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}-request.pem"
     export GVM_CERT_TEMPLATE_FILENAME="gsecert-finished.cfg"
     export GVM_SIGNING_CA_KEY_FILENAME="$GVM_KEY_LOCATION/cakey.pem"
     export GVM_SIGNING_CA_CERT_FILENAME="$GVM_CERT_LOCATION/cacert.pem"
@@ -37,28 +37,14 @@ create_gsecerts() {
     sync;
     # Check certificate creation
     if test -f $GVM_CERT_FILENAME; then
-        /usr/bin/logger 'certificates for secondary created' -t 'gse-21.4';
-        echo -e "\e[1;32mSuccess; certificates and keys available. Copy $GVM_CERT_FILENAME, $GVM_KEY_FILENAME, and $GVM_SIGNING_CA_CERT_FILENAME to secondaries\\e[0m"
+        /usr/bin/logger "Successfully created certificates for secondary $SECHOST" -t 'gse-21.4';
+        echo -e "\e[1;32mSuccess; certificates and keys available. Copy $GVM_CERT_FILENAME, $GVM_KEY_FILENAME, and $GVM_SIGNING_CA_CERT_FILENAME to secondary $SECHOST\\e[0m"
         chown gvm:gvm *.pem;
     else
-        /usr/bin/logger 'Certificates for secondary not created' -t 'gse-21.4';
-        echo -e "Failed: \e[1;31m$GVM_CERT_FILENAME not found, certificates not created\e[0m"
+        /usr/bin/logger "Failed creating Certificates for secondary $SECHOST" -t 'gse-21.4';
+        echo -e "Failed: \e[1;31m$GVM_CERT_FILENAME not found, certificates not created for $SECHOST\e[0m"
     fi;
     /usr/bin/logger 'create_gsecerts finished' -t 'gse-21.4';
-}
-
-configure_cmake() {
-    /usr/bin/logger 'configure_cmake' -t 'gse-21.4';
-    # Temporary workaround until CMAKE recognizes Postgresql 13
-    sed -ie '1 s/^/set(PostgreSQL_ADDITIONAL_VERSIONS "13")\n/' /usr/share/cmake-3.18/Modules/FindPostgreSQL.cmake
-    # Temporary workaround until CMAKE recognizes Postgresql 13
-   /usr/bin/logger 'configure_cmake finished' -t 'gse-21.4';
-}
-
-update_openvas_feed () {
-    /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gse';
-    su gvm -c '/opt/gvm/sbin/openvas --update-vt-info';
-    /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gse';
 }
 
 ##################################################################################################################

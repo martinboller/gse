@@ -5,7 +5,7 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Email:        martin                                                      #
-# Last Update:  2021-10-23                                                  #
+# Last Update:  2021-12-17                                                  #
 # Version:      2.10                                                        #
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
@@ -13,6 +13,7 @@
 #               2021-09-13 Updated to run on Debian 10 and 11               #
 #               2021-10-23 Latest GSE release                               #
 #               2021-10-25 Correct ospd-openvas.sock                        #
+#               2021-12-17 Create secondary cert w hostname not *           #
 #                                                                           #
 # Info:         https://sadsloth.net/post/install-gvm-20_08-src-on-debian/  #
 #                                                                           #
@@ -136,23 +137,23 @@ prepare_nix() {
     # Update the PATH environment variable
     echo "PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin" > /etc/profile.d/gvm.sh;
     # Add GVM library path to /etc/ld.so.conf.d
-    sh -c 'cat << EOF > /etc/ld.so.conf.d/greenbone.conf;
+    cat << __EOF__ > /etc/ld.so.conf.d/greenbone.conf;
 # Greenbone libraries
 /opt/gvm/lib
 /opt/gvm/include
-EOF'
-    sh -c 'cat << EOF > /etc/sudoers.d/greenbone
+__EOF__
+    cat << __EOF__ > /etc/sudoers.d/greenbone
 gvm     ALL = NOPASSWD: /opt/gvm/sbin/gsad, /opt/gvm/sbin/gvmd, /opt/gvm/sbin/openvas
 
 Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/gvm/sbin"
-EOF'
-    sh -c 'cat << EOF > /etc/tmpfiles.d/greenbone.conf
+__EOF__
+    cat << __EOF__ > /etc/tmpfiles.d/greenbone.conf
 d /run/gvm 1775 gvm gvm
 d /run/gvm/gse 1775 root
 d /run/ospd 1775 gvm gvm
 d /run/ospd/gse 1775 root
 d /var/log/gvm 1775 gvm gvm
-EOF'
+__EOF__
     # start systemd-tmpfiles to create directories
     systemd-tmpfiles --create;
 }
@@ -351,7 +352,7 @@ install_impacket() {
 configure_openvas() {
     /usr/bin/logger 'configure_openvas' -t 'gse-21.4';
     # Create openvas configuration file
-    sh -c 'cat << EOF > /etc/openvas/openvas.conf
+    cat << __EOF__ > /etc/openvas/openvas.conf
 cgi_path = /cgi-bin:/scripts
 checks_read_timeout = 5
 nasl_no_signature_check = yes
@@ -382,10 +383,10 @@ drop_privileges = no
 test_alive_hosts_only = yes
 unscanned_closed_udp = yes
 non_simult_ports = 139, 445, 3389, Services/irc
-EOF'
+__EOF__
 
     # Create OSPD Openvas service
-    sh -c 'cat << EOF > /lib/systemd/system/ospd-openvas.service
+    cat << __EOF__ > /lib/systemd/system/ospd-openvas.service
 [Unit]
 Description=OSPD OpenVAS
 After=network.target networking.service redis-server.service systemd-tmpfiles.service
@@ -397,7 +398,7 @@ Environment="PATH=/opt/gvm/sbin:/opt/gvm/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 User=gvm
 Group=gvm
 # Change log-level to info before production
-ExecStart=/usr/local/bin/ospd-openvas --port=9390 --bind-address=0.0.0.0 --pid-file=/run/gvm/ospd-openvas.pid --lock-file-dir=/run/gvm/ --key-file=/var/lib/gvm/private/CA/secondarykey.pem --cert-file=/var/lib/gvm/CA/secondarycert.pem --ca-file=/var/lib/gvm/CA/cacert.pem --log-file=/var/log/gvm/ospd-openvas.log
+ExecStart=/usr/local/bin/ospd-openvas --port=9390 --bind-address=0.0.0.0 --pid-file=/run/gvm/ospd-openvas.pid --lock-file-dir=/run/gvm/ --key-file=/var/lib/gvm/private/CA/secondary-key.pem --cert-file=/var/lib/gvm/CA/secondary-cert.pem --ca-file=/var/lib/gvm/CA/cacert.pem --log-file=/var/log/gvm/ospd-openvas.log
 # --log-level in ospd-openvas.conf can be debug too, info is default
 # This works asynchronously, but does not take the daemon down during the reload so it is ok.
 Restart=always
@@ -405,12 +406,12 @@ RestartSec=60
 
 [Install]
 WantedBy=multi-user.target
-EOF'
+__EOF__
 
     ## Configure ospd
     # Directory for ospd-openvas configuration file
     mkdir -p /etc/ospd;
-    sh -c 'cat << EOF > /etc/ospd/ospd-openvas.conf
+    cat << __EOF__ > /etc/ospd/ospd-openvas.conf
 [OSPD - openvas]
 log_level = INFO
 socket_mode = 0o766
@@ -428,7 +429,7 @@ min_free_mem_scan_queue = 1500
 ; max_queued_scans is the maximum amount of queued scans before starting to reject the new task (will not be queued) and send an error message to gvmd
 ; This options are disabled with the value 0 (zero), all arriving tasks will be started without queuing.
 max_queued_scans = 0
-EOF'
+__EOF__
     sync;
     /usr/bin/logger 'configure_openvas finished' -t 'gse-21.4';
 }
@@ -438,7 +439,7 @@ configure_greenbone_updates() {
     # Configure daily GVM updates timer and service
     mkdir -p /opt/gvm/gse-updater;
     # Timer
-    sh -c 'cat << EOF > /lib/systemd/system/gse-update.timer
+    cat << __EOF__ > /lib/systemd/system/gse-update.timer
 [Unit]
 Description=Daily job to update nvt feed
 
@@ -453,10 +454,10 @@ Unit=gse-update.service
 
 [Install]
 WantedBy=multi-user.target
-EOF'  
+__EOF__  
 
     ## Create gse-update.service
-    sh -c 'cat << EOF > /lib/systemd/system/gse-update.service
+    cat << __EOF__ > /lib/systemd/system/gse-update.service
 [Unit]
 Description=gse updater
 After=network.target networking.service
@@ -468,16 +469,16 @@ TimeoutSec=300
 
 [Install]
 WantedBy=multi-user.target
-EOF'    
+__EOF__    
 
     # Create script for gse-update.service
-    sh -c 'cat << EOF  > /opt/gvm/gse-updater/gse-updater.sh;
+    cat << __EOF__  > /opt/gvm/gse-updater/gse-updater.sh;
 #! /bin/bash
 # updates feeds for openvas on secondary server
 # NVT data
 su gvm -c "/opt/gvm/bin/greenbone-nvt-sync";
 /usr/bin/logger ''nvt data Feed Version \$(su gvm -c "/opt/gvm/bin/greenbone-nvt-sync --feedversion")'' -t gse;
-EOF'
+__EOF__
 sync;
 chmod +x /opt/gvm/gse-updater/gse-updater.sh;
 /usr/bin/logger 'configure_greenbone_updates finished' -t 'gse-21.4';
@@ -514,12 +515,12 @@ start_services() {
 
 configure_redis() {
     /usr/bin/logger 'configure_redis' -t 'gse-21.4';
-        sh -c 'cat << EOF > /etc/tmpfiles.d/redis.conf
+        cat << __EOF__ > /etc/tmpfiles.d/redis.conf
 d /run/redis 0755 redis redis
-EOF'
+__EOF__
     # start systemd-tmpfiles to create directories
     systemd-tmpfiles --create;
-    sh -c 'cat << EOF  > /etc/redis/redis.conf
+    cat << __EOF__  > /etc/redis/redis.conf
 daemonize yes
 pidfile /run/redis/redis-server.pid
 port 0
@@ -566,7 +567,7 @@ client-output-buffer-limit slave 256mb 64mb 60
 client-output-buffer-limit pubsub 32mb 8mb 60
 hz 10
 aof-rewrite-incremental-fsync yes
-EOF'
+__EOF__
     # Redis requirements - overcommit memory and TCP backlog setting > 511
     sysctl -w vm.overcommit_memory=1;
     sysctl -w net.core.somaxconn=1024;
@@ -574,10 +575,10 @@ EOF'
     echo "net.core.somaxconn=1024" >> /etc/sysctl.d/60-gse-redis.conf;
     # Disable THP
     echo never > /sys/kernel/mm/transparent_hugepage/enabled;
-    sh -c 'cat << EOF  > /etc/default/grub.d/99-transparent-huge-page.cfg
+    cat << __EOF__  > /etc/default/grub.d/99-transparent-huge-page.cfg
 # Turns off Transparent Huge Page functionality as required by redis
 GRUB_CMDLINE_LINUX_DEFAULT="\$GRUB_CMDLINE_LINUX_DEFAULT transparent_hugepage=never"
-EOF'
+__EOF__
 update-grub;
     sync;
     /usr/bin/logger 'configure_redis finished' -t 'gse-21.4';
@@ -603,7 +604,7 @@ create_gvm_python_script() {
     /usr/bin/logger 'create_gvm_python_script' -t 'gse-21.4';
     mkdir /opt/gvm/scripts;
     chown -R gvm:gvm /opt/gvm/scripts/;
-    sh -c "cat << EOF  > /opt/gvm/scripts/gvm-tasks.py
+    cat << __EOF__  > /opt/gvm/scripts/gvm-tasks.py
 from gvm.connections import UnixSocketConnection
 from gvm.protocols.gmp import Gmp
 from gvm.transforms import EtreeTransform
@@ -628,7 +629,7 @@ with Gmp(connection, transform=transform) as gmp:
     # Get names of tasks
     task_names = tasks.xpath('task/name/text()')
     pretty_print(task_names)
-EOF"
+__EOF__
     sync;
     /usr/bin/logger 'create_gvm_python_script finished' -t 'gse-21.4';
 }
@@ -676,9 +677,11 @@ main() {
     update_scan_data;
     update_openvas_feed;
     start_services;
+    echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------------------\e[0m";
     echo -e;
-    echo 'Copy the required certificates from the primary server (/root/sec_certs) and run install-vuln-secondary-certs.sh';
+    echo '\e[1;31mCopy the required certificates from the primary server (/root/sec_certs) and run install-vuln-secondary-certs.sh\e[0m';
     echo -e;
+    echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------------------\e[0m";
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of Openvas feed data into Redis, then reboot' -t 'gse-21.4';
 }
 

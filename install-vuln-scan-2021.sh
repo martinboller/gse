@@ -5,7 +5,7 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Email:        martin                                                      #
-# Last Update:  2021-10-23                                                  #
+# Last Update:  2021-12-17                                                  #
 # Version:      2.00                                                        #
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
@@ -13,6 +13,7 @@
 #               2021-09-13 Updated to run on Debian 10 and 11               #
 #               2021-10-23 Latest GSE release                               #
 #               2021-10-25 Correct ospd-openvas.sock path                   #
+#               2021-12-17 Create secondary cert w hostname not *           #
 #                                                                           #
 # Info:         https://sadsloth.net/post/install-gvm-20_08-src-on-debian/  #
 #                                                                           #
@@ -880,18 +881,19 @@ EOF"
     /usr/bin/logger 'create_gvm_python_script finished' -t 'gse-21.4';
 }
 
+
 create_gsecerts() {
     /usr/bin/logger 'create_gsecerts' -t 'gse-21.4';
     cd /root/
-    mkdir sec_certs;
-    cd /root/sec_certs;
+    mkdir -p sec_certs/$SECHOST/;
+    cd /root/sec_certs/$SECHOST/;
     #Set required variables for secondary
     export GVM_CERTIFICATE_HOSTNAME=$SECHOST
     export GVM_CERT_PREFIX="secondary"
-    export GVM_CERT_DIR="/root/sec_certs/"
-    export GVM_KEY_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}key.pem"
-    export GVM_CERT_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}cert.pem"
-    export GVM_CERT_REQUEST_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}request.pem"
+    export GVM_CERT_DIR="/root/sec_certs/$SECHOST"
+    export GVM_KEY_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}-key.pem"
+    export GVM_CERT_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}-cert.pem"
+    export GVM_CERT_REQUEST_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}-request.pem"
     export GVM_CERT_TEMPLATE_FILENAME="gsecert-finished.cfg"
     export GVM_SIGNING_CA_KEY_FILENAME="$GVM_KEY_LOCATION/cakey.pem"
     export GVM_SIGNING_CA_CERT_FILENAME="$GVM_CERT_LOCATION/cacert.pem"
@@ -902,12 +904,12 @@ create_gsecerts() {
     sync;
     # Check certificate creation
     if test -f $GVM_CERT_FILENAME; then
-        /usr/bin/logger 'certificates for secondary created' -t 'gse-21.4';
-        echo -e "\e[1;32mSuccess; certificates and keys available. Copy $GVM_CERT_FILENAME, $GVM_KEY_FILENAME, and $GVM_SIGNING_CA_CERT_FILENAME to secondaries\\e[0m"
+        /usr/bin/logger "Successfully created certificates for secondary $SECHOST" -t 'gse-21.4';
+        echo -e "\e[1;32mSuccess; certificates and keys available. Copy $GVM_CERT_FILENAME, $GVM_KEY_FILENAME, and $GVM_SIGNING_CA_CERT_FILENAME to secondary $SECHOST\\e[0m"
         chown gvm:gvm *.pem;
     else
-        /usr/bin/logger 'Certificates for secondary not created' -t 'gse-21.4';
-        echo -e "Failed: \e[1;31m$GVM_CERT_FILENAME not found, certificates not created\e[0m"
+        /usr/bin/logger "Failed creating Certificates for secondary $SECHOST" -t 'gse-21.4';
+        echo -e "Failed: \e[1;31m$GVM_CERT_FILENAME not found, certificates not created for $SECHOST\e[0m"
     fi;
     /usr/bin/logger 'create_gsecerts finished' -t 'gse-21.4';
 }
@@ -931,9 +933,16 @@ update_openvas_feed () {
 ##################################################################################################################
 
 main() {
+    echo -e "\e[1;31m-----------------------------------------------------------------------------------------------------\e[0m"
+    echo -e "\e[1;31mStarting installation of primary Greenbone Source Edition Server: $HOSTNAME\e[0m"
+    echo -e "\e[1;31mServer: $HOSTNAME will also be the Certificate Authority for itself and all secondaries\e[0m"
+    echo -e "\e[1;31m-----------------------------------------------------------------------------------------------------\e[0m"
     # Shared variables
     # Certificate options
+    echo -e
     read -p "Enter hostname of Secondary Server: " SECHOST;
+    echo -e "\e[1;31m-----------------------------------------------------------------------------------------------------\e[0m"
+    
     # Lifetime in days
     export GVM_CERTIFICATE_LIFETIME=3650
     # Country
@@ -941,16 +950,16 @@ main() {
     # Locality
     export GVM_CERTIFICATE_LOCALITY="Germany"
     # Organization
-    export GVM_CERTIFICATE_ORG="Greenbone Scanner"
+    export GVM_CERTIFICATE_ORG="Greenbone Source Edition"
     # (Organization unit)
-    export GVM_CERTIFICATE_ORG_UNIT="Certificate Authority for Vulnerability Management"
+    export GVM_CERTIFICATE_ORG_UNIT="Certificate Authority for $GVM_CERTIFICATE_ORG"
     # State
     export GVM_CA_CERTIFICATE_STATE="Bavaria"
     # Security Parameters
     GVM_CERTIFICATE_SECPARAM="high"
     GVM_CERTIFICATE_SIGNALG="SHA512"
     # Hostname
-    export GVM_CERTIFICATE_HOSTNAME=$HOSTNAME  
+    export GVM_CERTIFICATE_HOSTNAME=$HOSTNAME
     # CA Certificate Lifetime
     export GVM_CA_CERTIFICATE_LIFETIME=3652
     # Key & cert material locations
@@ -990,7 +999,7 @@ main() {
     configure_gvm;
     configure_openvas;
     configure_gsa;
-    #create_gsecerts;
+    create_gsecerts;
     create_gvm_python_script;
     # Prestage only works on the specific Vagrant lab where a scan-data tar-ball is copied to the Host. 
     # Update scan-data only from greenbone when used everywhere else 

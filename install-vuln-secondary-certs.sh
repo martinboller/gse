@@ -5,15 +5,11 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Email:        martin                                                      #
-# Last Update:  2021-10-23                                                  #
+# Last Update:  2021-12-17                                                  #
 # Version:      2.00                                                        #
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
-#               2021-10-23 Latest GSE release                               #
-#                                                                           #
-#                                                                           #
-# Info:        https://sadsloth.net/post/install-gvm-20_08-src-on-debian/   #
-#                                                                           #
+#               2021-12-17 hostname in cert                                 #
 #                                                                           #
 # Instruction:  Copies required cert files  from current                    #
 #               to correct directories                                      #
@@ -23,11 +19,11 @@
 
 install_certs() {
     /usr/bin/logger 'install_certs' -t 'gse';
-     if test -f ./secondarycert.pem; then
+     if test -f ./cacert.pem; then
         echo -e "\e[1;32mCertificates for secondary found, now copying to correct locations\e[0m";
-        cp ./secondarycert.pem /var/lib/gvm/CA/;
+        cp ./$HOSTNAME-cert.pem /var/lib/gvm/CA/;
         cp ./cacert.pem /var/lib/gvm/CA/;
-        cp ./secondarykey.pem /var/lib/gvm/private/CA/;
+        cp ./$HOSTNAME-key.pem /var/lib/gvm/private/CA/;
         chown -R gvm:gvm /var/lib/gvm/;
         sync;
         /usr/bin/logger 'Certificates for secondary installed' -t 'gse';
