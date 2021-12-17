@@ -49,7 +49,12 @@ create_gsecerts() {
 
 add_secondary() {
     su gvm -c "/opt/gvm/sbin/gvmd --create-scanner=\"OpenVAS $SECHOST\" --scanner-host=$SECHOST --scanner-port=$REMOTEPORT --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=/var/lib/gvm/secondaries/$SECHOST/secondary-cert.pem --scanner-key-priv=/var/lib/gvm/secondaries/$SECHOST/secondary-key.pem"
-    scp /var/lib/gvm/secondaries/$SECHOST/*.pem greenbone@$SECHOST:
+    # Configure sudoers to give greenbone sudo access
+    cat << __EOF__ > /etc/sudoers.d/greenbone
+greenbone     ALL = NOPASSWD: ALL
+__EOF__
+    sshpass -p $SECPASSWORD scp /var/lib/gvm/secondaries/$SECHOST/*.pem greenbone@$SECHOST:
+    sshpass -p $SECPASSWORD ssh root@$SECHOST /root/install-vuln-secondary-certs.sh:    
 }
 
 
@@ -60,7 +65,7 @@ add_secondary() {
 main() {
     # Shared variables
     read -p "Enter hostname of Secondary Server: " SECHOST;
-    read -p "Enter password for user greenbone on $SECHOST (/var/lib/gvm/greenboneuser): " SECHOST;    
+    read -p "Enter password for user greenbone on $SECHOST (/var/lib/gvm/greenboneuser): " SECPASSWORD;    
     # Remote Port on secondary
     export REMOTEPORT=9390
     # Certificate options
