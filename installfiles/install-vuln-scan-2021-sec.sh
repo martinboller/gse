@@ -301,6 +301,12 @@ install_openvas() {
     /usr/bin/logger 'install_openvas finished' -t 'gse-21.4';
 }
 
+create_scan_user() {
+    export greenbone_secret="$(< /dev/urandom tr -dc A-Za-z0-9_ | head -c 20)";
+    /usr/sbin/useradd --create-home -c "greenbone secondary user" --shell /bin/bash greenbone --password $greenbone_secret;
+    echo "User Greenbone for secondary $HOSTNAME created with password: $greenbone_secret" >> /var/lib/gvm/greenboneuser;
+}
+
 install_nmap() {
     /usr/bin/logger 'install_nmap' -t 'gse-21.4';
     cd /opt/gvm/src/greenbone;
@@ -677,6 +683,7 @@ main() {
     update_scan_data;
     update_openvas_feed;
     start_services;
+    create_scan_user;
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------------------\e[0m";
     echo -e;
     echo "\e[1;31mCopy the required certificates from the primary server (/root/sec_certs) and run install-vuln-secondary-certs.sh\e[0m";
