@@ -18,12 +18,12 @@
 create_gsecerts() {
     /usr/bin/logger 'create_gsecerts' -t 'gse-21.4';
     cd /root/
-    mkdir -p sec_certs/$SECHOST/;
-    cd /root/sec_certs/$SECHOST/;
+    mkdir -p /var/lib/gvm/secondaries/$SECHOST/;
+    cd /var/lib/gvm/secondaries/$SECHOST/;
     #Set required variables for secondary
     export GVM_CERTIFICATE_HOSTNAME=$SECHOST
     export GVM_CERT_PREFIX="secondary"
-    export GVM_CERT_DIR="/root/sec_certs/$SECHOST"
+    export GVM_CERT_DIR="/var/lib/gvm/secondaries/$SECHOST"
     export GVM_KEY_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}-key.pem"
     export GVM_CERT_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}-cert.pem"
     export GVM_CERT_REQUEST_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}-request.pem"
@@ -47,6 +47,11 @@ create_gsecerts() {
     /usr/bin/logger 'create_gsecerts finished' -t 'gse-21.4';
 }
 
+add_secondary() {
+    su gvm -c "/opt/gvm/sbin/gvmd --create-scanner=\"OpenVAS $SECHOST\" --scanner-host=$SECHOST --scanner-port=$REMOTEPORT --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=/var/lib/gvm/secondaries/$SECHOST/secondary-cert.pem --scanner-key-priv=/var/lib/gvm/secondaries/$SECHOST/secondary-key.pem"
+}
+
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -54,7 +59,10 @@ create_gsecerts() {
 main() {
     # Shared variables
     read -p "Enter hostname of Secondary Server: " SECHOST;
+    # Remote Port on secondary
+    export REMOTEPORT=9390
     # Certificate options
+    #
     # Lifetime in days
     export GVM_CERTIFICATE_LIFETIME=3650
     # Country
@@ -80,64 +88,11 @@ main() {
 
     # Shared components
     create_gsecerts;
+    add_secondary;
+    echo -e;
+    echo -e "\e[1;32mCertificates created and scanner created, verify in UI or from commandline\e[0m";
 }
 
 main;
 
 exit 0;
-
-######################################################################################################################################
-# Post install 
-# 
-# Feedowner/admin account is automatically created during installation.x
-# The admin account is import feed owner: https://community.greenbone.net/t/gvm-20-08-missing-report-formats-and-scan-configs/6397/2
-# /opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value UUID of admin account 
-# Get the uuid using /opt/gvm/sbin/gvmd --get-users --verbose
-# The first OpenVas scanner is always this UUID /opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73
-#
-# 08b69003-5fc2-4037-a479-93b440211c73  OpenVAS  /run/ospd/ospd-openvas.sock  0  OpenVAS Default
-# 6acd0832-df90-11e4-b9d5-28d24461215b  CVE    0  CVE
-#
-#
-# Admin user:   cat /opt/gvm/lib/adminuser.
-#               You should change this: /opt/gvm/sbin/gvmd --user admin --new-password 'Your new password'
-#
-# Check the logs:
-# tail -f /var/log/gvm/ospd-openvas.log
-# tail -f /var/log/gvm/gvmd.log
-# tail -f /var/log/gvm/openvas-log < This is very useful when scanning
-# tail -f /var/log/syslog | grep -i gse
-#
-# Create required certs for secondary
-# # cd /root/sec_certs
-# /opt/gvm/sbin/gvm-manage-certs -e ./gsecert.cfg -v -d -c
-# copy secondarycert.pem, secondarykey.pem, and /var/lib/gvm/CA/cacert.pem to the remote system to the correct locations. 
-# Then create the scanner in GVMD
-# chown gvm:gvm *
-# su gvm -c '/opt/gvm/sbin/gvmd --create-scanner="OSP Scanner secondary hostname" --scanner-host=hostname --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem'
-# Example:
-#   su gvm -c '/opt/gvm/sbin/gvmd --create-scanner="OpenVAS Secondary host aboleth" --scanner-host=aboleth --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem'
-#       Scanner created.
-# 
-# Don't forget to install the certs on the secondary as discussed further down, then return and do these verification steps on the primary:
-#   
-#   su gvm -c '/opt/gvm/sbin/gvmd --get-scanners'
-#       08b69003-5fc2-4037-a479-93b440211c73  OpenVAS  /var/run/ospd/ospd-openvas.sock  0  OpenVAS Default
-#       6acd0832-df90-11e4-b9d5-28d24461215b  CVE    0  CVE
-#       3e2232e3-b819-41bc-b5be-db52bfb06588  OpenVAS  mysecondary  9390  OSP Scanner mysecondary
-#
-#   su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner=3e2232e3-b819-41bc-b5be-db52bfb06588'
-#       Scanner version: OpenVAS 20.8.0.
-#
-#
-#The gsecert.cfg file supplied creates a wildcard cert, so can be used on all the secondaries you wish. 
-# 
-# On Secondary:
-# copy certificate files to correct locations. When copied locally use the script install-vuln-secondary-certs.sh
-# The script also restarts the unit.
-#
-# Using ps or top, You'll notice that postgres is being hammered by gvmd and that redis are
-# too, but by ospd-openvas.
-#
-# When running a - tail -f /var/log/openvas.log - is useful in following progress during the scanning.
-# /var/lib/gvm/private/CA/

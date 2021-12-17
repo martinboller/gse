@@ -454,7 +454,7 @@ Unit=gse-update.service
 
 [Install]
 WantedBy=multi-user.target
-__EOF__  
+__EOF__
 
     ## Create gse-update.service
     cat << __EOF__ > /lib/systemd/system/gse-update.service
@@ -469,7 +469,7 @@ TimeoutSec=300
 
 [Install]
 WantedBy=multi-user.target
-__EOF__    
+__EOF__
 
     # Create script for gse-update.service
     cat << __EOF__  > /opt/gvm/gse-updater/gse-updater.sh;
@@ -679,7 +679,7 @@ main() {
     start_services;
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------------------\e[0m";
     echo -e;
-    echo '\e[1;31mCopy the required certificates from the primary server (/root/sec_certs) and run install-vuln-secondary-certs.sh\e[0m';
+    echo "\e[1;31mCopy the required certificates from the primary server (/root/sec_certs) and run install-vuln-secondary-certs.sh\e[0m";
     echo -e;
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------------------\e[0m";
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of Openvas feed data into Redis, then reboot' -t 'gse-21.4';

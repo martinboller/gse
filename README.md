@@ -13,7 +13,7 @@ During installation a GVM user called 'admin' is created. The generated password
 stored in the file /usr/local/var/lib/adminuser. It is recommended that this password is changed and/or
 the file deleted. Do NOT delete the user admin unless you also change the feedowner to another user.
 
-A BIG Thank You to Greenbone Networks GmbH for supporting the security community, especially Björn Ricks (https://twitter.com/BjoernRicks).
+To create a secondary (slave) see instructions later - but running the script _add-secondary-2-primary.sh_ does the work required on the primary (Master)
 
 ### Known issues:
   - ~~ospd-openvas running as root (it needs that for openvas scanning) however that should be changed to a specific account~~
@@ -37,7 +37,7 @@ A BIG Thank You to Greenbone Networks GmbH for supporting the security community
   
 
 Runnning a secondary requires a few manual steps, specifically:
- - On the Primary Server run the _create_secondary_cert.sh_ script. It will ask for the hostname of the secondary.
+ - On the Primary Server run the _add-secondary-2-primary.sh_ script. It will ask for the hostname of the secondary.
  - Copying the created certificates to the secondary and running the helper script install-secondary-certs on there.
  - Configure GVMD to use this scanner.
  This is all described in the comments at the end of the install-vuln-scan-2021.sh script.

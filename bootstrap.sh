@@ -50,7 +50,7 @@ apt_install_prerequisites() {
         /usr/bin/logger 'install_updates()' -t 'gse';
     sed -i '/dns-nameserver/d' /etc/network/interfaces;
     # copy relevant scripts
-    /bin/cp /tmp/configfiles/Servers/*.sh /root/;
+    /bin/cp /tmp/installfiles/*.sh /root/;
     chmod +x /root/*.sh;
     /usr/bin/logger 'apt_install_prerequisites()' -t 'gse';
 }
@@ -59,7 +59,7 @@ install_ssh_keys() {
     # Echo add SSH public key for root logon
     export DEBIAN_FRONTEND=noninteractive;
     mkdir /root/.ssh;
-    echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIHJYsxpawSLfmIAZTPWdWe2xLAH758JjNs5/Z2pPWYm" | sudo tee -a /root/.ssh/authorized_keys;
+    echo $mySSHKey | sudo tee -a /root/.ssh/authorized_keys;
     sudo chmod 700 /root/.ssh;
     sudo chmod 600 /root/.ssh/authorized_keys;
     /usr/bin/logger 'install_ssh_keys()' -t 'gse';
@@ -72,6 +72,7 @@ install_ssh_keys() {
 main() {
     # Core elements, always installs
     #prepare_files;
+    export mySSHKey="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIHJYsxpawSLfmIAZTPWdWe2xLAH758JjNs5/Z2pPWYm"
     /usr/bin/logger '!!!!! Main routine starting' -t 'gse';
     install_ssh_keys;
     configure_timezone;
@@ -80,11 +81,10 @@ main() {
     configure_timezone;
 
     # copy relevant scripts
-    /bin/cp /tmp/configfiles/* /root/;
+    /bin/cp /tmp/installfiles/* /root/;
     chmod +x /root/*.sh;
     apt-get -y install --fix-policy;
     /usr/bin/logger 'installation finished (Main routine finished)' -t 'gse'; 
-
 }
 
 main;

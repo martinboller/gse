@@ -881,39 +881,6 @@ EOF"
     /usr/bin/logger 'create_gvm_python_script finished' -t 'gse-21.4';
 }
 
-
-create_gsecerts() {
-    /usr/bin/logger 'create_gsecerts' -t 'gse-21.4';
-    cd /root/
-    mkdir -p sec_certs/$SECHOST/;
-    cd /root/sec_certs/$SECHOST/;
-    #Set required variables for secondary
-    export GVM_CERTIFICATE_HOSTNAME=$SECHOST
-    export GVM_CERT_PREFIX="secondary"
-    export GVM_CERT_DIR="/root/sec_certs/$SECHOST"
-    export GVM_KEY_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}-key.pem"
-    export GVM_CERT_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}-cert.pem"
-    export GVM_CERT_REQUEST_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}-request.pem"
-    export GVM_CERT_TEMPLATE_FILENAME="gsecert-finished.cfg"
-    export GVM_SIGNING_CA_KEY_FILENAME="$GVM_KEY_LOCATION/cakey.pem"
-    export GVM_SIGNING_CA_CERT_FILENAME="$GVM_CERT_LOCATION/cacert.pem"
-    # Create Certs
-    /usr/bin/logger 'Creating certificates for secondary' -t 'gse-21.4';
-    /opt/gvm/bin/gvm-manage-certs -v -d -c;
-    cp /var/lib/gvm/CA/cacert.pem ./;
-    sync;
-    # Check certificate creation
-    if test -f $GVM_CERT_FILENAME; then
-        /usr/bin/logger "Successfully created certificates for secondary $SECHOST" -t 'gse-21.4';
-        echo -e "\e[1;32mSuccess; certificates and keys available. Copy $GVM_CERT_FILENAME, $GVM_KEY_FILENAME, and $GVM_SIGNING_CA_CERT_FILENAME to secondary $SECHOST\\e[0m"
-        chown gvm:gvm *.pem;
-    else
-        /usr/bin/logger "Failed creating Certificates for secondary $SECHOST" -t 'gse-21.4';
-        echo -e "Failed: \e[1;31m$GVM_CERT_FILENAME not found, certificates not created for $SECHOST\e[0m"
-    fi;
-    /usr/bin/logger 'create_gsecerts finished' -t 'gse-21.4';
-}
-
 configure_cmake() {
     /usr/bin/logger 'configure_cmake' -t 'gse-21.4';
     # Temporary workaround until CMAKE recognizes Postgresql 13
@@ -939,10 +906,7 @@ main() {
     echo -e "\e[1;31m-----------------------------------------------------------------------------------------------------\e[0m"
     # Shared variables
     # Certificate options
-    echo -e
-    read -p "Enter hostname of Secondary Server: " SECHOST;
-    echo -e "\e[1;31m-----------------------------------------------------------------------------------------------------\e[0m"
-    
+   
     # Lifetime in days
     export GVM_CERTIFICATE_LIFETIME=3650
     # Country
@@ -999,7 +963,6 @@ main() {
     configure_gvm;
     configure_openvas;
     configure_gsa;
-    create_gsecerts;
     create_gvm_python_script;
     # Prestage only works on the specific Vagrant lab where a scan-data tar-ball is copied to the Host. 
     # Update scan-data only from greenbone when used everywhere else 

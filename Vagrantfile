@@ -5,7 +5,7 @@ Vagrant.configure("2") do |config|
     cfg.vm.box = "generic/debian11"
     cfg.vm.hostname = "manticore"
     cfg.vm.network "public_network", type: "dhcp", bridge: 'enp1s0', mac: "0020911E0007"
-    cfg.vm.provision :file, source: './configfiles', destination: "/tmp/configfiles"
+    cfg.vm.provision :file, source: './installfiles', destination: "/tmp/installfiles"
     cfg.vm.provision :shell, path: "bootstrap.sh"
 
     cfg.vm.provider "virtualbox" do |vb, override|
@@ -24,7 +24,7 @@ Vagrant.configure("2") do |config|
     cfg.vm.box = "generic/debian11"
     cfg.vm.hostname = "aboleth"
     cfg.vm.network "public_network", type: "dhcp", bridge: 'enp1s0', mac: "0020911E0008"
-    cfg.vm.provision :file, source: './configfiles', destination: "/tmp/configfiles"
+    cfg.vm.provision :file, source: './installfiles', destination: "/tmp/installfiles"
     cfg.vm.provision :shell, path: "bootstrap.sh"
 
     cfg.vm.provider "virtualbox" do |vb, override|
@@ -43,7 +43,7 @@ Vagrant.configure("2") do |config|
   #   cfg.vm.box = "generic/debian11"
   #   cfg.vm.hostname = "nessie"
   #   cfg.vm.network "public_network", type: "dhcp", bridge: 'enp1s0', mac: "0020911E0009"
-  #   cfg.vm.provision :file, source: './configfiles', destination: "/tmp/configfiles"
+  #   cfg.vm.provision :file, source: './installfiles', destination: "/tmp/installfiles"
   #   cfg.vm.provision :shell, path: "bootstrap.sh"
 
   #   cfg.vm.provider "virtualbox" do |vb, override|
