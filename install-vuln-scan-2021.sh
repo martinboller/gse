@@ -886,7 +886,7 @@ create_gsecerts() {
     mkdir sec_certs;
     cd /root/sec_certs;
     #Set required variables for secondary
-    export GVM_CERTIFICATE_HOSTNAME=* 
+    export GVM_CERTIFICATE_HOSTNAME=$SECHOST
     export GVM_CERT_PREFIX="secondary"
     export GVM_CERT_DIR="/root/sec_certs/"
     export GVM_KEY_FILENAME="$GVM_CERT_DIR/${GVM_CERT_PREFIX}key.pem"
@@ -932,8 +932,8 @@ update_openvas_feed () {
 
 main() {
     # Shared variables
-
     # Certificate options
+    read -p "Enter hostname of Secondary Server: " SECHOST;
     # Lifetime in days
     export GVM_CERTIFICATE_LIFETIME=3650
     # Country
