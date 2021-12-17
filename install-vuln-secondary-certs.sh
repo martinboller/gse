@@ -21,9 +21,9 @@ install_certs() {
     /usr/bin/logger 'install_certs' -t 'gse';
      if test -f ./cacert.pem; then
         echo -e "\e[1;32mCertificates for secondary found, now copying to correct locations\e[0m";
-        cp ./$HOSTNAME-cert.pem /var/lib/gvm/CA/;
+        cp ./secondary-cert.pem /var/lib/gvm/CA/;
         cp ./cacert.pem /var/lib/gvm/CA/;
-        cp ./$HOSTNAME-key.pem /var/lib/gvm/private/CA/;
+        cp ./secondary-key.pem /var/lib/gvm/private/CA/;
         chown -R gvm:gvm /var/lib/gvm/;
         sync;
         /usr/bin/logger 'Certificates for secondary installed' -t 'gse';
