@@ -50,12 +50,14 @@ Runnning a secondary requires a few manual steps, specifically:
  1. On the Primary Server run the _add-secondary-2-primary.sh_ script. It will ask for the hostname and password for user greenbone on the secondary.
  2. The script then does the following;
     a) Copies required certificates to the secondary 
-    b) runs the helper script install-secondary-certs on the secondary to ensure all certificates are in the right location.
+    b) runs the helper script secondary-certs.sh on the secondary to ensure all certificates are in the right location.
     c) configures GVMD to use this scanner.
- 3. You can now verify the secondary using either the UI or gvmd with the switch '--verify-scanner=' 
- 
- Furher details on this can be found the comments at the end of the install-vuln-scan-2021.sh script.
+ 3. You can now verify the secondary using either the UI or gvmd with the switch '--verify-scanner='
 
-All feedback is welcome and the plan is to maintain this one, contrary to the older GVM10 install-script on my GitHub.
+
+<img src="./Images/Scanner_Verified.png" alt="Verify Scanner"/>
+
+
+Further details on using the commandline gvmd can be found the comments at the end of the install-vuln-scan-2021.sh script.
 
 There's a short companion blog on https://blog.infosecworrier.dk/2020/12/building-your-own-greenbone.html
