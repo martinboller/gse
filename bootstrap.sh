@@ -81,7 +81,7 @@ main() {
     configure_timezone;
 
     # copy relevant scripts
-    /bin/cp /tmp/installfiles/* /root/;
+    /bin/cp /tmp/installfiles/*.sh /root/;
     chmod +x /root/*.sh;
     apt-get -y install --fix-policy;
     # NAT Network adapter weirdness, so give it a kick.
