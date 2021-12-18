@@ -54,7 +54,7 @@ add_secondary() {
     su gvm -c "/opt/gvm/sbin/gvmd --create-scanner=\"OpenVAS $SECHOST\" --scanner-host=$SECHOST --scanner-port=$REMOTEPORT --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=/var/lib/gvm/secondaries/$SECHOST/secondary-cert.pem --scanner-key-priv=/var/lib/gvm/secondaries/$SECHOST/secondary-key.pem"
     sshpass -p $SECPASSWORD scp -o "StrictHostKeyChecking no" /root/install-vuln-secondary-certs.sh greenbone@$SECHOST:
     sshpass -p $SECPASSWORD scp -o "StrictHostKeyChecking no" /var/lib/gvm/secondaries/$SECHOST/*.pem greenbone@$SECHOST:
-    sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" greenbone@$SECHOST "sudo /root/install-vuln-secondary-certs.sh":    
+    sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" greenbone@$SECHOST "sudo /root/install-vuln-secondary-certs.sh" 
 }
 
 
