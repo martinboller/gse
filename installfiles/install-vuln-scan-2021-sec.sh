@@ -57,8 +57,7 @@ install_prerequisites() {
         then
             /usr/bin/logger '..install_prerequisites_debian_11_bullseye' -t 'gse-21.4';
             # Install pre-requisites for gvmd on bullseye (debian 11)
-            apt-get -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all postgresql-server-dev-13 \
-            pkg-config libical-dev xsltproc doxygen;        
+            apt-get -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc doxygen;        
             
             # Other pre-requisites for GSE - Bullseye / Debian 11
             /usr/bin/logger '....Other prerequisites for GSE on Debian 11' -t 'gse-21.4';
@@ -72,8 +71,7 @@ install_prerequisites() {
         then
             /usr/bin/logger '..install_prerequisites_debian_10_buster' -t 'gse-21.4';
             # Install pre-requisites for gvmd on buster (debian 10)
-            apt-get -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all postgresql-server-dev-11 \
-            pkg-config libical-dev xsltproc doxygen;
+            apt-get -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc doxygen;
             
             # Other pre-requisites for GSE - Buster / Debian 10
             /usr/bin/logger '....Other prerequisites for GSE on Debian 10' -t 'gse-21.4';
@@ -87,8 +85,7 @@ install_prerequisites() {
             /usr/bin/logger "Operating System: $OS Version: $VER" -t 'gse-21.4';
             # Untested but let's try like it is buster (debian 10)
 
-            apt-get -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all postgresql-server-dev-11 \
-            pkg-config libical-dev xsltproc doxygen;
+            apt-get -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc doxygen;
             
             # Other pre-requisites for GSE - Buster / Debian 10
             /usr/bin/logger '....Other prerequisites for GSE on unknown OS' -t 'gse-21.4';
@@ -142,7 +139,7 @@ prepare_nix() {
 /opt/gvm/lib
 /opt/gvm/include
 __EOF__
-    cat << __EOF__ > /etc/sudoers.d/greenbone
+    cat << __EOF__ > /etc/sudoers.d/gvm
 gvm     ALL = NOPASSWD: /opt/gvm/sbin/gsad, /opt/gvm/sbin/gvmd, /opt/gvm/sbin/openvas
 
 Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/gvm/sbin"
@@ -302,8 +299,12 @@ install_openvas() {
 }
 
 create_scan_user() {
+        cat << __EOF__ > /etc/sudoers.d/greenbone
+greenbone     ALL=(ALL) NOPASSWD: ALL
+__EOF__
     export greenbone_secret="$(< /dev/urandom tr -dc A-Za-z0-9_ | head -c 20)";
-    /usr/sbin/useradd --create-home -c "greenbone secondary user" --shell /bin/bash greenbone --password $greenbone_secret;
+    /usr/sbin/useradd --create-home -c "greenbone secondary user" --shell /bin/bash greenbone;
+    echo -e "$greenbone_secret\n$greenbone_secret\n" | passwd greenbone;
     echo "User Greenbone for secondary $HOSTNAME created with password: $greenbone_secret" >> /var/lib/gvm/greenboneuser;
 }
 
@@ -320,11 +321,11 @@ prestage_scan_data() {
     /usr/bin/logger 'prestage_scan_data' -t 'gse-21.4';
     # copy scan data from 2020-12-29 to prestage athe ~1.5 Gib required otherwise
     # change this to copy from cloned repo
-    cd /tmp/configfiles/;
+    cd /tmp/installfiles/;
     /usr/bin/logger '..opening TAR Ball' -t 'gse-21.4';
-    tar -xzf /tmp/configfiles/scandata.tar.gz; 
+    tar -xzf /tmp/installfiles/scandata.tar.gz; 
     /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gse-21.4';
-    /bin/cp -r /tmp/configfiles/GVM/openvas/plugins/* /var/lib/openvas/plugins/;
+    /bin/cp -r /tmp/installfiles/GVM/openvas/plugins/* /var/lib/openvas/plugins/;
     chown -R gvm:gvm /opt/gvm;
     /usr/bin/logger 'prestage_scan_data finished' -t 'gse-21.4';
 }
@@ -686,7 +687,7 @@ main() {
     create_scan_user;
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------------------\e[0m";
     echo -e;
-    echo "\e[1;31mCopy the required certificates from the primary server (/root/sec_certs) and run install-vuln-secondary-certs.sh\e[0m";
+    echo -e "\e[1;31mCopy the required certificates from the primary server (/root/sec_certs) and run install-vuln-secondary-certs.sh\e[0m";
     echo -e;
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------------------\e[0m";
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of Openvas feed data into Redis, then reboot' -t 'gse-21.4';

@@ -384,12 +384,12 @@ prestage_scan_data() {
     /usr/bin/logger 'prestage_scan_data' -t 'gse-21.4';
     # copy scan data to prestage ~1.5 Gib required otherwise
     # change this to copy from cloned repo
-    cd /tmp/configfiles/;
+    cd /tmp/installfiles/;
     /usr/bin/logger '..opening and extracting TAR Ball' -t 'gse-21.4';
-    tar -xzf /tmp/configfiles/scandata.tar.gz; 
+    tar -xzf /tmp/installfiles/scandata.tar.gz; 
     /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gse-21.4';
-    /bin/cp -r /tmp/configfiles/GVM/openvas/plugins/* /var/lib/openvas/plugins/;
-    /bin/cp -r /tmp/configfiles/GVM/gvm/* /var/lib/gvm/;
+    /bin/cp -r /tmp/installfiles/GVM/openvas/plugins/* /var/lib/openvas/plugins/;
+    /bin/cp -r /tmp/installfiles/GVM/gvm/* /var/lib/gvm/;
     chown -R gvm:gvm /opt/gvm;
     /usr/bin/logger 'prestage_scan_data finished' -t 'gse-21.4';
 }

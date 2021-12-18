@@ -38,7 +38,10 @@ create_gsecerts() {
     # Check certificate creation
     if test -f $GVM_CERT_FILENAME; then
         /usr/bin/logger "Successfully created certificates for secondary $SECHOST" -t 'gse-21.4';
-        echo -e "\e[1;32mSuccess; certificates and keys available. Copy $GVM_CERT_FILENAME, $GVM_KEY_FILENAME, and $GVM_SIGNING_CA_CERT_FILENAME to secondary $SECHOST\\e[0m"
+        echo -e "\e[1;32mSuccess; certificates and keys available. These files will be copied to $SECHOST\e[0m";
+        echo -e "\e[1;32m$GVM_CERT_FILENAME\e[0m"
+        echo -e "\e[1;32m$GVM_KEY_FILENAME, and\e[0m"
+        echo -e "\e[1;32m$GVM_SIGNING_CA_CERT_FILENAME to secondary $SECHOST\e[0m"
         chown gvm:gvm *.pem;
     else
         /usr/bin/logger "Failed creating Certificates for secondary $SECHOST" -t 'gse-21.4';
@@ -49,12 +52,9 @@ create_gsecerts() {
 
 add_secondary() {
     su gvm -c "/opt/gvm/sbin/gvmd --create-scanner=\"OpenVAS $SECHOST\" --scanner-host=$SECHOST --scanner-port=$REMOTEPORT --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=/var/lib/gvm/secondaries/$SECHOST/secondary-cert.pem --scanner-key-priv=/var/lib/gvm/secondaries/$SECHOST/secondary-key.pem"
-    # Configure sudoers to give greenbone sudo access
-    cat << __EOF__ > /etc/sudoers.d/greenbone
-greenbone     ALL = NOPASSWD: ALL
-__EOF__
-    sshpass -p $SECPASSWORD scp /var/lib/gvm/secondaries/$SECHOST/*.pem greenbone@$SECHOST:
-    sshpass -p $SECPASSWORD ssh root@$SECHOST /root/install-vuln-secondary-certs.sh:    
+    sshpass -p $SECPASSWORD scp -o "StrictHostKeyChecking no" /root/install-vuln-secondary-certs.sh greenbone@$SECHOST:
+    sshpass -p $SECPASSWORD scp -o "StrictHostKeyChecking no" /var/lib/gvm/secondaries/$SECHOST/*.pem greenbone@$SECHOST:
+    sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" greenbone@$SECHOST "sudo /root/install-vuln-secondary-certs.sh":    
 }
 
 

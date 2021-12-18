@@ -84,6 +84,8 @@ main() {
     /bin/cp /tmp/installfiles/* /root/;
     chmod +x /root/*.sh;
     apt-get -y install --fix-policy;
+    # NAT Network adapter weirdness, so give it a kick.
+    ifdown eth0; ifup eth0;
     /usr/bin/logger 'installation finished (Main routine finished)' -t 'gse'; 
 }
 
