@@ -687,9 +687,9 @@ main() {
     create_scan_user;
     echo -e;
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------------------\e[0m";
-    echo -e "\e[1;32mCopy the required certificates from the primary server (/root/sec_certs) and run \e[0m";
-    echo -e "\e[1;32madd-secondary-2-primary on the primary server\e[0m";
-    echo -e "\e[1;32mYou will need hostname: $HOSTNAME and password: $SECPASSWORD\e[0m";
+    echo -e "\e[1;32mThere's a copy of all required certificates at /var/lib/gvm/$HOSTNAME \e[0m";
+    echo -e "\e[1;32mBut just run add-secondary-2-primary on the primary server\e[0m";
+    echo -e "\e[1;32mYou will need hostname: $HOSTNAME and password: $greenbone_secret\e[0m";
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------------------\e[0m";
     echo -e;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of Openvas feed data into Redis, then reboot' -t 'gse-21.4';

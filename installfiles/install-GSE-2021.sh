@@ -1030,7 +1030,7 @@ exit 0;
 #The gsecert.cfg file supplied creates a wildcard cert, so can be used on all the secondaries you wish. 
 # 
 # On Secondary:
-# copy certificate files to correct locations. When copied locally use the script install-vuln-secondary-certs.sh
+# copy certificate files to correct locations. When copied locally use the script secondary-certs.sh
 # The script also restarts the unit.
 #
 # Using ps or top, You'll notice that postgres is being hammered by gvmd and that redis are
