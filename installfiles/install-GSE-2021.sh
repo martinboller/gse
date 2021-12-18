@@ -203,9 +203,9 @@ prepare_source() {
     /usr/bin/logger '..ospd' -t 'gse-21.4';
     wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/refs/tags/v21.4.4.tar.gz;
     /usr/bin/logger '..python-gvm' -t 'gse-21.4';
-    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v21.10.0.tar.gz;
+    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v21.11.0.tar.gz;
     /usr/bin/logger '..gvm-tools' -t 'gse-21.4';
-    wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v21.6.1.tar.gz;
+    wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v21.10.0.tar.gz;
   
     # open and extract the tarballs
     /usr/bin/logger '..open and extract the tarballs' -t 'gse-21.4';
@@ -221,8 +221,8 @@ prepare_source() {
     mv /opt/gvm/src/greenbone/gsa-21.4.3 /opt/gvm/src/greenbone/gsa;
     mv /opt/gvm/src/greenbone/openvas-smb-21.4.0 /opt/gvm/src/greenbone/openvas-smb;
     mv /opt/gvm/src/greenbone/ospd-21.4.4 /opt/gvm/src/greenbone/ospd;
-    mv /opt/gvm/src/greenbone/python-gvm-21.10.0 /opt/gvm/src/greenbone/python-gvm;
-    mv /opt/gvm/src/greenbone/gvm-tools-21.6.1 /opt/gvm/src/greenbone/gvm-tools;
+    mv /opt/gvm/src/greenbone/python-gvm-21.11.0 /opt/gvm/src/greenbone/python-gvm;
+    mv /opt/gvm/src/greenbone/gvm-tools-21.10.0 /opt/gvm/src/greenbone/gvm-tools;
     sync;
     chown -R gvm:gvm /opt/gvm;
     /usr/bin/logger 'prepare_source finished' -t 'gse-21.4';
@@ -422,6 +422,19 @@ install_gsa() {
     make install;        # install the build
     sync;
     /usr/bin/logger 'install_gsa finished' -t 'gse-21.4';
+}
+
+browserlist_update(){
+    /usr/bin/logger 'browserlist_update()' -t 'gse-21.4';
+    cat << __EOF__ > /etc/cron.weekly/browserlistupdate
+#!/bin/bash
+npx browserslist@latest --update-db
+/usr/bin/logger 'browserlist_update' -t 'gse-21.4';
+exit 0
+__EOF__
+    sync;
+    chmod +x /etc/cron.weekly/browserlistupdate;
+    /usr/bin/logger 'browserlist_update() finished' -t 'gse-21.4';
 }
 
 install_gvm_tools() {
@@ -834,6 +847,7 @@ configure_permissions() {
 }
 
 show_default_scanner_status() {
+    /usr/bin/logger 'show_default_scanner_status()' -t 'gse-21.4';
     # Check status of Default scanners (Openvas and CVE).
     # If returning "Failed to verify scanner" most likely GVMD cannot communicate with ospd-openvas.sock
     echo -e
@@ -964,6 +978,7 @@ main() {
     configure_openvas;
     configure_gsa;
     create_gvm_python_script;
+    browserlist_update;
     # Prestage only works on the specific Vagrant lab where a scan-data tar-ball is copied to the Host. 
     # Update scan-data only from greenbone when used everywhere else 
     prestage_scan_data;

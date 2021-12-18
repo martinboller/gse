@@ -68,6 +68,7 @@ main() {
     update_openvas_redis;
     /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gse';
     /usr/bin/logger 'Certificate installation completed, check for errors in logs' -t 'gse';
+    passwd --lock greenbone;
 }
 
 main;

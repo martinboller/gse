@@ -173,9 +173,9 @@ prepare_source_secondary() {
     /usr/bin/logger '..ospd' -t 'gse-21.4';
     wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/refs/tags/v21.4.4.tar.gz;
     /usr/bin/logger '..python-gvm' -t 'gse-21.4';
-    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v21.10.0.tar.gz;
+    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v21.11.0.tar.gz;
     /usr/bin/logger '..gvm-tools' -t 'gse-21.4';
-    wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v21.6.1.tar.gz;
+    wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v21.10.0.tar.gz;
   
     # open and extract the tarballs
     find *.gz | xargs -n1 tar zxvfp;
@@ -188,8 +188,8 @@ prepare_source_secondary() {
     mv /opt/gvm/src/greenbone/openvas-scanner-21.4.3 /opt/gvm/src/greenbone/openvas;
     mv /opt/gvm/src/greenbone/openvas-smb-21.4.0 /opt/gvm/src/greenbone/openvas-smb;
     mv /opt/gvm/src/greenbone/ospd-21.4.4 /opt/gvm/src/greenbone/ospd;
-    mv /opt/gvm/src/greenbone/python-gvm-21.10.0 /opt/gvm/src/greenbone/python-gvm;
-    mv /opt/gvm/src/greenbone/gvm-tools-21.6.1 /opt/gvm/src/greenbone/gvm-tools;
+    mv /opt/gvm/src/greenbone/python-gvm-21.11.0 /opt/gvm/src/greenbone/python-gvm;
+    mv /opt/gvm/src/greenbone/gvm-tools-21.10.0 /opt/gvm/src/greenbone/gvm-tools;
     sync;
     chown -R gvm:gvm /opt/gvm/src/greenbone;
     /usr/bin/logger 'prepare_source_secondary finished' -t 'gse-21.4';
@@ -686,11 +686,11 @@ main() {
     start_services;
     create_scan_user;
     echo -e;
-    echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------------------\e[0m";
-    echo -e "\e[1;32mThere's a copy of all required certificates at /var/lib/gvm/$HOSTNAME \e[0m";
+    echo -e "\e[1;32m-----------------------------------------------------------------------------------------\e[0m";
+    echo -e "\e[1;32mThere's a copy of all required certificates at \e[1;33m/var/lib/gvm/$HOSTNAME\e[0m";
     echo -e "\e[1;32mBut just run add-secondary-2-primary on the primary server\e[0m";
-    echo -e "\e[1;32mYou will need hostname: $HOSTNAME and password: $greenbone_secret\e[0m";
-    echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------------------\e[0m";
+    echo -e "\e[1;32mYou will need hostname: \e[1;33m$HOSTNAME\e[0m and password: \e[1;33m$greenbone_secret\e[0m";
+    echo -e "\e[1;32m-----------------------------------------------------------------------------------------\e[0m";
     echo -e;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of Openvas feed data into Redis, then reboot' -t 'gse-21.4';
 }

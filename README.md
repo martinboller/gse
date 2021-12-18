@@ -1,6 +1,6 @@
 # Greenbone Vulnerability Manager 21.4.x Source Code Edition Installation script
 
-## Bash script automating the installation of Greenbone Vulnerability Manager 21.4.2 (August 2021 releases) on Debian 10 or 11 (20.8.0 will eol end of 2021)
+## Bash script automating the installation of Greenbone Vulnerability Manager 21.4.3 (October 2021 releases) on Debian 10 or 11
 
 Installation will be located in /usr/local/, which is the default for GVM SCE.
 
@@ -34,15 +34,23 @@ To create a secondary (slave) see instructions later - but running the script _a
 
 ### 2021-10-23 - oct 13 bugfixes, moved install to /opt/gvm instead of /usr/local/ and use yarn from Deb repo
   - https://community.greenbone.net/t/new-releases-for-gvm-20-08-and-gvm-21-04/10385
+  - Greenbone Security Assistant (GSA) 21.4.3
+  - gvmd 21.4.4
+  - ospd-openvas 21.4.3
+  - openvas-scanner 21.4.3
+  - OpenVAS SMB v21.4.0
+  - gvm-libs 21.4.3
+  - gvm-tools 21.10.0
+  - python-gvm 21.11.0
 
 #### 2021-09-14 - Debian 10 and 11 support
   - Works with Debian 10 (Buster) and Debian 11 (Bullseye). Likely to work with most Debian based distros, but some checks in the scripts expect Debian 10 or 11.
 
-#### 2021-05-08 - updated to 21.4.0.
-  - Changed to 21.4.0 versions
+#### 2021-05-08 - updated to 21.04.
+  - Changed to 21.4.0 versions, as older is retired as of 2021-12-03: https://community.greenbone.net/t/greenbone-os-20-08-retired/10873
 
 #### 2021-09-24 - August Greenbone releases
-  - Modified to work with the latest releases from Greenbone
+  - Modified to work with the latest releases from Greenbone: https://community.greenbone.net/t/new-releases-for-gvm-20-08-and-gvm-21-04/10385
 
 ## Add Secondary Server 
 

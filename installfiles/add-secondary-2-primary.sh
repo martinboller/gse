@@ -51,10 +51,12 @@ create_gsecerts() {
 }
 
 add_secondary() {
+    /usr/bin/logger 'add_secondary()' -t 'gse-21.4';
     su gvm -c "/opt/gvm/sbin/gvmd --create-scanner=\"OpenVAS $SECHOST\" --scanner-host=$SECHOST --scanner-port=$REMOTEPORT --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=/var/lib/gvm/secondaries/$SECHOST/secondary-cert.pem --scanner-key-priv=/var/lib/gvm/secondaries/$SECHOST/secondary-key.pem"
     sshpass -p $SECPASSWORD scp -o "StrictHostKeyChecking no" /root/secondary-certs.sh greenbone@$SECHOST:
     sshpass -p $SECPASSWORD scp -o "StrictHostKeyChecking no" /var/lib/gvm/secondaries/$SECHOST/*.pem greenbone@$SECHOST:
     sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" greenbone@$SECHOST "sudo /root/secondary-certs.sh" 
+    /usr/bin/logger 'add_secondary() finished' -t 'gse-21.4';
 }
 
 
@@ -94,6 +96,8 @@ main() {
     export GVM_CERT_LOCATION="/var/lib/gvm/CA"
 
     # Shared components
+    echo -e;
+    echo -e "\e[1;32mThis may take a while, please wait\e[0m";    
     create_gsecerts;
     add_secondary;
     echo -e;
