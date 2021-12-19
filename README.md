@@ -62,9 +62,9 @@ Runnning a secondary requires a few manual steps, specifically:
     c) configures GVMD to use this scanner.
  3. You can now verify the secondary using either the UI or gvmd with the switch '--verify-scanner='
 
-
 <img src="./Images/Scanner_Verified.png" alt="Verify Scanner"/>
 
+If this fails, just copy the .pem files from /var/lib/gvm/secondaries/hostname_of_secondary/ to the new secondary, run secondary-certs.sh and ospd-openvas.service should start and scanner can be verified.
 
 Further details on using the commandline gvmd can be found the comments at the end of the install-vuln-scan-2021.sh script.
 

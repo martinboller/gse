@@ -63,11 +63,14 @@ update_openvas_redis () {
 ##################################################################################################################
 
 main() {
+    # Install certificates and start ospd-openvas
     install_certs;
     start_services;
-    update_openvas_redis;
+    # Update redis with NVT information
     /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gse';
+    update_openvas_redis;
     /usr/bin/logger 'Certificate installation completed, check for errors in logs' -t 'gse';
+    # Disable user greenbone after first use (installing certificates)
     passwd --lock greenbone;
 }
 
