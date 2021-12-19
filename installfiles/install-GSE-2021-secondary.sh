@@ -299,13 +299,15 @@ install_openvas() {
 }
 
 create_scan_user() {
-        cat << __EOF__ > /etc/sudoers.d/greenbone
+    /usr/bin/logger 'create_scan_user' -t 'gse-21.4';
+    cat << __EOF__ > /etc/sudoers.d/greenbone
 greenbone     ALL=(ALL) NOPASSWD: ALL
 __EOF__
     export greenbone_secret="$(< /dev/urandom tr -dc A-Za-z0-9_ | head -c 20)";
-    /usr/sbin/useradd --create-home -c "greenbone secondary user" --shell /bin/bash greenbone;
-    echo -e "$greenbone_secret\n$greenbone_secret\n" | passwd greenbone;
+    /usr/sbin/useradd --create-home -c "greenbone secondary user" --shell /bin/bash greenbone > /dev/null 2>&1
+    echo -e "$greenbone_secret\n$greenbone_secret\n" | passwd greenbone > /dev/null 2>&1
     echo "User Greenbone for secondary $HOSTNAME created with password: $greenbone_secret" >> /var/lib/gvm/greenboneuser;
+    /usr/bin/logger 'create_scan_user() finished' -t 'gse-21.4';
 }
 
 install_nmap() {
