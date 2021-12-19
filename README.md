@@ -19,12 +19,16 @@ To create a secondary (slave) see instructions later - but running the script _a
   - ~~ospd-openvas running as root (it needs that for openvas scanning) however that should be changed to a specific account~~
   - ~~Not tested with separate scanner systems~~
 
-### Latest changes 
+## Latest changes 
+
+### 2021-12-19 - Put GSAD behind NGINX Proxy
+  - In order to benefit from the security features of NGINX GSAD is now being proxied through that.
 
 ### 2021-12-18 - Automated addition of secondary
   - The script add-secondary-2-primary.sh now does everything needed to get a secondary up and running
+
 ### 2021-12-12 - NodeJS 14 instead of 12.x with Buster and Bullseye
-  - Add packages for nodesource to install node 14.x instead of the lower versions in the Debian repos
+  - Add packages for nodesource to install node 14.x instead of the lower versions in the Debian repos. According to Greenbone documentation Node >= 14 is required
 
 ### 2021-11-14 - Vagrantfile and bootstrap for testing with vagrant
   - Just added some files for use with VirtualBox and Vagrant

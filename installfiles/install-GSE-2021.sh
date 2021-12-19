@@ -599,7 +599,9 @@ Type=forking
 User=gvm
 Group=gvm
 PIDFile=/run/gvm/gsad.pid
-ExecStart=/opt/gvm/sbin/gsad --port=8443 --ssl-private-key=/var/lib/gvm/private/CA/serverkey.pem --ssl-certificate=/var/lib/gvm/CA/servercert.pem --munix-socket=/run/gvm/gvmd.sock --no-redirect --secure-cookie --http-sts --timeout=60 --http-cors="https://%H:8443/" --gnutls-priorities=SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2
+# With NGINX listen on 127.0.0.1 and http only (https through NGINX)
+ExecStart=/opt/gvm/sbin/gsad --listen 127.0.0.1 --port=8443 --http-only
+# Without NGINX user: ExecStart=/opt/gvm/sbin/gsad --port=8443 --ssl-private-key=/var/lib/gvm/private/CA/serverkey.pem --ssl-certificate=/var/lib/gvm/CA/servercert.pem --munix-socket=/run/gvm/gvmd.sock --no-redirect --secure-cookie --http-sts --timeout=60 --http-cors="https://%H:8443/" --gnutls-priorities=SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2
 Restart=always
 TimeoutStopSec=10
 
@@ -715,6 +717,8 @@ start_services() {
     # Enable gse-update timer and service
     systemctl enable gse-update.timer;
     systemctl enable gse-update.service;
+    # restart NGINX
+    systemctl restart nginx.service;
     # Will start after next reboot - may disturb the initial update
     systemctl start gse-update.timer;
     # Check status of critical services
@@ -909,6 +913,105 @@ update_openvas_feed () {
     /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gse';
 }
 
+install_nginx() {
+    /usr/bin/logger 'install_nginx()' -t 'GSE-21.4.3';
+    apt-get -y install nginx apache2-utils;
+    /usr/bin/logger 'install_nginx() finished' -t 'GSE-21.4.3';
+}
+
+configure_nginx() {
+    /usr/bin/logger 'configure_nginx()' -t 'GSE-21.4.3';
+    # Change ROOTCA to point to correct cert when/if not using self signed cert.
+    export ROOTCA=$HOSTNAME
+    openssl dhparam -out /etc/nginx/dhparam.pem 2048
+    # TLS
+    cat << __EOF__ > /etc/nginx/sites-available/default;
+#
+# Changed by: Martin Boller
+#         secuuru.dk
+# Email: martin.boller@secuuru.dk
+# Last Update: 2021-11-21
+#
+# reverse proxy configuration for GSE
+# Running GSE on port 443 TLS
+##
+
+server {
+    listen 80;
+    return 301 https://\$host\$request_uri;
+}
+
+server {
+    client_max_body_size 32M;
+    listen 443 ssl http2;
+    ssl_certificate           /etc/nginx/certs/$HOSTNAME.crt;
+    ssl_certificate_key       /etc/nginx/certs/$HOSTNAME.key;
+    ssl on;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
+    ssl_prefer_server_ciphers on;
+    # Enable HSTS
+    add_header Strict-Transport-Security "max-age=31536000" always;
+    # Optimize session cache
+    ssl_session_cache   shared:SSL:40m;
+    ssl_session_timeout 4h;  # Enable session tickets
+    ssl_session_tickets on;
+    # Diffie Hellman Parameters
+    ssl_dhparam /etc/nginx/dhparam.pem;
+
+### GSE on port 8443
+    location / {
+      # Authentication handled by GSAD
+      # Access log for GSE
+      access_log              /var/log/nginx/GSE.access.log;
+      proxy_set_header        Host \$host;
+      proxy_set_header        X-Real-IP \$remote_addr;
+      proxy_set_header        X-Forwarded-For \$proxy_add_x_forwarded_for;
+      proxy_set_header        X-Forwarded-Proto \$scheme;
+
+      # Fix the “It appears that your reverse proxy set up is broken" error.
+      proxy_pass          http://localhost:8443;
+      proxy_read_timeout  90;
+
+      proxy_redirect      http://localhost:8443 https://$HOSTNAME;
+    }
+  }
+__EOF__
+    /usr/bin/logger 'configure_nginx() finished' -t 'GSE-21.4.3';
+}
+
+nginx_certificates() {
+    /usr/bin/logger 'nginx_certificates()' -t 'GSE-21.4.3';
+    mkdir -p /etc/nginx/certs/;
+    cat << __EOF__ > ./openssl.cnf
+## Request for $FQDN
+[ req ]
+default_bits = 2048
+default_md = sha256
+prompt = no
+encrypt_key = no
+distinguished_name = dn
+req_extensions = req_ext
+
+[ dn ]
+countryName         = $ISOCOUNTRY
+stateOrProvinceName = $PROVINCE
+localityName        = $LOCALITY
+organizationName    = $ORGNAME
+CN = $FQDN
+
+[ req_ext ]
+subjectAltName = $ALTNAMES
+__EOF__
+    sync;
+    # generate Certificate Signing Request to send to corp PKI
+    openssl req -new -config openssl.cnf -keyout /etc/nginx/certs/$HOSTNAME.key -out /etc/nginx/certs/$HOSTNAME.csr
+    # generate self-signed certificate (remove when CSR can be sent to Corp PKI)
+    openssl x509 -in /etc/nginx/certs/$HOSTNAME.csr -out /etc/nginx/certs/$HOSTNAME.crt -req -signkey /etc/nginx/certs/$HOSTNAME.key -days 365
+    chmod 600 /etc/nginx/certs/$HOSTNAME.key
+    /usr/bin/logger 'nginx_certificates() finished' -t 'GSE-21.4.3';
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -919,7 +1022,7 @@ main() {
     echo -e "\e[1;31mServer: $HOSTNAME will also be the Certificate Authority for itself and all secondaries\e[0m"
     echo -e "\e[1;31m-----------------------------------------------------------------------------------------------------\e[0m"
     # Shared variables
-    # Certificate options
+    # GSE Certificate options
    
     # Lifetime in days
     export GVM_CERTIFICATE_LIFETIME=3650
@@ -943,6 +1046,27 @@ main() {
     # Key & cert material locations
     export GVM_KEY_LOCATION="/var/lib/gvm/private/CA"
     export GVM_CERT_LOCATION="/var/lib/gvm/CA"
+
+    ## NGINX stuff
+    ## Required information for NGINX certificates
+    # organization name
+    # (see also https://www.switch.ch/pki/participants/)
+    export ORGNAME=$GVM_CERTIFICATE_ORG
+    # the fully qualified server (or service) name, change if other servicename than hostname
+    export FQDN=$HOSTNAME;
+    # Local information
+    export ISOCOUNTRY=$GVM_CERTIFICATE_COUNTRY
+    export PROVINCE=$GVM_CA_CERTIFICATE_STATE
+    export LOCALITY=$GVM_CERTIFICATE_LOCALITY
+    # subjectAltName entries: to add DNS aliases to the CSR, delete
+    # the '#' character in the ALTNAMES line, and change the subsequent
+    # 'DNS:' entries accordingly. Please note: all DNS names must
+    # resolve to the same IP address as the FQDN.
+    export ALTNAMES=DNS:$HOSTNAME   # , DNS:bar.example.org , DNS:www.foo.example.org
+    ## Start actual installation
+    install_nginx;
+    configure_nginx;
+    nginx_certificates;
 
     # Shared components
     install_prerequisites;
