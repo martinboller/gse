@@ -65,6 +65,15 @@ To create a secondary see instructions later - but running the script _add-secon
   - Modified to work with the latest releases from Greenbone: https://community.greenbone.net/t/new-releases-for-gvm-20-08-and-gvm-21-04/10385.
 
 ---
+### GSE Overview
+The overall components are depicted in the figure below. All dotted lines are transitory, existing only during installation.
+- At install time, when running the script *add-secondary-2-primary.sh* the primary connects to the secondary over port 22/TCP. If this is not possible, copy the created certificates to the secondary using another method and run script *secondary.certs.sh* on the secondary.
+- During normal operations, GVMD, running on the primary, connects from an ephemeral port to port 9390/TCP on the secondary, connecting to osdp-openvas. ospd-openvas in return controls openvas-scanner on the secondary, allowing it to start scans on the secondary as requested by GVMD on the primary. 
+- Port 9390/TCP can be changed to any available port, however you <u>must</u> ensure that traffic is allowed whatever port you choose.
+
+<img src="./Images/GSE-Flow-2021-12-20-1926.png" alt="Overview" width="1200"/>
+
+---
 
 ## Production Installation
 ### 1. Install a basic (net-install) Debian 11 (Bullseye) or 10 (Buster) server for the primary
