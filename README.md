@@ -10,37 +10,40 @@ Installation will be located in /opt/gvm/ and /var/lib/gvm/.
   - Least access.
   - Prepared for adding secondaries.
 
-<b>Note</b> The primary server also serves as the Certificate Authority for itself and all secondaries.
+<b>Note:</b> The primary server also serves as the Certificate Authority for itself and all secondaries.
 
-During installation a GVM user called 'admin' is created. The generated password for user admin is
-stored in the file /var/lib/gvm/adminuser. It is recommended that this password is changed and/or
+During installation a GVM user called *'admin'* is created. The generated password for user admin is
+stored in the file */var/lib/gvm/adminuser*. It is recommended that this password is changed and/or
 the file deleted. Do NOT delete the user admin unless you also change the feedowner to another user. This is described elsewhere in this README.
 
-To create a secondary (slave) see instructions later - but running the script _add-secondary-2-primary.sh_ does the work required on the primary, hence this is the preferred method.
+To create a secondary see instructions later - but running the script _add-secondary-2-primary.sh_ does the work required on the primary as well as on the secondary, hence this is the preferred method.
+
+----
 
 ## Latest changes
 
 ### 2021-12-19 - Greenbone Security Assistant Daemon (GSAD) behind NGINX Proxy
   - In order to benefit from the security features of NGINX, GSAD is now being proxied through that.
-  - Connect directly to https://servername/ and NGINX will proxy to GSAD as well as redirect if you forget https.
+  - Connect directly to https://servername/ and NGINX will proxy to GSAD as well as redirect if you forget to specify https.
 
 ### 2021-12-18 - Automated addition of secondary
   - The script add-secondary-2-primary.sh now does everything needed to get a secondary up and running.
-  - Provided the primary can connect to the secondary over SSH/SCP and the configured port, that is port 22 and 9390.
-  - Port 9390 used to communicate with secondaries can be changed in the scripts.<sup>1</sup> 
+  - Provided the primary can connect to the secondary over SSH/SCP and the configured port, that is ports 22/TCP and 9390/TCP.
+  - Port 9390/TCP used to communicate with secondaries can be changed in the scripts.<sup>1</sup>
+  - Port 22 for SSH/SCP can be changed in sshd_config, however also needs changing in the script *add-secondary-2-primary.sh*.
 
-<sup>1</sup> I've successfully used 3389/TCP on networks that wouldn't allow port 9390 "for security" but allowed RDP across all networks. (Yeah, those stupid rules exist).
+<sup>1</sup> I've successfully used 3389/TCP on networks that wouldn't allow port 9390 *"for security reasons"* but allowed RDP across all networks. (Yeah, those stupid rules do exist).
 
 ### 2021-12-12 - NodeJS 14 instead of 12.x with Buster and Bullseye
-  - Add packages for nodesource to install node 14.x instead of the lower versions in the Debian repos. According to Greenbone documentation Node >= 14 is required.
+  - Add packages for nodesource to install node 14.x instead of the lesser versions in the Debian repos. According to Greenbone documentation Node >= 14 is required.
 
 ### 2021-11-14 - Vagrantfile and bootstrap for testing with vagrant
-  - Just added some files for use with VirtualBox and Vagrant.
+  - VirtualBox and Vagrant support files.
 
 ### 2021-10-25 - Correct ospd.sock patch. Without this NVTs, scan configs, and compliance policies do not sync
   - Version 2.0 was borked with wrong path to the ospd socket causing NVT's, scan configs and policies to not synchronize across Openvas/Redis and GVMD/Postgres.
 
-### 2021-10-23 - oct 13 bugfixes, moved install to /opt/gvm instead of /usr/local/ and use yarn from Deb repo
+### 2021-10-23 - oct 13 bugfixes, moved install to /opt/gvm/ & /var/kib/gvm/ instead of /usr/local/ and use yarn from Deb repo
   - https://community.greenbone.net/t/new-releases-for-gvm-20-08-and-gvm-21-04/10385
   - Greenbone Security Assistant (GSA) 21.4.3
   - gvmd 21.4.4
@@ -51,8 +54,9 @@ To create a secondary (slave) see instructions later - but running the script _a
   - gvm-tools 21.10.0
   - python-gvm 21.11.0 (as of December 2021)
 
-#### 2021-09-14 - Debian 10 and 11 support
+#### 2021-09-14 - Debian 11 support
   - Works with Debian 10 (Buster) and Debian 11 (Bullseye). Likely to work with most Debian based distros, but some checks in the scripts expect Debian 10 or 11.
+  - Debian 11 (Bullseye) is the preferred distro and the one most tests are run against.
 
 #### 2021-05-08 - updated to 21.04.
   - Changed to 21.4.0 versions, as all older versions are retired as of 2021-12-03: https://community.greenbone.net/t/greenbone-os-20-08-retired/10873.
@@ -60,27 +64,31 @@ To create a secondary (slave) see instructions later - but running the script _a
 #### 2021-09-24 - August Greenbone releases
   - Modified to work with the latest releases from Greenbone: https://community.greenbone.net/t/new-releases-for-gvm-20-08-and-gvm-21-04/10385.
 
+---
+
 ## Production Installation
 ### 1. Install a basic (net-install) Debian 11 (Bullseye) or 10 (Buster) server for the primary
 
 Run <i>install-GSE-2021.sh</i> and wait for a (long) while. 
 - The primary needs at least 4Gb of RAM, preferably more.
+- A primary can run on a RPi 4 with 8GB RAM, but go for something with a little more oomph.
+- The latest RaspiOS is based on Bullseye, use the *Raspberry Pi OS Lite* version (it is supposed to run as a server after all, you don't want a Desktop Environment on that.
 
-<b>Note:</b> I've had so many issues with TEX, which currently is resolved by installing texlive-full, which takes forever. Debian has a quirk here that breaks apt when not installing texlive-full.
+<b>Note:</b> Several issues with TEX, currently resolved by installing texlive-full. Installing texlive-full takes time, but Debian has a quirk here that sometimes breaks apt when not installing texlive-full.
 
 ### 2. Install as many basic (net-install) Debian 11 (Bullseye) or 10 (Buster) servers needed for secondaries
 Run <i>install-GSE-2021-secondary.sh</i> and wait for installation to finish. 
-- This works in 1Gb of RAM, but more is recommended
-- Raspberry Pi's work well, however has only been tested on RPi 4's with 2Gb and more
-- The latest RaspiOS is based on Bullseye, use the Raspberry Pi OS Lite (it is supposed to run as a server after all)
+- This works in 1Gb of RAM, but more is recommended.
+- Raspberry Pi's work well, however has only been tested on RPi 4's with 2Gb and more.
+- The latest RaspiOS is based on Bullseye, use the *Raspberry Pi OS Lite* version (it is supposed to run as a server after all, you don't want a Desktop Environment on that.
 
 ### 3. Add secondaries
 Run <i>add-secondary-2-primary.sh</i> on the primary.
 - You need to provide the folowing to the script (both will be provided when the installation of the secondary finishes).
     - hostname or IP address of the secondary.
-    - Pasword of the user Greenbone on the secondary.
+    - Pasword of the user Greenbone on the secondary. This is shown in the terminal when the script *install-GSE-2021-secondary.sh' finishes.
 - This will add the new secondary to GVMD.
-- Provided the primary can connect to the secondary over ssh the certs and key needed will be copied to the secondary and ospd-openvas restarted.
+- Provided the primary can connect to the secondary over ssh (22/TCP) the certs and key needed will be copied to the secondary and ospd-openvas restarted.
 
 The <i>add-secondary-2-primary.sh</i> does the following.
     a) Copies required certificates to the secondary.
@@ -93,6 +101,7 @@ The <i>add-secondary-2-primary.sh</i> does the following.
 
 If this fails, just copy the .pem files from /var/lib/gvm/secondaries/hostname_of_secondary/ to the new secondary, run secondary-certs.sh and ospd-openvas.service should start and scanner can be verified. Follow the steps under <b>Manual Installation</b> below.
 
+---
 
 ## Vagrant installation
 Provided you have Vagrant and VirtualBox installed, installation is "just".
@@ -131,6 +140,7 @@ Logon to the website on the server https://manticore (if you have not changed th
  
 The first install will take longer, as it needs to download the Vagrant box for Debian 11 (which this build is based on) first, however that’ll be reused in subsequent installations.
 
+---
 
 ## Other useful tips and tricks
 ### Scanners
@@ -196,12 +206,15 @@ Pick the UUID for the one you just created in the list provided and replace <i>U
 su gvm -c '/opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value UUID of new account' 
 ```
 
+---
+
 ### Useful logs
 - tail -f /var/log/gvm/ospd-openvas.log < By default only provide informational logging, but enabling debug logging is great for t-shooting.
 - tail -f /var/log/gvm/gvmd.log < How is GVM in general behaving, and can it communicate with both local and remote scanners (secondaries).
 - tail -f /var/log/gvm/openvas-log < This is very useful when scanning, not least on a secondary.
 - tail -f /var/log/syslog | grep -i gse < The installation scripts log a lot of what they do, this will follow along during installation.
 
+---
 
 ### Manually adding a secondary
 #### 1. On the primary; Create the certificate and key needed (The primary is the CA for all secondaries as well as itself)
@@ -260,7 +273,7 @@ Outputting something like this (the UUID will be different for the scanner just 
 3e2232e3-b819-41bc-b5be-db52bfb06588  OpenVAS  mysecondary  9390  OSP Scanner mysecondary
 </i>
 
-Verify the added secondary
+Verify the secondary just added:
 ```
 su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner=3e2232e3-b819-41bc-b5be-db52bfb06588'
 ```
@@ -270,19 +283,30 @@ Which, provided the scanner works, should return this:
 Scanner version: OpenVAS 21.4.3.
 </i>
 
-<b>Congrats, You have now added a secondary manually</b>
+<b>Congrats, You have now added a secondary scanner manually</b>
+
+---
 
 ### Other useful commands
 Just after installation, going from empty feeds to fully up-to-date, you'll notice that postgres is being hammered by gvmd and that redis are by ospd-openvas as openvas-scanner uses Redis (on the secondary only ospd-openvas, openvas, and redis is running). When feeds are updated this isn't as obvious, as the delta is significantly less than "everything".
 Use ps or top to follow along - the UI also show that the feeds are updating under <i>Administration -> Feed Status</i>.
 
+<b><u>Primary, Web Interface:</b></u>
+
+
 <img src="./Images/GSE-Update_in_Progress.png" alt="Update in progress"/>
 
+<b><u>Primary, top:</b></u>
 
 <img src="./Images/postgres.png" alt="Update in progress, top"/>
 
+<b><u>Secondary, top:</b></u>
+
+<img src="./Images/RedisOpenVAS.png" alt="Update in progress, top"/>  <br>
 
 #### <u>Hang in there, depending on your server it will take quite a while.</u>
+
+---
 
 ### Blog Post
 There's a short companion blogpost on https://blog.infosecworrier.dk/2020/12/building-your-own-greenbone.html
