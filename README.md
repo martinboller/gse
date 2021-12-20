@@ -14,7 +14,7 @@ Installation will be located in /opt/gvm/ and /var/lib/gvm/.
 
 During installation a GVM user called *'admin'* is created. The generated password for user admin is
 stored in the file */var/lib/gvm/adminuser*. It is recommended that this password is changed and/or
-the file deleted. Do NOT delete the user admin unless you also change the feedowner to another user. This is described elsewhere in this README.
+the file deleted. Do NOT delete the user admin unless you also change the feedowner to another user. This is described in the section **Feed Owner**.
 
 To create a secondary see instructions later - but running the script _add-secondary-2-primary.sh_ does the work required on the primary as well as on the secondary, hence this is the preferred method.
 
@@ -43,7 +43,7 @@ To create a secondary see instructions later - but running the script _add-secon
 ### 2021-10-25 - Correct ospd.sock patch. Without this NVTs, scan configs, and compliance policies do not sync
   - Version 2.0 was borked with wrong path to the ospd socket causing NVT's, scan configs and policies to not synchronize across Openvas/Redis and GVMD/Postgres.
 
-### 2021-10-23 - oct 13 bugfixes, moved install to /opt/gvm/ & /var/kib/gvm/ instead of /usr/local/ and use yarn from Deb repo
+### 2021-10-23 - oct 13 bugfixes, moved install to /opt/gvm/ & /var/lib/gvm/ instead of /usr/local/ and use yarn from Deb repo
   - https://community.greenbone.net/t/new-releases-for-gvm-20-08-and-gvm-21-04/10385
   - Greenbone Security Assistant (GSA) 21.4.3
   - gvmd 21.4.4
@@ -71,15 +71,14 @@ To create a secondary see instructions later - but running the script _add-secon
 
 Run <i>install-GSE-2021.sh</i> and wait for a (long) while. 
 - The primary needs at least 4Gb of RAM, preferably more.
-- A primary can run on a RPi 4 with 8GB RAM, but go for something with a little more oomph.
-- The latest RaspiOS is based on Bullseye, use the *Raspberry Pi OS Lite* version (it is supposed to run as a server after all, you don't want a Desktop Environment on that.
+- Don't skimp on the hardware for the primary, however you don't need extreme performance. Test according to your requirements and select haeware based on that.
 
 <b>Note:</b> Several issues with TEX, currently resolved by installing texlive-full. Installing texlive-full takes time, but Debian has a quirk here that sometimes breaks apt when not installing texlive-full.
 
 ### 2. Install as many basic (net-install) Debian 11 (Bullseye) or 10 (Buster) servers needed for secondaries
 Run <i>install-GSE-2021-secondary.sh</i> and wait for installation to finish. 
 - This works in 1Gb of RAM, but more is recommended.
-- Raspberry Pi's work well, however has only been tested on RPi 4's with 2Gb and more.
+- Raspberry Pi's work well, however only tested on RPi 4's with 2Gb and more. Feel free to perform your own testing on other SBC's and report back here.
 - The latest RaspiOS is based on Bullseye, use the *Raspberry Pi OS Lite* version (it is supposed to run as a server after all, you don't want a Desktop Environment on that.
 
 ### 3. Add secondaries
@@ -287,7 +286,7 @@ Scanner version: OpenVAS 21.4.3.
 
 ---
 
-### Other useful commands
+### Other useful information
 Just after installation, going from empty feeds to fully up-to-date, you'll notice that postgres is being hammered by gvmd and that redis are by ospd-openvas as openvas-scanner uses Redis (on the secondary only ospd-openvas, openvas, and redis is running). When feeds are updated this isn't as obvious, as the delta is significantly less than "everything".
 Use ps or top to follow along - the UI also show that the feeds are updating under <i>Administration -> Feed Status</i>.
 
