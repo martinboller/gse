@@ -921,8 +921,6 @@ install_nginx() {
 
 configure_nginx() {
     /usr/bin/logger 'configure_nginx()' -t 'GSE-21.4.3';
-    # Change ROOTCA to point to correct cert when/if not using self signed cert.
-    export ROOTCA=$HOSTNAME
     openssl dhparam -out /etc/nginx/dhparam.pem 2048
     # TLS
     cat << __EOF__ > /etc/nginx/sites-available/default;
@@ -944,8 +942,8 @@ server {
 server {
     client_max_body_size 32M;
     listen 443 ssl http2;
-    ssl_certificate           /etc/nginx/certs/$HOSTNAME.crt;
-    ssl_certificate_key       /etc/nginx/certs/$HOSTNAME.key;
+    ssl_certificate           /var/lib/gvm/CA/servercert.pem;
+    ssl_certificate_key       /var/lib/gvm/private/CA/serverkey.pem;
     ssl on;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
@@ -981,7 +979,26 @@ __EOF__
 }
 
 nginx_certificates() {
+    ## Use this if you want to create a request to send to corporate PKI for the web interface, also change the NGINX config to use that
     /usr/bin/logger 'nginx_certificates()' -t 'GSE-21.4.3';
+
+    ## NGINX stuff
+    ## Required information for NGINX certificates
+    # organization name
+    # (see also https://www.switch.ch/pki/participants/)
+    export ORGNAME=$GVM_CERTIFICATE_ORG
+    # the fully qualified server (or service) name, change if other servicename than hostname
+    export FQDN=$HOSTNAME;
+    # Local information
+    export ISOCOUNTRY=$GVM_CERTIFICATE_COUNTRY
+    export PROVINCE=$GVM_CA_CERTIFICATE_STATE
+    export LOCALITY=$GVM_CERTIFICATE_LOCALITY
+    # subjectAltName entries: to add DNS aliases to the CSR, delete
+    # the '#' character in the ALTNAMES line, and change the subsequent
+    # 'DNS:' entries accordingly. Please note: all DNS names must
+    # resolve to the same IP address as the FQDN.
+    export ALTNAMES=DNS:$HOSTNAME   # , DNS:bar.example.org , DNS:www.foo.example.org
+
     mkdir -p /etc/nginx/certs/;
     cat << __EOF__ > ./openssl.cnf
 ## Request for $FQDN
@@ -1047,26 +1064,11 @@ main() {
     export GVM_KEY_LOCATION="/var/lib/gvm/private/CA"
     export GVM_CERT_LOCATION="/var/lib/gvm/CA"
 
-    ## NGINX stuff
-    ## Required information for NGINX certificates
-    # organization name
-    # (see also https://www.switch.ch/pki/participants/)
-    export ORGNAME=$GVM_CERTIFICATE_ORG
-    # the fully qualified server (or service) name, change if other servicename than hostname
-    export FQDN=$HOSTNAME;
-    # Local information
-    export ISOCOUNTRY=$GVM_CERTIFICATE_COUNTRY
-    export PROVINCE=$GVM_CA_CERTIFICATE_STATE
-    export LOCALITY=$GVM_CERTIFICATE_LOCALITY
-    # subjectAltName entries: to add DNS aliases to the CSR, delete
-    # the '#' character in the ALTNAMES line, and change the subsequent
-    # 'DNS:' entries accordingly. Please note: all DNS names must
-    # resolve to the same IP address as the FQDN.
-    export ALTNAMES=DNS:$HOSTNAME   # , DNS:bar.example.org , DNS:www.foo.example.org
     ## Start actual installation
     install_nginx;
     configure_nginx;
-    nginx_certificates;
+    ## The function below can be used to create a CSR to send to corporate PKI
+    #nginx_certificates;
 
     # Shared components
     install_prerequisites;
