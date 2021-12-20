@@ -278,7 +278,11 @@ Use ps or top to follow along - the UI also show that the feeds are updating und
 
 <img src="./Images/GSE-Update_in_Progress.png" alt="Update in progress"/>
 
-Hang in there, depending on your server it will take quite a while.
+
+<img src="./Images/postgres.png" alt="Update in progress, top"/>
+
+
+#### <u>Hang in there, depending on your server it will take quite a while.</u>
 
 ### Blog Post
 There's a short companion blogpost on https://blog.infosecworrier.dk/2020/12/building-your-own-greenbone.html

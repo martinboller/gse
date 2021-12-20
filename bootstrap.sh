@@ -86,6 +86,14 @@ main() {
     apt-get -y install --fix-policy;
     # NAT Network adapter weirdness, so give it a kick.
     ifdown eth0; ifup eth0;
+    if [ "$HOSTNAME" = "manticore" ];
+    then
+      /root/install-GSE-2021.sh
+    fi
+    if [ "$HOSTNAME" = "aboleth" ];
+    then
+      /root/install-GSE-2021-secondary.sh
+    fi
     /usr/bin/logger 'installation finished (Main routine finished)' -t 'gse'; 
 }
 
