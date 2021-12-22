@@ -1055,8 +1055,8 @@ main() {
     # State
     export GVM_CA_CERTIFICATE_STATE="Bavaria"
     # Security Parameters
-    GVM_CERTIFICATE_SECPARAM="high"
-    GVM_CERTIFICATE_SIGNALG="SHA512"
+    export GVM_CERTIFICATE_SECPARAM="high"
+    export GVM_CERTIFICATE_SIGNALG="SHA512"
     # Hostname
     export GVM_CERTIFICATE_HOSTNAME=$HOSTNAME
     # CA Certificate Lifetime
