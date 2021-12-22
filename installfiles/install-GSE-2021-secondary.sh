@@ -700,29 +700,3 @@ main() {
 main;
 
 exit 0;
-
-
-######################################################################################################################################
-# Post install 
-#
-# The feedowner/admin account is created as part of the script.
-# The admin account is import feed owner: https://community.greenbone.net/t/gvm-20-08-missing-report-formats-and-scan-configs/6397/2
-# /opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value UUID of admin account 
-# Get the uuid using /opt/gvm/sbin/gvmd --get-users --verbose
-# The first OpenVas scanner is always this UUID gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73
-#
-# Admin user:   cat /var/lib/gvm/adminuser.
-#               You should change this: /opt/gvm/sbin/gvmd --user admin --new-password 'Your new password'
-#
-# Check the logs:
-# tail -f /var/log/gvm/ospd-openvas.log
-# tail -f /var/log/gvm/gvmd.log
-# tail -f /var/log/gvm/openvas-log < This is very useful when scanning
-# tail -f /var/log/syslog | grep -i gse
-#
-# Create required certs for secondary on primary run /opt/gvm/sbin/gvm-manage-certs -e ./gsecert.cfg  -v -d -c
-#
-# Using ps or top, You'll notice that redis is being hammered by ospd-openvas.
-#
-# When running a - tail -f /var/log/gvm/openvas.log - is useful in following progress during scanning.
-#

@@ -673,8 +673,9 @@ EOF'
 #! /bin/bash
 # updates feeds for Greenbone Vulnerability Manager
 # Using the Community feed require some significant delays between syncs, as only one session at a time is allowed for community feed
+
 # NVT data
-su gvm -c "/opt/gvm/bin/greenbone-nvt-sync --rsync";
+su gvm -c "/opt/gvm/bin/greenbone-nvt-sync";
 /usr/bin/logger ''nvt data Feed Version \$(su gvm -c "/opt/gvm/bin/greenbone-nvt-sync --feedversion")'' -t gse;
 # Debian keeps TCP sessions open for 60 seconds
 sleep 62;
@@ -1123,59 +1124,3 @@ main() {
 main;
 
 exit 0;
-
-######################################################################################################################################
-# Post install 
-# 
-# Feedowner/admin account is automatically created during installation.x
-# The admin account is import feed owner: https://community.greenbone.net/t/gvm-20-08-missing-report-formats-and-scan-configs/6397/2
-# /opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value UUID of admin account 
-# Get the uuid using /opt/gvm/sbin/gvmd --get-users --verbose
-# The first OpenVas scanner is always this UUID /opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73
-#
-# 08b69003-5fc2-4037-a479-93b440211c73  OpenVAS  /run/ospd/ospd-openvas.sock  0  OpenVAS Default
-# 6acd0832-df90-11e4-b9d5-28d24461215b  CVE    0  CVE
-#
-#
-# Admin user:   cat /opt/gvm/lib/adminuser.
-#               You should change this: /opt/gvm/sbin/gvmd --user admin --new-password 'Your new password'
-#
-# Check the logs:
-# tail -f /var/log/gvm/ospd-openvas.log
-# tail -f /var/log/gvm/gvmd.log
-# tail -f /var/log/gvm/openvas-log < This is very useful when scanning
-# tail -f /var/log/syslog | grep -i gse
-#
-# Create required certs for secondary
-# # cd /root/sec_certs
-# /opt/gvm/sbin/gvm-manage-certs -e ./gsecert.cfg -v -d -c
-# copy secondarycert.pem, secondarykey.pem, and /var/lib/gvm/CA/cacert.pem to the remote system to the correct locations. 
-# Then create the scanner in GVMD
-# chown gvm:gvm *
-# su gvm -c '/opt/gvm/sbin/gvmd --create-scanner="OSP Scanner secondary hostname" --scanner-host=hostname --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem'
-# Example:
-#   su gvm -c '/opt/gvm/sbin/gvmd --create-scanner="OpenVAS Secondary host aboleth" --scanner-host=aboleth --scanner-port=9390 --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=./secondarycert.pem --scanner-key-priv=./secondarykey.pem'
-#       Scanner created.
-# 
-# Don't forget to install the certs on the secondary as discussed further down, then return and do these verification steps on the primary:
-#   
-#   su gvm -c '/opt/gvm/sbin/gvmd --get-scanners'
-#       08b69003-5fc2-4037-a479-93b440211c73  OpenVAS  /var/run/ospd/ospd-openvas.sock  0  OpenVAS Default
-#       6acd0832-df90-11e4-b9d5-28d24461215b  CVE    0  CVE
-#       3e2232e3-b819-41bc-b5be-db52bfb06588  OpenVAS  mysecondary  9390  OSP Scanner mysecondary
-#
-#   su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner=3e2232e3-b819-41bc-b5be-db52bfb06588'
-#       Scanner version: OpenVAS 20.8.0.
-#
-#
-#The gsecert.cfg file supplied creates a wildcard cert, so can be used on all the secondaries you wish. 
-# 
-# On Secondary:
-# copy certificate files to correct locations. When copied locally use the script secondary-certs.sh
-# The script also restarts the unit.
-#
-# Using ps or top, You'll notice that postgres is being hammered by gvmd and that redis are
-# too, but by ospd-openvas.
-#
-# When running a - tail -f /var/log/openvas.log - is useful in following progress during the scanning.
-# /var/lib/gvm/private/CA/

@@ -2,7 +2,10 @@
 
 ### Bash script automating the installation of Greenbone Vulnerability Manager 21.4.3 (October 2021 releases) on Debian 10 or 11
 
-Installation will be located in /opt/gvm/ and /var/lib/gvm/.
+Installation will be located in 
+- /opt/gvm/ for binaries.
+- /var/lib/gvm/ for gvm data CA and feed data.
+- /var/lib/openvas/ for OpenVAS feed data (.nasl files)
 
 ### Design principles:
   - Dedicated to GVM, nothing else.
@@ -27,7 +30,7 @@ To create a secondary see instructions later - but running the script _add-secon
   - Connect directly to https://servername/ and NGINX will proxy to GSAD as well as redirect if you forget to specify https.
 
 ### 2021-12-18 - Automated addition of secondary
-  - The script add-secondary-2-primary.sh now does everything needed to get a secondary up and running.
+  - The script *add-secondary-2-primary.sh* now does everything needed to get a secondary up and running.
   - Provided the primary can connect to the secondary over SSH/SCP and the configured port, that is ports 22/TCP and 9390/TCP.
   - Port 9390/TCP used to communicate with secondaries can be changed in the scripts.<sup>1</sup>
   - Port 22 for SSH/SCP can be changed in sshd_config, however also needs changing in the script *add-secondary-2-primary.sh*.
@@ -66,9 +69,9 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ---
 ### GSE Overview
-The overall components are depicted in the figure below. All dotted lines are transitory, existing only during installation.
+The overall components are depicted in the figure below. All dotted lines are transitory, existing only during installation, that is initiated by the bash scripts.
 - At install time, when running the script *add-secondary-2-primary.sh* the primary connects to the secondary over port 22/TCP. If this is not possible, copy the created certificates to the secondary using another method and run script *secondary.certs.sh* on the secondary.
-- During normal operations, GVMD, running on the primary, connects from an ephemeral port to port 9390/TCP on the secondary, connecting to osdp-openvas. ospd-openvas in return controls openvas-scanner on the secondary, allowing it to start scans on the secondary as requested by GVMD on the primary. 
+- During normal operations, GVMD, running on the primary, connects from an ephemeral port to port 9390/TCP on the secondary, connecting to osdp-openvas. ospd-openvas in return controls openvas-scanner on the secondary, allowing GVMD on the primary to control OpenVAS on the secondary. 
 - Port 9390/TCP can be changed to any available port, however you <u>must</u> ensure that traffic is allowed whatever port you choose.
 
 <img src="./Images/GSE-Flow-2021-12-20-1926.png" alt="Overview" width="1200"/>
@@ -79,10 +82,10 @@ The overall components are depicted in the figure below. All dotted lines are tr
 ### 1. Install a basic (net-install) Debian 11 (Bullseye) or 10 (Buster) server for the primary
 
 Run <i>install-GSE-2021.sh</i> and wait for a (long) while. 
-- The primary needs at least 4Gb of RAM, preferably more.
+- The primary needs at least 4Gb of RAM, preferably more. The testlab (Vagrant) assigns 5120 MB.
 - Don't skimp on the hardware for the primary, however you don't need extreme performance. Test according to your requirements and select haeware based on that.
 
-<b>Note:</b> Several issues with TEX, currently resolved by installing texlive-full. Installing texlive-full takes time, but Debian has a quirk here that sometimes breaks apt when not installing texlive-full.
+<b>Note:</b> Several issues with TEX, currently resolved by installing texlive-full. Installing texlive-full takes a lot of time compared to everything else installed, but Debian has a quirk here that sometimes breaks apt when not installing texlive-full.
 
 ### 2. Install as many basic (net-install) Debian 11 (Bullseye) or 10 (Buster) servers needed for secondaries
 Run <i>install-GSE-2021-secondary.sh</i> and wait for installation to finish. 
