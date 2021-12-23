@@ -296,6 +296,15 @@ Scanner version: OpenVAS 21.4.3.
 
 <b>Congrats, You have now added a secondary scanner manually</b>
 
+#### 5. Delete a scanner
+If you've created a scanner in error or have decommissioned it, remove it using *--delete-scanner*.
+- find the UUID the same ways as described in the section 4. Verification steps on the primary.
+- then run the following (replacing the UUID with the one found):
+
+```
+su gvm -c '/opt/gvm/sbin/gvmd --delete-scanner=f12cca78-c6b9-4fd1-ad4f-9a9eb2037d29'
+```
+
 ---
 
 ### Other useful information
