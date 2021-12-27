@@ -55,14 +55,14 @@ apt_install_prerequisites() {
     /usr/bin/logger 'apt_install_prerequisites()' -t 'gse';
 }
 
-install_ssh_keys() {
+install_public_ssh_keys() {
     # Echo add SSH public key for root logon
     export DEBIAN_FRONTEND=noninteractive;
     mkdir /root/.ssh;
-    echo $mySSHKey | sudo tee -a /root/.ssh/authorized_keys;
+    echo $myPublicSSHKey | sudo tee -a /root/.ssh/authorized_keys;
     sudo chmod 700 /root/.ssh;
     sudo chmod 600 /root/.ssh/authorized_keys;
-    /usr/bin/logger 'install_ssh_keys()' -t 'gse';
+    /usr/bin/logger 'install_public_ssh_keys()' -t 'gse';
 }
 
 ##################################################################################################################
@@ -72,9 +72,9 @@ install_ssh_keys() {
 main() {
     # Core elements, always installs
     #prepare_files;
-    export mySSHKey="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIHJYsxpawSLfmIAZTPWdWe2xLAH758JjNs5/Z2pPWYm"
+    export myPublicSSHKey="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIHJYsxpawSLfmIAZTPWdWe2xLAH758JjNs5/Z2pPWYm"
     /usr/bin/logger '!!!!! Main routine starting' -t 'gse';
-    install_ssh_keys;
+    install_public_ssh_keys;
     configure_timezone;
     apt_install_prerequisites;
     configure_locale;

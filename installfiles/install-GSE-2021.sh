@@ -36,9 +36,10 @@ install_prerequisites() {
     VER=$VERSION_ID
     /usr/bin/logger "Operating System: $OS Version: $VER" -t 'gse-21.4';
     echo -e "\e[1;32mOperating System: $OS Version: $VER\e[0m";
-     # Install prerequisites
-    # Prepare package sources for NODEJS 14
-    export VERSION=node_14.x
+    # Install prerequisites
+    # Prepare package sources for NODEJS 16.x
+    # GSAD works with node 16.x but NOT 17.x
+    export VERSION=node_16.x
     export KEYRING=/usr/share/keyrings/nodesource.gpg
     export DISTRIBUTION="$(lsb_release -s -c)"
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$KEYRING" >/dev/null
