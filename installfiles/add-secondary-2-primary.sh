@@ -10,7 +10,7 @@
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
 #                                                                           #
-# Instruction:  Create certificates for secondary (slave) server            #
+# Instruction:  Create certificates for secondary server                    #
 #               Debian 10 (Buster) or Debian 11 (Bullseye)                  #
 #                                                                           #
 #############################################################################
@@ -101,7 +101,7 @@ main() {
     create_gsecerts;
     add_secondary;
     echo -e;
-    echo -e "\e[1;32mCertificates created and scanner created, verify in UI or from commandline\e[0m";
+    echo -e "\e[1;32mCertificates and scanner created, verify in UI or from commandline\e[0m";
 }
 
 main;

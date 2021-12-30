@@ -40,7 +40,8 @@ configure_timezone() {
 apt_install_prerequisites() {
     # Install prerequisites and useful tools
     export DEBIAN_FRONTEND=noninteractive;
-    apt-get -y remove postfix*;
+    # Removing some of the cruft installed by default in the Vagrant images
+    apt-get -y purge postfix*; memcached
         sudo sync \
         && sudo apt-get update \
         && sudo apt-get -y full-upgrade \

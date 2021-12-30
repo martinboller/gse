@@ -39,7 +39,7 @@ install_prerequisites() {
     # Install prerequisites
     # Prepare package sources for NODEJS 16.x
     # GSAD works with node 16.x but NOT 17.x
-    export VERSION=node_16.x
+    export VERSION=node_14.x
     export KEYRING=/usr/share/keyrings/nodesource.gpg
     export DISTRIBUTION="$(lsb_release -s -c)"
     curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$KEYRING" >/dev/null
@@ -64,7 +64,7 @@ install_prerequisites() {
         libgcrypt20-dev redis-server libunistring-dev libxml2-dev;
     # Install pre-requisites for gsad
     /usr/bin/logger '..Prerequisites for GSAD' -t 'gse-21.4';
-    apt-get -y install libmicrohttpd-dev;
+    apt-get -y install libmicrohttpd-dev clang;
     
     # Other pre-requisites for GSE
     if [ $VER -eq "11" ] 
@@ -926,15 +926,10 @@ configure_nginx() {
     openssl dhparam -out /etc/nginx/dhparam.pem 2048
     # TLS
     cat << __EOF__ > /etc/nginx/sites-available/default;
-#
-# Changed by: Martin Boller
-#         secuuru.dk
-# Email: martin.boller@secuuru.dk
-# Last Update: 2021-11-21
-#
-# reverse proxy configuration for GSE
-# Running GSE on port 443 TLS
-##
+#########################################
+# reverse proxy configuration for GSE   #
+# Running GSE on port 443 TLS           #
+#########################################
 
 server {
     listen 80;
@@ -946,7 +941,6 @@ server {
     listen 443 ssl http2;
     ssl_certificate           /var/lib/gvm/CA/servercert.pem;
     ssl_certificate_key       /var/lib/gvm/private/CA/serverkey.pem;
-    ssl on;
     ssl_protocols TLSv1.2 TLSv1.3;
     ssl_ciphers HIGH:!aNULL:!eNULL:!EXPORT:!CAMELLIA:!DES:!MD5:!PSK:!RC4;
     ssl_prefer_server_ciphers on;
@@ -959,11 +953,12 @@ server {
     # Diffie Hellman Parameters
     ssl_dhparam /etc/nginx/dhparam.pem;
 
-### GSE on port 8443
+### GSAD is listening on localhost port 8443/TCP
     location / {
       # Authentication handled by GSAD
       # Access log for GSE
-      access_log              /var/log/nginx/GSE.access.log;
+      access_log              /var/log/nginx/gse.access.log;
+      error_log               /var/log/nginx/gse.error.log  warn;
       proxy_set_header        Host \$host;
       proxy_set_header        X-Real-IP \$remote_addr;
       proxy_set_header        X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -1106,7 +1101,7 @@ main() {
     configure_openvas;
     configure_gsa;
     create_gvm_python_script;
-    browserlist_update;
+    #browserlist_update;
     # Prestage only works on the specific Vagrant lab where a scan-data tar-ball is copied to the Host. 
     # Update scan-data only from greenbone when used everywhere else 
     prestage_scan_data;
