@@ -19,7 +19,9 @@ During installation a GVM user called *'admin'* is created. The generated passwo
 stored in the file */var/lib/gvm/adminuser*. It is recommended that this password is changed and/or
 the file deleted. Do NOT delete the user admin unless you also change the feedowner to another user. This is described in the section **Feed Owner**.
 
-To create a secondary see instructions later - but running the script _add-secondary-2-primary.sh_ does the work required on the primary as well as on the secondary, hence this is the preferred method.
+To create a secondary see instructions later - but running the script _add-secondary-2-primary.sh_ does the work required on the primary as well as on the secondary, hence this is the preferred method<sup>1</sup>.
+
+<sup>1</sup> You can install the complete installation on a secondary, that is include GSAD etc, but there's no good reason to. The secondary with ospd-openvas and openvas only is a small efficient thing with a smaller attack surface.
 
 ----
 
@@ -32,10 +34,10 @@ To create a secondary see instructions later - but running the script _add-secon
 ### 2021-12-18 - Automated addition of secondary
   - The script *add-secondary-2-primary.sh* now does everything needed to get a secondary up and running.
   - Provided the primary can connect to the secondary over SSH/SCP and the configured port, that is ports 22/TCP and 9390/TCP.
-  - Port 9390/TCP used to communicate with secondaries can be changed in the scripts.<sup>1</sup>
+  - Port 9390/TCP used to communicate with secondaries can be changed in the scripts.<sup>2</sup>
   - Port 22 for SSH/SCP can be changed in sshd_config, however also needs changing in the script *add-secondary-2-primary.sh*.
 
-<sup>1</sup> I've successfully used 3389/TCP on networks that wouldn't allow port 9390 *"for security reasons"* but allowed RDP across all networks. (Yeah, those stupid rules do exist).
+<sup>2</sup> I've successfully used 3389/TCP on networks that wouldn't allow port 9390 *"for security reasons"* but allowed RDP across all networks. (Yeah, those stupid rules do exist).
 
 ### 2021-12-12 - NodeJS 14 instead of 12.x with Buster and Bullseye
   - Add packages for nodesource to install node 14.x instead of the lesser versions in the Debian repos. According to Greenbone documentation Node >= 14 is required.
@@ -325,6 +327,19 @@ Use ps or top to follow along - the UI also show that the feeds are updating und
 <img src="./Images/RedisOpenVAS.png" alt="Update in progress, top"/>  <br>
 
 #### <u>Hang in there, depending on your server it will take quite a while.</u>
+
+<br>
+
+
+### Checking Certificates
+If you want to check the certificates are correct and contain the desired information, openssl is useful;
+
+<b>For the webserver on the primary host</b><br>
+```openssl s_client -showcerts -servername primary_host_name -connect primary_host_name:443```
+
+<b>For the secondary with ospd-openvas listening on 9390</b><br>
+```openssl s_client -showcerts -servername secondary_host_name -connect secondary_host_name:9390```
+
 
 ---
 
