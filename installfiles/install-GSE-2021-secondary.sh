@@ -796,7 +796,7 @@ main() {
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
     echo -e;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of Openvas feed data into Redis, then reboot' -t 'gse-21.4';
-    echo -e "\e[1;32m - Secoondary Server Install main()\e[0m";
+    echo -e "\e[1;32m - Secondary Server Install main() finished\e[0m";
 }
 
 main;
