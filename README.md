@@ -1,6 +1,6 @@
 # Greenbone Vulnerability Manager 21.4.x Source Code Edition Installation script
 
-### Bash script automating the installation of Greenbone Vulnerability Manager 21.4.3 (October 2021 releases) on Debian 10 or 11
+### Bash script automating the installation of Greenbone Vulnerability Manager 21.4.4 (February 2022 release) on Debian 10 or 11
 
 Installation will be located in 
 - /opt/gvm/ for binaries.
@@ -26,6 +26,10 @@ To create a secondary see instructions later - but running the script _add-secon
 ----
 
 ## Latest changes
+
+### 2022-03-05 - Updated to 21.4.4 released February 24th 2022
+  - GSA Web components and GSA Daemon 2 separate packages. Installation now also handles that as two functions.
+  - Minor changes to gsad.service, now using --drop-privileges
 
 ### 2021-12-19 - Greenbone Security Assistant Daemon (GSAD) behind NGINX Proxy
   - In order to benefit from the security features of NGINX, GSAD is now being proxied through that.
