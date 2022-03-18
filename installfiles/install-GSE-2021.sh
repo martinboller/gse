@@ -206,6 +206,7 @@ __EOF__
     # It appears that GVMD sometimes delete /run/gvmd so added a subfolder (/gse) to prevent this
     echo -e "\e[1;36m ... configuring tmpfiles.d for greenbone run files\e[0m";
     cat << __EOF__ > /etc/tmpfiles.d/greenbone.conf
+d /run/gsad 1775 gvm gvm
 d /run/gvmd 1775 gvm gvm
 d /run/gvmd/gse 1775 root root
 d /run/ospd 1775 gvm gvm
@@ -718,11 +719,11 @@ ConditionKernelCommandLine=!recovery
 
 [Service]
 Type=forking
-User=root
+User=gvm
 Group=gvm
-#PIDFile=/run/gvmd/gsad.pid
 # With NGINX listen on 127.0.0.1 and http only (https through NGINX)
-ExecStart=/opt/gvm/sbin/gsad --listen 127.0.0.1 --port=8443 --http-only --drop-privileges=gvm
+ExecStart=/opt/gvm/sbin/gsad --listen 127.0.0.1 --port=8443 --http-only
+# --drop-privileges=gvm
 # Without NGINX user: ExecStart=/opt/gvm/sbin/gsad --port=8443 --ssl-private-key=/var/lib/gvm/private/CA/serverkey.pem --ssl-certificate=/var/lib/gvm/CA/servercert.pem --munix-socket=/run/gvmd/gvmd.sock --no-redirect --secure-cookie --http-sts --timeout=60 --http-cors="https://%H:8443/" --gnutls-priorities=SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2
 Restart=always
 TimeoutStopSec=10
@@ -1276,8 +1277,8 @@ main() {
     install_ospd_openvas;
     install_gvm_tools;
     install_python_gvm;
-    install_gsad;
     install_gsa_web;
+    install_gsad;
     # Configuration of installed components
     configure_gvm;
     configure_openvas;
