@@ -27,6 +27,9 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ## Latest changes
 
+### 2022-03-18 - GSAD Couldn't create pid file after restart
+  - Creating /run/gsd/ with tmpfiles
+
 ### 2022-03-05 - Updated to 21.4.4 released February 24th 2022
   - GSA Web components and GSA Daemon 2 separate packages. Installation now also handles that as two functions.
   - Minor changes to gsad.service, now using --drop-privileges
@@ -170,17 +173,17 @@ For OpenVAS:
 su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73'
 ```
 
-Which should return this (Version Oct. 2021).
+Which should return this (Version Mar. 2022).
 
-<i>Scanner version: OpenVAS 21.4.3.</i>
+<i>Scanner version: OpenVAS 21.4.4.</i>
 
 For GVM:
 ```
 su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner 6acd0832-df90-11e4-b9d5-28d24461215b'
 ```
-Which should return this (Version Oct. 2021).
+Which should return this (Version Mar. 2022).
 
-<i>Scanner version: GVM/21.4.4. </i>
+<i>Scanner version: GVM/21.4.5. </i>
 
 
 ### Admin Account
@@ -297,7 +300,7 @@ su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner=3e2232e3-b819-41bc-b5be-db52bfb06
 Which, provided the scanner works, should return this:
 
 <i>
-Scanner version: OpenVAS 21.4.3.
+Scanner version: OpenVAS 21.4.4.
 </i>
 
 <b>Congrats, You have now added a secondary scanner manually</b>

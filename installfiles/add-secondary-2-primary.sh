@@ -69,6 +69,15 @@ add_secondary() {
     /usr/bin/logger 'add_secondary() finished' -t 'gse-21.4'
 }
 
+show_scanner_status() {
+    /usr/bin/logger 'show_scanner_status()' -t 'gse-21.4';
+    echo -e "\e[1;32m - show_scanner_status())\e[0m";
+    echo -e "\e[1;36m ... Verifying secondary scanner $SECHOST on primary $HOSTNAME\e[0m";
+    export SCANNER_ID=$(su gvm -c '/opt/gvm/sbin/gvmd --get-scanners' | grep $SECHOST | awk -F " " {'print $1'})
+    echo -e "\e[1;33m ... Secondary Scanner ID on host $SECHOST is: $SCANNER_ID\e[0m";
+    echo -e "\e[1;33m ... $SECHOST $(su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner $SCANNER_ID')\e[0m";
+    /usr/bin/logger 'show_scanner_status() finished' -t 'gse-21.4';
+}
 
 ##################################################################################################################
 ## Main                                                                                                          #
@@ -111,6 +120,7 @@ main() {
     echo -e "\e[1;36m ... This may take a while, please wait\e[0m";    
     create_gsecerts;
     add_secondary;
+    show_scanner_status;    
     echo -e;
     echo -e "\e[1;36m ... Certificates and scanner created, verify in UI or from commandline\e[0m";
     echo -e "\e[1;36m ... certificate installation completed, check for errors in logs on $SECHOST\e[0m";
