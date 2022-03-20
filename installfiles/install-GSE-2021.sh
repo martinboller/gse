@@ -1273,7 +1273,7 @@ main() {
     install_gvm;
     install_openvas_smb;
     install_openvas;
-    #install_ospd;
+    install_ospd;
     install_ospd_openvas;
     install_gvm_tools;
     install_python_gvm;

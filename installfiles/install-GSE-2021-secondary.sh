@@ -199,8 +199,8 @@ prepare_source_secondary() {
     /usr/bin/logger '..openvas-smb' -t 'gse-21.4.4';
     wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v21.4.0.tar.gz > /dev/null 2>&1;
 
-    #/usr/bin/logger '..ospd' -t 'gse-21.4.4';
-    #wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/refs/tags/v21.4.4.tar.gz > /dev/null 2>&1;
+    /usr/bin/logger '..ospd' -t 'gse-21.4.4';
+    wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/refs/tags/v21.4.4.tar.gz > /dev/null 2>&1;
 
     /usr/bin/logger '..python-gvm' -t 'gse-21.4.4';
     wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v21.11.0.tar.gz > /dev/null 2>&1;
@@ -778,7 +778,7 @@ main() {
     install_gvm_libs;
     install_openvas_smb;
     install_openvas;
-    #nstall_ospd;
+    nstall_ospd;
     install_ospd_openvas;
     # Configuration of installed components
     configure_openvas;
