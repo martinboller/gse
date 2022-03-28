@@ -19,15 +19,24 @@
 
 show_scanner_status() {
     /usr/bin/logger 'show_scanner_status()' -t 'gse-21.4';
-    echo -e "\e[1;32m - show_scanner_status())\e[0m";
+    echo -e
+    echo -e "\e[1;32mGetting installed scanners\e[0m";
     readarray -t scanners < <(su gvm -c '/opt/gvm/sbin/gvmd --get-scanners' | awk -F " " {'print $1,$3'})
-    #declare -p scanners;
+    echo -e
+    echo -e "\e[1;32mRetrieving current status and version of scanners\e[0m";
     for scanner in "${scanners[@]}"
         do
-            echo $scanner | awk -F " " {'print $2'}
+            echo -e "\e[1;36m-------------------------------------------------------------------------------------------------\e[1;32m"
+            echo "Scanner Identifier and Name: " $scanner
             su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner $scanner";
-            echo -e
         done
+    echo -e "\e[1;36m-------------------------------------------------------------------------------------------------\e[0m"
+    echo -e 
+    echo -e 
+    echo -e "\e[1;36m-------------------------------------------------------------------------------------------------\e[0m"
+    echo -e "\e[1;36mEnumerated all scanners on $HOSTNAME\e[0m"
+    echo -e "\e[1;36mPlease check that they're replying and run a recent version\e[0m"
+    echo -e "\e[1;36m-------------------------------------------------------------------------------------------------\e[0m"
     /usr/bin/logger 'show_scanner_status() finished' -t 'gse-21.4';
 }
 
@@ -36,7 +45,7 @@ show_scanner_status() {
 ##################################################################################################################
 
 main() {
-    echo -e "\e[1;36m ... Verifying Scanners, please wait\e[0m";    
+    echo -e "\e[1;36mVerifying Scanners, please wait\e[0m";    
     show_scanner_status;    
     echo -e;
 }
