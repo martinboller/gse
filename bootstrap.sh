@@ -44,6 +44,8 @@ gse_bootstrap_prerequisites() {
   echo -e "\e[32m - gse_bootstrap_prerequisites()\e[0m";
   # Install prerequisites and useful tools
   export DEBIAN_FRONTEND=noninteractive;
+  sed -ie s/http/https/ /etc/apt/sources.list;
+  apt-get update;
   # Removing some of the cruft installed by default in the Vagrant images
   echo -e "\e[36m ... removing unneeded packages\e[0m";
   apt-get -qq -y purge postfix* memcached > /dev/null 2>&1
@@ -55,12 +57,14 @@ gse_bootstrap_prerequisites() {
   apt-get -qq -y --purge autoremove > /dev/null 2>&1
   apt-get -qq autoclean > /dev/null 2>&1
   sync > /dev/null 2>&1
+  apt-get -y --fix-broken install;
+  apt-get -y --fix-missing install;
   /usr/bin/logger 'install_updates()' -t 'gse';
   echo -e "\e[36m ... removing nameserver from interfaces file\e[0m";
   sed -i '/dns-nameserver/d' /etc/network/interfaces > /dev/null 2>&1;
   # copy relevant scripts
   echo -e "\e[36m ... copying instalation scripts\e[0m";
-  /bin/cp /tmp/installfiles/*.sh /root/ > /dev/null 2>&1;
+  /bin/cp -r /tmp/installfiles/* /root/ > /dev/null 2>&1;
   chmod 744 /root/*.sh > /dev/null 2>&1;
   /usr/bin/logger 'gse_bootstrap_prerequisites()' -t 'gse';
 }
@@ -94,16 +98,16 @@ main() {
     configure_locale;
     configure_timezone;
     # NAT Network adapter weirdness, so give it a kick.
-    ifdown eth0 > /dev/null 2>&1; ifup eth0 > /dev/null 2>&1;
+    #ifdown eth0 > /dev/null 2>&1; ifup eth0 > /dev/null 2>&1;
     if [ "$HOSTNAME" = "manticore" ];
     then
       echo -e "\e[36m ... Installing primary server\e[0m";    
-      /root/install-GSE-2021.sh
+      #/root/install-GSE-2021.sh
     fi
     if [ "$HOSTNAME" = "aboleth" ];
     then
       echo -e "\e[36m ... Installing secondary server\e[0m";    
-      /root/install-GSE-2021-secondary.sh
+      #/root/install-GSE-2021-secondary.sh
     fi
     echo -e "\e[32m - GSE Bootstrap main() finished\e[0m";
     /usr/bin/logger 'GSE Bootstrap main() finished' -t 'gse';
