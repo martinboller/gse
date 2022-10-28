@@ -96,7 +96,7 @@ install_prerequisites() {
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-                    python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
+                python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
             echo -e "\e[1;36m ... installing yarn\e[0m";
             npm install -g yarn --force > /dev/null 2>&1;
     elif [ $VER -eq "10" ]
@@ -497,10 +497,10 @@ prestage_scan_data() {
     echo -e "\e[1;32m - prestage_scan_data() \e[0m";
     # copy scan data to prestage ~1.5 Gib required otherwise
     # change this to copy from cloned repo
-    cd /root/ > /dev/null 2>&1;
+    cd /root/installfiles/ > /dev/null 2>&1;
     /usr/bin/logger '..opening and extracting TAR Ball' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... opening and extracting TAR ball with prestaged feed data\e[0m";
-    tar -xzf scandata.tar.gz > /dev/null 2>&1; 
+    tar -xzf /root/installfiles/scandata.tar.gz > /dev/null 2>&1; 
     /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... copying feed data to correct locations\e[0m";
     /bin/cp -r /root/GVM/openvas/plugins/* /var/lib/openvas/plugins/ > /dev/null 2>&1;
@@ -1438,7 +1438,9 @@ main() {
     #browserlist_update;
     # Prestage only works on the specific Vagrant lab where a scan-data tar-ball is copied to the Host. 
     # Update scan-data only from greenbone when used everywhere else.
-    prestage_scan_data;
+    if test -f /root/scandata.tar.gz; then
+        prestage_scan_data;
+    fi
     configure_greenbone_updates;
     configure_permissions;
     update_feed_data;

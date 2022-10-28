@@ -1,6 +1,6 @@
-# Greenbone Vulnerability Manager 21.4.x Source Code Edition Installation script
+# Greenbone Vulnerability Manager 22.4.x Source Code Edition Installation script
 
-### Bash script automating the installation of Greenbone Vulnerability Manager 21.4.4 (February 2022 release) on Debian 10 or 11
+### Bash script automating the installation of Greenbone Vulnerability Manager 22.4.0 (July 2022 release) on Debian 11 (Bullseye)
 
 Installation will be located in 
 - /opt/gvm/ for binaries.
@@ -26,6 +26,9 @@ To create a secondary see instructions later - but running the script _add-secon
 ----
 
 ## Latest changes
+
+### 2022-10-28 - GSAD Couldn't create pid file after restart
+ - Upgraded installation to 22.4.0 requiring notus-scanner and mosquitto
 
 ### 2022-03-18 - GSAD Couldn't create pid file after restart
   - Creating /run/gsd/ with tmpfiles

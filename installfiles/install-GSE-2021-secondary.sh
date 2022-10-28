@@ -54,11 +54,10 @@ install_prerequisites() {
     # Install pre-requisites for openvas
     /usr/bin/logger '..Tools for Development' -t 'gse-21.4.4';
     echo -e "\e[1;36m ... installing required development tools\e[0m";
-    apt-get -qq -y install gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
-        libgcrypt20-dev redis-server libunistring-dev libxml2-dev > /dev/null 2>&1;
-    # Install pre-requisites for gsad
-    #/usr/bin/logger '..Prerequisites for GSAD' -t 'gse-21.4.4';
-    #apt-get -qq -y install libmicrohttpd-dev;
+    apt-get -qq -y install openssh-client gpgsm dpkg xmlstarlet libbsd-dev libjson-glib-dev gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
+        libgcrypt20-dev redis-server libunistring-dev libxml2-dev > /dev/null 2>&1;    # Install pre-requisites for gsad
+    /usr/bin/logger '..Prerequisites for notus-scanner' -t 'gse-21.4.4';
+    apt-get -qq -y install libpaho-mqtt-dev;
     
     # Other pre-requisites for GSE
     if [ $VER -eq "11" ] 
@@ -70,11 +69,13 @@ install_prerequisites() {
             echo -e "\e[1;36m ... other prerequisites for Greenbone Source Edition\e[0m";
             # Other pre-requisites for GSE - Bullseye / Debian 11
             /usr/bin/logger '....Other prerequisites for Greenbone Source Edition on Debian 11' -t 'gse-21.4.4';
+            apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
+                postgresql-server-dev-13 pkg-config libical-dev xsltproc > /dev/null 2>&1;        
             apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
-            bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz rpm nsis \
-            sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
-            xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-            python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
+                bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz rpm nsis \
+                sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
+                xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
+                python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
         
     elif [ $VER -eq "10" ]
         then
@@ -208,6 +209,9 @@ prepare_source_secondary() {
     /usr/bin/logger '..gvm-tools' -t 'gse-21.4.4';
     wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v21.10.0.tar.gz > /dev/null 2>&1;
   
+    /usr/bin/logger '..notus-scanner' -t 'gse-22.4.1';
+    wget -O notus.tar.gz https://github.com/greenbone/notus-scanner/archive/refs/tags/v22.4.1.tar.gz > /dev/null 2>&1;
+
     # open and extract the tarballs
     echo -e "\e[1;36m ... open and extract tarballs\e[0m";
     find *.gz | xargs -n1 tar zxvfp > /dev/null 2>&1;
@@ -223,6 +227,7 @@ prepare_source_secondary() {
     mv /opt/gvm/src/greenbone/ospd-21.4.4 /opt/gvm/src/greenbone/ospd > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/python-gvm-21.11.0 /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gvm-tools-21.10.0 /opt/gvm/src/greenbone/gvm-tools > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/notus-scanner-22.4.1 /opt/gvm/src/greenbone/notus > /dev/null 2>&1;
     sync;
     echo -e "\e[1;36m ... configuring permissions\e[0m";
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
@@ -385,21 +390,21 @@ install_nmap() {
 }
 
 prestage_scan_data() {
-    /usr/bin/logger 'prestage_scan_data' -t 'gse-21.4.4';
+    /usr/bin/logger 'prestage_scan_data' -t 'gse-22.4.0';
     echo -e "\e[1;32m - prestage_scan_data() \e[0m";
-    # copy scan data from 2020-12-29 to prestage athe ~1.5 Gib required otherwise
+    # copy scan data to prestage ~1.5 Gib required otherwise
     # change this to copy from cloned repo
-    cd /tmp/installfiles/ > /dev/null 2>&1;
-    /usr/bin/logger '..opening TAR Ball' -t 'gse-21.4.4';
+    cd /root/ > /dev/null 2>&1;
+    /usr/bin/logger '..opening and extracting TAR Ball' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... opening and extracting TAR ball with prestaged feed data\e[0m";
-    tar -xzf /tmp/installfiles/scandata.tar.gz > /dev/null 2>&1; 
-    /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gse-21.4.4';
+    tar -xzf scandata.tar.gz > /dev/null 2>&1; 
+    /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... copying feed data to correct locations\e[0m";
-    /bin/cp -r /tmp/installfiles/GVM/openvas/plugins/* /var/lib/openvas/plugins/ > /dev/null 2>&1;
+    /bin/cp -r /root/GVM/openvas/plugins/* /var/lib/openvas/plugins/ > /dev/null 2>&1;
+    /bin/cp -r /root/notus/* /var/lib/notus/ > /dev/null 2>&1;
     echo -e "\e[1;36m ... setting permissions\e[0m";
-    chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     echo -e "\e[1;32m - prestage_scan_data() finished\e[0m";
-    /usr/bin/logger 'prestage_scan_data finished' -t 'gse-21.4.4';
+    /usr/bin/logger 'prestage_scan_data finished' -t 'gse-22.4.0';
 }
 
 update_feed_data() {
@@ -434,6 +439,20 @@ install_impacket() {
     python3 -m pip install impacket > /dev/null 2>&1;
     echo -e "\e[1;32m - install_impacket() finished\e[0m";
     /usr/bin/logger 'install_impacket finished' -t 'gse-21.4.4';
+}
+
+install_notus() {
+    /usr/bin/logger 'install_notus' -t 'gse-22.4.0';
+    echo -e "\e[1;32m - install_notus()\e[0m";
+    mkdir -p /var/lib/notus/products;
+    cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
+    cd notus/ > /dev/null 2>&1;
+    chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1
+    echo -e "\e[1;36m ... Install notus scanner Python pip module (notus-scanner) \e[0m";
+    /usr/bin/python3 -m pip install . > /dev/null 2>&1; 
+    sync;
+    echo -e "\e[1;32m - install_notus() finished\e[0m";
+    /usr/bin/logger 'install_notus finished' -t 'gse-22.4.0';
 }
 
 configure_openvas() {
@@ -521,6 +540,33 @@ min_free_mem_scan_queue = 1500
 ; This options are disabled with the value 0 (zero), all arriving tasks will be started without queuing.
 max_queued_scans = 0
 __EOF__
+
+    # Create NOTUS Scanner service
+    echo -e "\e[1;36m ... creating NOTUS scanner service\e[0m";
+    cat << __EOF__ > /lib/systemd/system/notus-scanner.service
+[Unit]
+Description=Notus Scanner
+Documentation=https://github.com/greenbone/notus-scanner
+After=mosquitto.service
+Wants=mosquitto.service
+ConditionKernelCommandLine=!recovery
+
+[Service]
+Type=forking
+User=gvm
+RuntimeDirectory=notus-scanner
+RuntimeDirectoryMode=2775
+PIDFile=/run/notus-scanner/notus-scanner.pid
+ExecStart=/usr/local/bin/notus-scanner --products-directory /var/lib/notus/products --log-file /var/log/gvm/notus-scanner.log
+SuccessExitStatus=SIGKILL
+Restart=always
+RestartSec=60
+
+[Install]
+WantedBy=multi-user.target
+__EOF__
+
+    echo "mqtt_server_uri = localhost:1883" | sudo tee -a /etc/openvas/openvas.conf
     sync;
     echo -e "\e[1;32m - configure_openvas() finished\e[0m";
     /usr/bin/logger 'configure_openvas finished' -t 'gse-21.4.4';
@@ -596,7 +642,12 @@ start_services() {
     # Start ospd-openvas
     echo -e "\e[1;36m ... restarting ospd-openvas service\e[0m";
     systemctl restart ospd-openvas.service > /dev/null 2>&1;
-    # Enable gse-update timer and service
+    echo -e "\e[1;36m ... enabling notus-scanner service\e[0m";
+    systemctl enable notus-scanner.service > /dev/null 2>&1;
+    # Start notus-scanner
+    echo -e "\e[1;36m ... restarting ospd-openvas service\e[0m";
+    systemctl restart notus-scanner.service > /dev/null 2>&1;
+    Enable gse-update timer and service
     echo -e "\e[1;36m ... enabling gse-update timer and service\e[0m";
     systemctl enable gse-update.timer > /dev/null 2>&1;
     systemctl enable gse-update.service > /dev/null 2>&1;
@@ -606,6 +657,15 @@ start_services() {
     # Check status of critical service ospd-openvas.service and gse-update
     echo -e
     echo 'Checking core daemons.....';
+    if systemctl is-active --quiet notus-scanner.service;
+    then
+        echo -e "\e[1;32mnotus-scanner.service started successfully\e[0m";
+        /usr/bin/logger 'notus-scanner.service started successfully' -t 'gse-22.4.0';
+    else
+        echo -e "\e[1;31mnotus-scanner.service FAILED!";
+        /usr/bin/logger 'notus-scanner.service FAILED!\e[0m' -t 'gse-22.4.0';
+    fi
+
     if systemctl is-active --quiet gse-update.timer;
     then
         echo 'gse-update.timer started successfully';
@@ -778,16 +838,14 @@ main() {
     install_gvm_libs;
     install_openvas_smb;
     install_openvas;
-    nstall_ospd;
     install_ospd_openvas;
+    install_notus;
     # Configuration of installed components
     configure_openvas;
     configure_redis;
     # Prestage only works on the specific Vagrant lab where a scan-data tar-ball is copied to the Host. 
     # Update scan-data only from greenbone when used everywhere else 
-    if test -f /tmp/installfiles/scandata.tar.gz; then
-        prestage_scan_data;
-    fi
+    prestage_scan_data;
     configure_greenbone_updates;
     configure_permissions;
     update_feed_data;
