@@ -1414,14 +1414,14 @@ main() {
     # Install everything needed for Greenbone Source Edition
     install_impacket;
     install_gvm_libs;
+    install_openvas_smb;
+    install_openvas;
+#   install_ospd;
+    install_ospd_openvas;
     install_gvm;
     install_pggvm;
     install_gsa_web;
     install_gsad;
-    install_openvas_smb;
-    install_openvas;
-#    install_ospd;
-    install_ospd_openvas;
     install_notus;
     install_gvm_tools;
     install_python_gvm;

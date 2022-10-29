@@ -159,7 +159,7 @@ prepare_nix() {
 __EOF__
     echo -e "\e[1;36m ... creating sudoers.d/greenbone file\e[0m";
     cat << __EOF__ > /etc/sudoers.d/gvm
-gvm     ALL = NOPASSWD: /opt/gvm/sbin/gsad, /opt/gvm/sbin/gvmd, /opt/gvm/sbin/openvas
+gvm     ALL = NOPASSWD: /opt/gvm/sbin/openvas
 
 Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/gvm/sbin"
 __EOF__
