@@ -246,8 +246,6 @@ prepare_source() {
     wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/refs/tags/v22.4.0.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..openvas-smb' -t 'gse-22.4.0';
     wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v22.4.0.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..ospd' -t 'gse-21.4.4';
-    wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/refs/tags/v21.4.4.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..python-gvm' -t 'gse-22.9.1';
     wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v22.9.1.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gvm-tools' -t 'gse-22.9.0';
@@ -273,7 +271,6 @@ prepare_source() {
     mv /opt/gvm/src/greenbone/gsa-22.4.0 /opt/gvm/src/greenbone/gsa > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gsad-22.4.0 /opt/gvm/src/greenbone/gsad > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/openvas-smb-22.4.0 /opt/gvm/src/greenbone/openvas-smb > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/ospd-21.4.4 /opt/gvm/src/greenbone/ospd > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/python-gvm-22.9.1 /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gvm-tools-22.9.0 /opt/gvm/src/greenbone/gvm-tools > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/pg-gvm-22.4.0 /opt/gvm/src/greenbone/pg-gvm > /dev/null 2>&1;
@@ -1366,7 +1363,7 @@ main() {
     # Locality
     export GVM_CERTIFICATE_LOCALITY="Germany"
     # Organization
-    export GVM_CERTIFICATE_ORG="Greenbone Source Edition"
+    export GVM_CERTIFICATE_ORG="Greenbone Source Edition 22.4"
     # (Organization unit)
     export GVM_CERTIFICATE_ORG_UNIT="Certificate Authority for $GVM_CERTIFICATE_ORG"
     # State

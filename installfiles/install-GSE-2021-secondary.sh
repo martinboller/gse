@@ -188,30 +188,22 @@ prepare_source_secondary() {
 
     #Get all packages (the python elements can be installed w/o, but downloaded and used for install anyway)
     /usr/bin/logger '..gvm libraries' -t 'gse-21.4.4';
-    echo -e "\e[1;36m ... downloading released packages for GSE\e[0m";
-    wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v21.4.4.tar.gz > /dev/null 2>&1;
-
-    /usr/bin/logger '..ospd-openvas' -t 'gse-21.4.4';
-    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v21.4.4.tar.gz > /dev/null 2>&1;
-
-    /usr/bin/logger '..openvas-scanner' -t 'gse-21.4.4';
-    wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v21.4.4.tar.gz > /dev/null 2>&1;
-
-    /usr/bin/logger '..openvas-smb' -t 'gse-21.4.4';
-    wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v21.4.0.tar.gz > /dev/null 2>&1;
-
-    /usr/bin/logger '..ospd' -t 'gse-21.4.4';
-    wget -O ospd.tar.gz https://github.com/greenbone/ospd/archive/refs/tags/v21.4.4.tar.gz > /dev/null 2>&1;
-
-    /usr/bin/logger '..python-gvm' -t 'gse-21.4.4';
-    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v21.11.0.tar.gz > /dev/null 2>&1;
-
-    /usr/bin/logger '..gvm-tools' -t 'gse-21.4.4';
-    wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v21.10.0.tar.gz > /dev/null 2>&1;
-  
+    /usr/bin/logger '..gvm-libs 22.4.0' -t 'gse-22.4.2';
+    wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v22.4.0.tar.gz > /dev/null 2>&1;
+    /usr/bin/logger '..ospd-openvas' -t 'gse-22.4.2';
+    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v22.4.2.tar.gz > /dev/null 2>&1;
+    /usr/bin/logger '..openvas-scanner' -t 'gse-22.4.0';
+    wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v22.4.0.tar.gz > /dev/null 2>&1;
+    /usr/bin/logger '..gvm daemon' -t 'gse-22.4.0';
+    /usr/bin/logger '..openvas-smb' -t 'gse-22.4.0';
+    wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v22.4.0.tar.gz > /dev/null 2>&1;
+    /usr/bin/logger '..python-gvm' -t 'gse-22.9.1';
+    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v22.9.1.tar.gz > /dev/null 2>&1;
+    /usr/bin/logger '..gvm-tools' -t 'gse-22.9.0';
+    wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v22.9.0.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..notus-scanner' -t 'gse-22.4.1';
     wget -O notus.tar.gz https://github.com/greenbone/notus-scanner/archive/refs/tags/v22.4.1.tar.gz > /dev/null 2>&1;
-
+  
     # open and extract the tarballs
     echo -e "\e[1;36m ... open and extract tarballs\e[0m";
     find *.gz | xargs -n1 tar zxvfp > /dev/null 2>&1;
@@ -220,13 +212,12 @@ prepare_source_secondary() {
     # Naming of directories w/o version
     /usr/bin/logger '..re-naming directories' -t 'gse-21.4.4';
     echo -e "\e[1;36m ... renaming package directories\e[0m";
-    mv /opt/gvm/src/greenbone/gvm-libs-21.4.4 /opt/gvm/src/greenbone/gvm-libs > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/ospd-openvas-21.4.4 /opt/gvm/src/greenbone/ospd-openvas > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/openvas-scanner-21.4.4 /opt/gvm/src/greenbone/openvas > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/openvas-smb-21.4.0 /opt/gvm/src/greenbone/openvas-smb > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/ospd-21.4.4 /opt/gvm/src/greenbone/ospd > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/python-gvm-21.11.0 /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/gvm-tools-21.10.0 /opt/gvm/src/greenbone/gvm-tools > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gvm-libs-22.4.0 /opt/gvm/src/greenbone/gvm-libs > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/ospd-openvas-22.4.2 /opt/gvm/src/greenbone/ospd-openvas > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/openvas-scanner-22.4.0 /opt/gvm/src/greenbone/openvas > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/openvas-smb-22.4.0 /opt/gvm/src/greenbone/openvas-smb > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/python-gvm-22.9.1 /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gvm-tools-22.9.0 /opt/gvm/src/greenbone/gvm-tools > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/notus-scanner-22.4.1 /opt/gvm/src/greenbone/notus > /dev/null 2>&1;
     sync;
     echo -e "\e[1;36m ... configuring permissions\e[0m";
