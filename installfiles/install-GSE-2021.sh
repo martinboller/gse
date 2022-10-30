@@ -77,7 +77,9 @@ install_prerequisites() {
     /usr/bin/logger '..Prerequisites for Greenbone Security Assistant' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... prequisites for Greenbone Security Assistant\e[0m";
     apt-get -qq -y install libmicrohttpd-dev clang;
-    
+    apt-get -qq -y install python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg;
+
+
     # Other pre-requisites for GSE
     echo -e "\e[1;36m ... other prerequisites for Greenbone Source Edition\e[0m";
 
@@ -300,15 +302,15 @@ install_pggvm() {
     cd pg-gvm/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
-    echo -e "\e[1;36m ... cmake Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
+    echo -e "\e[1;36m ... cmake pg-gvm PostgreSQL server extension\e[0m";
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1
-    /usr/bin/logger '..make Greenbone Vulnerability Manager Postgres addins' -t 'gse-22.4.0';
-    echo -e "\e[1;36m ... make Greenbone Vulnerability Manager Postgres addins\e[0m";
+    /usr/bin/logger '..make pg-gvm PostgreSQL server extension' -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... make pg-gvm PostgreSQL server extension\e[0m";
     make > /dev/null 2>&1;
-    #/usr/bin/logger '..make gvm libraries Documentation' -t 'gse-22.4.0';
+    #/usr/bin/logger '..make pg-gvm libraries Documentation' -t 'gse-22.4.0';
     #make doc-full;
-    /usr/bin/logger '..make install Greenbone Postgres addins' -t 'gse-22.4.0';
-    echo -e "\e[1;36m ... make install pg-gvm\e[0m";
+    /usr/bin/logger '..make install pg-gvm PostgreSQL server extension' -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... make install pg-gvm PostgreSQL server extension\e[0m";
     make install > /dev/null 2>&1;
     sync;
     echo -e "\e[1;32m - install_pggvm() finished\e[0m";
@@ -502,7 +504,7 @@ prestage_scan_data() {
     echo -e "\e[1;36m ... copying feed data to correct locations\e[0m";
     /bin/cp -r /root/GVM/openvas/plugins/* /var/lib/openvas/plugins/ > /dev/null 2>&1;
     /bin/cp -r /root/GVM/gvm/* /var/lib/gvm/ > /dev/null 2>&1;
-    /bin/cp -r /root/notus/* /var/lib/notus/ > /dev/null 2>&1;
+    /bin/cp -r /root/GVM/notus/* /var/lib/notus/ > /dev/null 2>&1;
     echo -e "\e[1;36m ... setting permissions\e[0m";
     echo -e "\e[1;32m - prestage_scan_data() finished\e[0m";
     /usr/bin/logger 'prestage_scan_data finished' -t 'gse-22.4.0';
@@ -1089,20 +1091,20 @@ prepare_gpg() {
     echo -e "\e[1;32m - prepare_gpg()\e[0m";
     echo -e "\e[1;36m ... Downloading and importing Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Downloading and importing Greenbone Community Signing Key (PGP)' -t 'gse-22.4.0';
-    curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
-    gpg --import /tmp/GBCommunitySigningKey.asc  > /dev/null 2>&1;
+    curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc;
+    gpg --import /tmp/GBCommunitySigningKey.asc;
     echo -e "\e[1;36m ... Fully trust Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Fully trust Greenbone Community Signing Key (PGP)' -t 'gse-22.4.0';
-    echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt > /dev/null 2>&1;
-    export GNUPGHOME=/tmp/openvas-gnupg  > /dev/null 2>&1;
-    mkdir -p $GNUPGHOME  > /dev/null 2>&1;
-    gpg --import /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
-    gpg --import-ownertrust < /tmp/ownertrust.txt > /dev/null 2>&1;
-    export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg > /dev/null 2>&1;
-    sudo mkdir -p $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
-    sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/ > /dev/null 2>&1;
-    sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
-    gpg --import-ownertrust < /tmp/ownertrust.txt > /dev/null 2>&1;
+    echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt;
+    export GNUPGHOME=/tmp/openvas-gnupg;
+    mkdir -p $GNUPGHOME;
+    gpg --import /tmp/GBCommunitySigningKey.asc;
+    gpg --import-ownertrust < /tmp/ownertrust.txt;
+    export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg;
+    sudo mkdir -p $OPENVAS_GNUPG_HOME;
+    sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/;
+    sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME;
+    gpg --import-ownertrust < /tmp/ownertrust.txt;
     /usr/bin/logger 'prepare_gpg finished' -t 'gse-22.4.0';
     echo -e "\e[1;32m - prepare_gpg() finished\e[0m";
 }
@@ -1119,6 +1121,7 @@ configure_feed_validation() {
     sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
     sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME
 }
+
 configure_permissions() {
     /usr/bin/logger 'configure_permissions' -t 'gse-22.4.0';
     echo -e "\e[1;32m - configure_permissions()\e[0m";
@@ -1142,6 +1145,8 @@ configure_permissions() {
     chmod -R g+srw /var/lib/gvm
     chmod -R g+srw /var/lib/openvas
     chmod -R g+srw /var/log/gvm
+    # NOTUS Feed
+    chown -R gvm:gvm /var/lib/notus > /dev/null 2>&1;
     echo -e "\e[1;32m - configure_permissions() finished\e[0m";
     /usr/bin/logger 'configure_permissions finished' -t 'gse-22.4.0';
 }

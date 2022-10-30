@@ -33,6 +33,7 @@ configure_timezone() {
   echo -e "\e[32m - configure_timezone()\e[0m";
   echo -e "\e[36m ... set timezone to Etc/UTC\e[0m";
   export DEBIAN_FRONTEND=noninteractive;
+  timedatectl set-timezone UTC;
   rm /etc/localtime > /dev/null 2>&1;
   echo 'Etc/UTC' > /etc/timezone > /dev/null 2>&1;
   dpkg-reconfigure -f noninteractive tzdata > /dev/null 2>&1;

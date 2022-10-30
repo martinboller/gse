@@ -57,7 +57,7 @@ install_prerequisites() {
     apt-get -qq -y install openssh-client gpgsm dpkg xmlstarlet libbsd-dev libjson-glib-dev gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
         libgcrypt20-dev redis-server libunistring-dev libxml2-dev > /dev/null 2>&1;    # Install pre-requisites for gsad
     /usr/bin/logger '..Prerequisites for notus-scanner' -t 'gse-21.4.4';
-    apt-get -qq -y install libpaho-mqtt-dev;
+    apt-get -qq -y install libpaho-mqtt-dev python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg;
     
     # Other pre-requisites for GSE
     if [ $VER -eq "11" ] 
@@ -392,7 +392,7 @@ prestage_scan_data() {
     /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... copying feed data to correct locations\e[0m";
     /bin/cp -r /root/GVM/openvas/plugins/* /var/lib/openvas/plugins/ > /dev/null 2>&1;
-    /bin/cp -r /root/notus/* /var/lib/notus/ > /dev/null 2>&1;
+    /bin/cp -r /root/GVM/notus/* /var/lib/notus/ > /dev/null 2>&1;
     echo -e "\e[1;36m ... setting permissions\e[0m";
     echo -e "\e[1;32m - prestage_scan_data() finished\e[0m";
     /usr/bin/logger 'prestage_scan_data finished' -t 'gse-22.4.0';
@@ -444,6 +444,29 @@ install_notus() {
     sync;
     echo -e "\e[1;32m - install_notus() finished\e[0m";
     /usr/bin/logger 'install_notus finished' -t 'gse-22.4.0';
+}
+
+prepare_gpg() {
+    /usr/bin/logger 'prepare_gpg' -t 'gse-22.4.0';
+    echo -e "\e[1;32m - prepare_gpg()\e[0m";
+    echo -e "\e[1;36m ... Downloading and importing Greenbone Community Signing Key (PGP)\e[0m";
+    /usr/bin/logger '..Downloading and importing Greenbone Community Signing Key (PGP)' -t 'gse-22.4.0';
+    curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc;
+    gpg --import /tmp/GBCommunitySigningKey.asc;
+    echo -e "\e[1;36m ... Fully trust Greenbone Community Signing Key (PGP)\e[0m";
+    /usr/bin/logger '..Fully trust Greenbone Community Signing Key (PGP)' -t 'gse-22.4.0';
+    echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt;
+    export GNUPGHOME=/tmp/openvas-gnupg;
+    mkdir -p $GNUPGHOME;
+    gpg --import /tmp/GBCommunitySigningKey.asc;
+    gpg --import-ownertrust < /tmp/ownertrust.txt;
+    export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg;
+    sudo mkdir -p $OPENVAS_GNUPG_HOME;
+    sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/;
+    sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME;
+    gpg --import-ownertrust < /tmp/ownertrust.txt;
+    /usr/bin/logger 'prepare_gpg finished' -t 'gse-22.4.0';
+    echo -e "\e[1;32m - prepare_gpg() finished\e[0m";
 }
 
 configure_openvas() {
@@ -759,6 +782,8 @@ configure_permissions() {
     chown -R gvm:gvm /var/lib/openvas > /dev/null 2>&1;
     # GVM Feed
     chown -R gvm:gvm /var/lib/gvm > /dev/null 2>&1;
+    # NOTUS Feed
+    chown -R gvm:gvm /var/lib/notus > /dev/null 2>&1;
     # OSPD Configuration file
     chown -R gvm:gvm /etc/ospd/ > /dev/null 2>&1;
     echo -e "\e[1;32m - configure_permissions() finished\e[0m";
@@ -831,6 +856,8 @@ main() {
     install_openvas;
     install_ospd_openvas;
     install_notus;
+    prepare_gpg;
+ 
     # Configuration of installed components
     configure_openvas;
     configure_redis;
