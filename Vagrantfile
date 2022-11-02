@@ -41,6 +41,7 @@ Vagrant.configure("2") do |config|
     cfg.vm.hostname = "aboleth"
     cfg.vm.network "public_network", type: "dhcp", bridge: 'enp1s0', mac: "0020911E0008"
     cfg.vm.provision :file, source: './installfiles', destination: "/tmp/installfiles"
+    cfg.vm.provision :file, source: './gvm-cli-scripts', destination: "/tmp/gvm-cli-scripts"
     cfg.vm.provision :shell, path: "bootstrap.sh"
     cfg.vm.provision "reload"
     cfg.vm.provision :shell, path: "installfiles/install-GSE-2021-secondary.sh"

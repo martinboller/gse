@@ -1173,6 +1173,7 @@ create_gvm_python_script() {
     /usr/bin/logger 'create_gvm_python_script' -t 'gse-22.4.0';
     echo -e "\e[1;32m - create_gvm_python_script()\e[0m";
     mkdir /opt/gvm/scripts > /dev/null 2>&1;
+    cp -r /tmp/gvm-cli-scripts /opt/gvm/scripts;
     chown -R gvm:gvm /opt/gvm/scripts/ > /dev/null 2>&1;
     echo -e "\e[1;36m ... creating sample script\e[0m";
     sh -c "cat << EOF  > /opt/gvm/scripts/gvm-tasks.py

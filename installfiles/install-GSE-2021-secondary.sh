@@ -661,7 +661,7 @@ start_services() {
     # Start notus-scanner
     echo -e "\e[1;36m ... restarting ospd-openvas service\e[0m";
     systemctl restart notus-scanner.service > /dev/null 2>&1;
-    Enable gse-update timer and service
+    # Enable gse-update timer and service
     echo -e "\e[1;36m ... enabling gse-update timer and service\e[0m";
     systemctl enable gse-update.timer > /dev/null 2>&1;
     systemctl enable gse-update.service > /dev/null 2>&1;
