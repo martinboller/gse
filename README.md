@@ -27,7 +27,7 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ## Latest changes
 
-### 2022-10-28 - GSAD Couldn't create pid file after restart
+### 2022-10-28 - Latest version 22.4.x
  - Upgraded installation to 22.4.0 requiring notus-scanner and mosquitto
 
 ### 2022-03-18 - GSAD Couldn't create pid file after restart
