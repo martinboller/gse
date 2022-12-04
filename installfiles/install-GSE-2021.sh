@@ -505,7 +505,8 @@ prestage_scan_data() {
     /bin/cp -r /root/GVM/openvas/plugins/* /var/lib/openvas/plugins/ > /dev/null 2>&1;
     /bin/cp -r /root/GVM/gvm/* /var/lib/gvm/ > /dev/null 2>&1;
     /bin/cp -r /root/GVM/notus/* /var/lib/notus/ > /dev/null 2>&1;
-    echo -e "\e[1;36m ... setting permissions\e[0m";
+    echo -e "\e[1;36m ... Cleaning Up\e[0m";
+    rm -rf /root/GVM;
     echo -e "\e[1;32m - prestage_scan_data() finished\e[0m";
     /usr/bin/logger 'prestage_scan_data finished' -t 'gse-22.4.0';
 }
@@ -1091,20 +1092,20 @@ prepare_gpg() {
     echo -e "\e[1;32m - prepare_gpg()\e[0m";
     echo -e "\e[1;36m ... Downloading and importing Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Downloading and importing Greenbone Community Signing Key (PGP)' -t 'gse-22.4.0';
-    curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc;
-    gpg --import /tmp/GBCommunitySigningKey.asc;
+    curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
+    gpg --import /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
     echo -e "\e[1;36m ... Fully trust Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Fully trust Greenbone Community Signing Key (PGP)' -t 'gse-22.4.0';
-    echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt;
-    export GNUPGHOME=/tmp/openvas-gnupg;
-    mkdir -p $GNUPGHOME;
-    gpg --import /tmp/GBCommunitySigningKey.asc;
-    gpg --import-ownertrust < /tmp/ownertrust.txt;
-    export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg;
-    sudo mkdir -p $OPENVAS_GNUPG_HOME;
-    sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/;
-    sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME;
-    gpg --import-ownertrust < /tmp/ownertrust.txt;
+    echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" | tee -a /tmp/ownertrust.txt > /dev/null 2>&1;
+    export GNUPGHOME=/tmp/openvas-gnupg > /dev/null 2>&1; 
+    mkdir -p $GNUPGHOME > /dev/null 2>&1;
+    gpg --import /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
+    gpg --import-ownertrust < /tmp/ownertrust.txt > /dev/null 2>&1;
+    export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg > /dev/null 2>&1;
+    sudo mkdir -p $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
+    sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/ > /dev/null 2>&1;
+    sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
+    gpg --import-ownertrust < /tmp/ownertrust.txt > /dev/null 2>&1;
     /usr/bin/logger 'prepare_gpg finished' -t 'gse-22.4.0';
     echo -e "\e[1;32m - prepare_gpg() finished\e[0m";
 }
@@ -1173,35 +1174,14 @@ create_gvm_python_script() {
     /usr/bin/logger 'create_gvm_python_script' -t 'gse-22.4.0';
     echo -e "\e[1;32m - create_gvm_python_script()\e[0m";
     mkdir /opt/gvm/scripts > /dev/null 2>&1;
-    cp -r /tmp/gvm-cli-scripts /opt/gvm/scripts;
+    echo -e "\e[1;36m ... copying scripts and xml files\e[0m";
+    cp -r /root/gvm-cli-scripts/* /opt/gvm/scripts/ > /dev/null 2>&1;
+    cp -r /root/XML-Files/ /opt/gvm/scripts/  > /dev/null 2>&1;
+    sync;
+    echo -e "\e[1;36m ... cleaning home dir for root\e[0m";
+    rm -rf /root/XML-Files/ > /dev/null 2>&1;
+    rm -rf /root/gvm-cli-scripts/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/scripts/ > /dev/null 2>&1;
-    echo -e "\e[1;36m ... creating sample script\e[0m";
-    sh -c "cat << EOF  > /opt/gvm/scripts/gvm-tasks.py
-from gvm.connections import UnixSocketConnection
-from gvm.protocols.gmp import Gmp
-from gvm.transforms import EtreeTransform
-from gvm.xml import pretty_print
-
-connection = UnixSocketConnection(path = '/run/gvmd/gvmd.sock')
-transform = EtreeTransform()
-
-with Gmp(connection, transform=transform) as gmp:
-    # Retrieve GMP version supported by the remote daemon
-    version = gmp.get_version()
-
-    # Prints the XML in beautiful form
-    pretty_print(version)
-
-    # Login
-    gmp.authenticate('admin', 'password')
-
-    # Retrieve all tasks
-    tasks = gmp.get_tasks()
-
-    # Get names of tasks
-    task_names = tasks.xpath('task/name/text()')
-    pretty_print(task_names)
-EOF"
     sync;
     echo -e "\e[1;32m - create_gvm_python_script() finished\e[0m";
     /usr/bin/logger 'create_gvm_python_script finished' -t 'gse-22.4.0';
