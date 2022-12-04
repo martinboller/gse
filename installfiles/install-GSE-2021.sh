@@ -1182,6 +1182,8 @@ create_gvm_python_script() {
     rm -rf /root/XML-Files/ > /dev/null 2>&1;
     rm -rf /root/gvm-cli-scripts/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/scripts/ > /dev/null 2>&1;
+    chmod 755 /opt/gvm/scripts/*.sh;
+    chmod 755 /opt/gvm/scripts/*.py;
     sync;
     echo -e "\e[1;32m - create_gvm_python_script() finished\e[0m";
     /usr/bin/logger 'create_gvm_python_script finished' -t 'gse-22.4.0';
