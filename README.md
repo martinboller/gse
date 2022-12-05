@@ -27,6 +27,9 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ## Latest changes
 
+### 2022-12-05 - Scripts and updated readme
+ - Added scripts: Example create Targets and export reports in pdf and csv format
+
 ### 2022-10-28 - Latest version 22.4.x
  - Upgraded installation to 22.4.0 requiring notus-scanner and mosquitto
 
@@ -318,6 +321,16 @@ su gvm -c '/opt/gvm/sbin/gvmd --delete-scanner=f12cca78-c6b9-4fd1-ad4f-9a9eb2037
 ```
 
 ---
+
+#### 6. Scripts
+Added the following scripts:
+-create_targets.sh. This takes the admin password as input and creates some example networks
+-export-csv-report.gmp.py. Creates a csv formatted report. You need to specify user, password, connection type as well as the id of the report: Examples in the script.
+-export-pdf-report.gmp.py. Same as above but pdf format.
+<pre>
+
+</pre>
+
 
 ### Other useful information
 Just after installation, going from empty feeds to fully up-to-date, you'll notice that postgres is being hammered by gvmd and that redis are by ospd-openvas as openvas-scanner uses Redis (on the secondary only ospd-openvas, openvas, and redis is running). When feeds are updated this isn't as obvious, as the delta is significantly less than "everything".
