@@ -42,8 +42,7 @@ def check_args(args):
         Examples:
             $ gvm-script --gmp-username name --gmp-password pass \
 ssh --hostname <gsm> scripts/export-csv-report.gmp.py <report_id> <csv_file>
-            $ gvm-script --gmp-username admin --gmp-password '0f6fa69b-32bb-453a-9aa4-b8c9e56b3d00' \ 
-            export-csv-report.gmp.py b26229cd-94c8-44f8-9cb6-27486a3dedad ./test.csv
+            $ gvm-script --gmp-username admin --gmp-password '0f6fa69b-32bb-453a-9aa4-b8c9e56b3d00' socket export-csv-report.gmp.py b26229cd-94c8-44f8-9cb6-27486a3dedad ./test.csv
         """
         print(message)
         sys.exit()
@@ -95,3 +94,4 @@ def main(gmp: Gmp, args: Namespace) -> None:
 
 if __name__ == '__gmp__':
     main(gmp, args)
+
