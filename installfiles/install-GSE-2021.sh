@@ -172,6 +172,7 @@ install_prerequisites() {
     echo -e "\e[1;36m ... preparing directories for logs\e[0m";
     mkdir -p /var/log/gvm/ > /dev/null 2>&1;
     chown -R gvm:gvm /var/log/gvm/ > /dev/null 2>&1;
+    timedatectl set-timezone UTC;
     echo -e "\e[1;32m - install_prerequisites() finished\e[0m";
     /usr/bin/logger 'install_prerequisites finished' -t 'gse-22.4.0';
 }

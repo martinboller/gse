@@ -1,4 +1,8 @@
 # -*- coding: utf-8 -*-
+# 
+# Based on the Greenbone list-tasks script and modified to show targets
+# Martin Boller
+#
 # Copyright (C) 2019-2021 Greenbone Networks GmbH
 #
 # SPDX-License-Identifier: GPL-3.0-or-later

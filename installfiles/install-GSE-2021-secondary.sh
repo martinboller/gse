@@ -133,6 +133,7 @@ install_prerequisites() {
     # logging
     mkdir -p /var/log/gvm/ > /dev/null 2>&1;
     chown -R gvm:gvm /var/log/gvm/ > /dev/null 2>&1;
+    timedatectl set-timezone UTC;
     echo -e "\e[1;32m - install_prerequisites() finished\e[0m";
     /usr/bin/logger 'install_prerequisites finished' -t 'gse-21.4.4';
 }

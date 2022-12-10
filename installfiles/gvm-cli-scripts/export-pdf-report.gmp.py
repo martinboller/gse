@@ -1,4 +1,9 @@
 # -*- coding: utf-8 -*-
+# 
+# Based on the Greenbone export-pdf-report script and modified to 
+# return more (all) details.
+# Martin Boller
+#
 # Copyright (C) 2019-2021 Greenbone Networks GmbH
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
