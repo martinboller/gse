@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Run with gvm-script --gmp-username admin-user --gmp-password password socket create-targets-list.gmp.py hostname-server targets.csv
+# Run with gvm-script --gmp-username admin-user --gmp-password password socket create-targets-from-csv.gmp.py hostname-server targets.csv
 #
 #
 
@@ -114,31 +114,76 @@ def parse_args(args: Namespace) -> Namespace:  # pylint: disable=unused-argument
     script_args, _ = parser.parse_known_args(args)
     return script_args
 
-
-def create_targets(   
+def create_credentials(   
     gmp: Gmp,
-    host_name: str,
-    host_file: Path,
-    port_list_id: str,
+    cred_file: Path,
 ):
     try:
-        with open(host_file, encoding="utf-8") as csvFile:
+        numberCredentials = 0
+        with open(cred_file, encoding="utf-8") as csvFile:
             content = csv.reader(csvFile, delimiter=',')  #read the data
             for row in content:   #loop through each row
-                name = row[0]
-                hosts = [row[1]]
+                numberCredentials = numberCredentials + 1
+                cred_name = row[0]
+                cred_type = row[1]
+                userName = row[2]
+                userPW = row[3]
                 comment = f"Created: {time.strftime('%Y/%m/%d-%H:%M:%S')}"
 
-                gmp.create_target(
-                   name=name, comment=comment, hosts=hosts, port_list_id=port_list_id
-                )
+                if cred_type == "UP":
+                        gmp.create_credential(
+                        name=cred_name,
+                        credential_type=gmp.types.CredentialType.USERNAME_PASSWORD,
+                        login=userName,
+                        password=userPW,
+                        comment=comment,
+                        )
+
+                elif cred_type == "SSH":
+                    with open(row[4]) as key_file:
+                        key = key_file.read()
+                    
+                    gmp.create_credential(
+                        name=cred_name,
+                        credential_type=gmp.types.CredentialType.USERNAME_SSH_KEY,
+                        login=userName,
+                        key_phrase=userPW,
+                        private_key=key,
+                        comment=comment,
+                        )
+
+                elif cred_type == "SNMP":
+                        # Unfinished, copy of UP for now
+                        gmp.create_credential(
+                        name=cred_name,
+                        credential_type=gmp.types.CredentialType.USERNAME_SSH_KEY,
+                        login=userName,
+                        key_phrase=userPW,
+                        private_key=key,
+                        comment=comment,
+                        )
+
+                elif cred_type == "ESX":
+                        # Unfinished, copy of UP for now
+                        gmp.create_credential(
+                        name=cred_name,
+                        credential_type=gmp.types.CredentialType.USERNAME_SSH_KEY,
+                        login=userName,
+                        key_phrase=userPW,
+                        private_key=key,
+                        comment=comment,
+                        )
+
         csvFile.close()   #close the csv file
+
     except IOError as e:
-        error_and_exit(f"Failed to read host_file: {str(e)} (exit)")
+        error_and_exit(f"Failed to read cred_file: {str(e)} (exit)")
 
     if len(row) == 0:
-        error_and_exit("Host file is empty (exit)")
-
+        error_and_exit("Credentials file is empty (exit)")
+    
+    return numberCredentials
+    
 def main(gmp: Gmp, args: Namespace) -> None:
     # pylint: disable=undefined-variable
     if args.script:
@@ -146,16 +191,13 @@ def main(gmp: Gmp, args: Namespace) -> None:
 
     parsed_args = parse_args(args=args)
 
-    port_list_id="4a4717fe-57d2-11e1-9a26-406186ea4fc5"
-
-    create_targets(
+    numberCredentials = create_credentials(
         gmp,
-        parsed_args.hostname,
         parsed_args.hosts_file,
-        port_list_id
     )
 
-    print("\n  Target(s) created!\n")
+    numberCredentials = str(numberCredentials)
+    print("   \n" + numberCredentials + " Credential(s) created!\n")
 
 
 if __name__ == "__gmp__":
