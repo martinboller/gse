@@ -29,16 +29,22 @@ def main(gmp: Gmp, args: Namespace) -> None:
     response_xml = gmp.get_tasks(details=True)
     tasks_xml = response_xml.xpath("task")
 
-    heading = ["ID", "Name", "Severity"]
+    heading = ["#", "ID", "Name", "Severity"]
 
     rows = []
+    numberRows = 0
 
     for task in tasks_xml:
+        # Count number of reports
+        numberRows = numberRows + 1
+        # Cast/convert to text to show in list
+        rowNumber = str(numberRows)
+
         name = "".join(task.xpath("name/text()"))
         task_id = task.get("id")
         severity = "".join(task.xpath("last_report/report/severity/text()"))
 
-        rows.append([task_id, name, severity])
+        rows.append([rowNumber, task_id, name, severity])
 
     print(Table(heading=heading, rows=rows))
 

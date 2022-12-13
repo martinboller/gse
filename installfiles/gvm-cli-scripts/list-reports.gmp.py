@@ -29,15 +29,21 @@ def main(gmp: Gmp, args: Namespace) -> None:
     response_xml = gmp.get_reports(ignore_pagination=True, details=True, filter_string="status=Done and sort-reverse=name")
     reports_xml = response_xml.xpath("report")
 
-    heading = ["ID", "Date"]
+    heading = ["#", "ID", "Date"]
 
     rows = []
+    numberRows = 0
 
     for report in reports_xml:
+        # Count number of reports
+        numberRows = numberRows + 1
+        # Cast/convert to text to show in list
+        rowNumber = str(numberRows)
+
         name = "".join(report.xpath("name/text()"))
         report_id = report.get("id")
         status = report.get("name")
-        rows.append([report_id, name])
+        rows.append([rowNumber, report_id, name])
 
     print(Table(heading=heading, rows=rows))
 

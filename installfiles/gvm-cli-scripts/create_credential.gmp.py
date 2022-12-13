@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-# Copyright (C) 2019-2021 Greenbone Networks GmbH
-#
+7# -*- coding: utf-8 -*-
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,6 +13,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# Martin Boller
+#
 
 from argparse import Namespace
 
@@ -22,30 +23,15 @@ from gvm.protocols.gmp import Gmp
 
 from gvmtools.helper import Table
 
-
 def main(gmp: Gmp, args: Namespace) -> None:
     # pylint: disable=unused-argument
 
-    response_xml = gmp.get_targets()
-    targets_xml = response_xml.xpath("target")
-
-    heading = ["#", "Name", "ID"]
-
-    rows = []
-    numberRows = 0
-
-    for target in targets_xml:
-        # Count number of reports
-        numberRows = numberRows + 1
-        # Cast/convert to text to show in list
-        rowNumber = str(numberRows)
-
-        name = "".join(target.xpath("name/text()"))
-        target_id = target.get("id")
-        rows.append([rowNumber, name, target_id])
-
-    print(Table(heading=heading, rows=rows))
-
+    gmp.create_credential(
+        name='Test Credential',
+        credential_type=gmp.types.CredentialType.USERNAME_PASSWORD,
+        login='foo',
+        password='bar',
+)
 
 if __name__ == "__gmp__":
     main(gmp, args)
