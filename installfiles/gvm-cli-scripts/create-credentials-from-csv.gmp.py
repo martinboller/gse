@@ -44,17 +44,17 @@ def check_args(args):
     len_args = len(args.script) - 1
     if len_args != 2:
         message = """
-        This script pulls hostnames from a text file and creates a target \
-for each.
+        This script pulls credentials from a csv file and creates a \
+credential for each row.
         One parameter after the script name is required.
 
         1. <hostname>        -- Hostname or IP of the GVM host 
-        2. <hosts_csvfile>  -- text file containing Targetname and hostnames or IP-addresses
+        2. <credentials_csvfile>  -- csv file containing names and secrets required for scan credentials
 
         Example:
             $ gvm-script --gmp-username name --gmp-password pass \
-ssh --hostname <gsm> scripts/create_targets_from_host_list.gmp \
-<hostname> <hosts_csvfile>
+ssh --hostname <gsm> scripts/create_credentials_from_csv.gmp.py \
+<hostname> <credentials-csvfile>
         """
         print(message)
         sys.exit()
