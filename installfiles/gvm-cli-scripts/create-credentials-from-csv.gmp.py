@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Looseæy based on the create-targetw-from-host-list
+# Loosely based on the create-targets-from-host-list.gmp.py
 # As provided by Greenbone in the gvm-tools repo
 #
 # SPDX-License-Identifier: GPL-3.0-or-later
@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-# Run with gvm-script --gmp-username admin-user --gmp-password password socket create-targets-from-csv.gmp.py hostname-server targets.csv
+# Run with gvm-script --gmp-username admin-user --gmp-password password socket create-credentials-from-csv.gmp.py credentials.csv
 #
 #
 
@@ -35,8 +35,12 @@ from gvm.protocols.gmp import Gmp
 from gvmtools.helper import error_and_exit
 
 HELP_TEXT = (
-    "This script pulls targetname and hostnames/IP addresses "
-    "from a csv file and creates a target for each row."
+    "This script pulls Credential information "
+    "from a csv file and creates a credential for each row. \n"
+    "use the same credential names when creating targets! \n"
+    "csv file may contain Name of target, Login, password, and ssh-key \n"
+    "Name,Type,Login,Password,ssh-key \n"
+    "Please note: SNMP and ESX not supported yet "
 )
 
 
@@ -45,16 +49,15 @@ def check_args(args):
     if len_args != 2:
         message = """
         This script pulls credentials from a csv file and creates a \
-credential for each row.
+credential for each row in the csv file.
         One parameter after the script name is required.
 
-        1. <hostname>        -- Hostname or IP of the GVM host 
-        2. <credentials_csvfile>  -- csv file containing names and secrets required for scan credentials
+        1. <credentials_csvfile>  -- csv file containing names and secrets required for scan credentials
 
         Example:
             $ gvm-script --gmp-username name --gmp-password pass \
 ssh --hostname <gsm> scripts/create_credentials_from_csv.gmp.py \
-<hostname> <credentials-csvfile>
+<credentials-csvfile>
         """
         print(message)
         sys.exit()
@@ -78,39 +81,10 @@ def parse_args(args: Namespace) -> Namespace:  # pylint: disable=unused-argument
     )
 
     parser.add_argument(
-        "hostname",
+        "cred_file",
         type=str,
-        help="Host name to create targets for.",
+        help=("CSV File containing credentials"),
     )
-
-    parser.add_argument(
-        "hosts_file",
-        type=str,
-        help=("File containing host names / IPs"),
-    )
-
-    ports = parser.add_mutually_exclusive_group()
-    ports.add_argument(
-        "+pl",
-        "++port-list-id",
-        type=str,
-        dest="port_list_id",
-        help="UUID of existing port list.",
-    )
-    ports.add_argument(
-        "+pr",
-        "++port-range",
-        dest="port_range",
-        type=str,
-        help=(
-            "Port range to create port list from, e.g. "
-            "T:1-1234 for ports 1-1234/TCP"
-        ),
-    )
-
-    ports.set_defaults(
-        port_list_id="4a4717fe-57d2-11e1-9a26-406186ea4fc5"
-    )  # All IANA assigned TCP and UDP
     script_args, _ = parser.parse_known_args(args)
     return script_args
 
@@ -193,7 +167,7 @@ def main(gmp: Gmp, args: Namespace) -> None:
 
     numberCredentials = create_credentials(
         gmp,
-        parsed_args.hosts_file,
+        parsed_args.cred_file,
     )
 
     numberCredentials = str(numberCredentials)

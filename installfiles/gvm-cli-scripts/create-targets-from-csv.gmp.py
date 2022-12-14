@@ -36,25 +36,25 @@ from gvmtools.helper import error_and_exit
 
 HELP_TEXT = (
     "This script pulls targetname and hostnames/IP addresses "
-    "from a csv file and creates a target for each row."
+    "from a csv file and creates a target for each row. \n"
+    "csv file to contain name of target, ips, and up to 4 credentials previously created \n"
+    "name,ip-addresses,credential1,credential2,credential3,credential4"
 )
 
 
 def check_args(args):
     len_args = len(args.script) - 1
-    if len_args != 2:
+    if len_args != 1:
         message = """
         This script pulls hostnames from a text file and creates a target \
 for each.
         One parameter after the script name is required.
 
-        1. <hostname>        -- Hostname or IP of the GVM host 
-        2. <hosts_csvfile>  -- text file containing Targetname and hostnames or IP-addresses
+        1. <hosts_csvfile>  -- text file containing Targetname and hostnames or IP-addresses
 
         Example:
             $ gvm-script --gmp-username name --gmp-password pass \
-ssh --hostname <gsm> scripts/create_targets_from_host_list.gmp \
-<hostname> <hosts_csvfile>
+ssh --hostname <gsm> scripts/create_targets_from_host_list.gmp <hosts_csvfile>
         """
         print(message)
         sys.exit()
@@ -75,12 +75,6 @@ def parse_args(args: Namespace) -> Namespace:  # pylint: disable=unused-argument
         "++help",
         action="help",
         help="Show this help message and exit.",
-    )
-
-    parser.add_argument(
-        "hostname",
-        type=str,
-        help="Host name to create targets for.",
     )
 
     parser.add_argument(
@@ -125,12 +119,10 @@ def credential_id(
     for credential in credentials_xml:
         name = "".join(credential.xpath("name/text()"))
         cred_id = credential.get("id")
-
     return cred_id
 
 def create_targets(   
     gmp: Gmp,
-    host_name: str,
     host_file: Path,
     port_list_id: str,
 ):
@@ -170,7 +162,6 @@ def main(gmp: Gmp, args: Namespace) -> None:
 
     numberTargets = create_targets(
         gmp,
-        parsed_args.hostname,
         parsed_args.hosts_file,
         parsed_args.port_list_id
     )
