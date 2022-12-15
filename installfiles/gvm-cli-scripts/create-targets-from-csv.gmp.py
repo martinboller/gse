@@ -36,7 +36,7 @@ from gvmtools.helper import error_and_exit
 
 HELP_TEXT = (
     "This script pulls targetname and hostnames/IP addresses "
-    "from a csv file and creates a target for each row. \n"
+    "from a csv file and creates a target for each row. \n\n"
     "csv file to contain name of target, ips, and up to 4 credentials previously created \n"
     "name,ip-addresses,credential1,credential2,credential3,credential4"
 )
@@ -167,7 +167,7 @@ def main(gmp: Gmp, args: Namespace) -> None:
     )
 
     numberTargets = str(numberTargets)
-    print("   \n" + numberTargets + " Target(s) created!\n")
+    print("   \n [" + numberTargets + "] Target(s) created!\n")
 
 
 if __name__ == "__gmp__":

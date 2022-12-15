@@ -37,9 +37,9 @@ from gvmtools.helper import error_and_exit
 HELP_TEXT = (
     "This script pulls Credential information "
     "from a csv file and creates a credential for each row. \n"
-    "use the same credential names when creating targets! \n"
+    "use the same credential names when creating targets! \n\n"
     "csv file may contain Name of target, Login, password, and ssh-key \n"
-    "Name,Type,Login,Password,ssh-key \n"
+    "Name,Type,Login,Password,ssh-key \n\n"
     "Please note: SNMP and ESX not supported yet "
 )
 
@@ -171,7 +171,7 @@ def main(gmp: Gmp, args: Namespace) -> None:
     )
 
     numberCredentials = str(numberCredentials)
-    print("   \n" + numberCredentials + " Credential(s) created!\n")
+    print("   \n [" + numberCredentials + "] Credential(s) created!\n")
 
 
 if __name__ == "__gmp__":
