@@ -3,6 +3,8 @@
 # Loosely based on the create-targets-from-host-list.gmp.py
 # As provided by Greenbone in the gvm-tools repo
 #
+# Martin Boller
+#
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 # This program is free software: you can redistribute it and/or modify

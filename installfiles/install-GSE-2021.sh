@@ -242,7 +242,7 @@ prepare_source() {
     /usr/bin/logger '..openvas-scanner' -t 'gse-22.4.0';
     wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v22.4.0.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gvm daemon' -t 'gse-22.4.0';
-    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v22.4.0.tar.gz> /dev/null 2>&1;
+    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v22.4.1.tar.gz> /dev/null 2>&1;
     /usr/bin/logger '..gsa daemon (gsad)' -t 'gse-22.4.0';
     wget -O gsad.tar.gz https://github.com/greenbone/gsad/archive/refs/tags/v22.4.0.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gsa webserver' -t 'gse-22.4.0';
@@ -270,7 +270,7 @@ prepare_source() {
     mv /opt/gvm/src/greenbone/gvm-libs-22.4.1 /opt/gvm/src/greenbone/gvm-libs > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/ospd-openvas-22.4.2 /opt/gvm/src/greenbone/ospd-openvas > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/openvas-scanner-22.4.0 /opt/gvm/src/greenbone/openvas > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/gvmd-22.4.0 /opt/gvm/src/greenbone/gvmd > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gvmd-22.4.1 /opt/gvm/src/greenbone/gvmd > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gsa-22.4.0 /opt/gvm/src/greenbone/gsa > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gsad-22.4.0 /opt/gvm/src/greenbone/gsad > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/openvas-smb-22.4.0 /opt/gvm/src/greenbone/openvas-smb > /dev/null 2>&1;

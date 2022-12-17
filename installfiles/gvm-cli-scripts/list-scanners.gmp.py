@@ -16,7 +16,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
-#
 # Based on other Greenbone scripts 
 #
 # Martin Boller
@@ -32,20 +31,23 @@ from gvmtools.helper import Table
 def main(gmp: Gmp, args: Namespace) -> None:
     # pylint: disable=unused-argument
 
-    response_xml = gmp.get_report_formats(details=True)
-    report_formats_xml = response_xml.xpath("report_format")
-    heading = ["#", "Id", "Name"]
+    response_xml = gmp.get_scanners()
+    scanners_xml = response_xml.xpath("scanner")
+
+    heading = ["#", "Name", "ID"]
+
     rows = []
     numberRows = 0
 
-    for report_format in report_formats_xml:
+    for scanner in scanners_xml:
         # Count number of reports
         numberRows = numberRows + 1
         # Cast/convert to text to show in list
         rowNumber = str(numberRows)
-        name = "".join(report_format.xpath("name/text()"))
-        report_format_id = report_format.get("id")
-        rows.append([rowNumber, report_format_id, name])
+
+        name = "".join(scanner.xpath("name/text()"))
+        scanner_id = scanner.get("id")
+        rows.append([rowNumber, name, scanner_id])
 
     print(Table(heading=heading, rows=rows))
 
