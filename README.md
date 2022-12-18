@@ -27,6 +27,9 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ## Latest changes
 
+### 2022-12-18 - GVMD version 22.4.1 and more + updated scripts (Python GMP)
+ - Upgraded GVMD to version 22.4.1 and updated some of the scripts + added a few more.
+
 ### 2022-12-05 - Scripts and updated readme
  - Added scripts: Example create Targets and export reports in pdf and csv format
 
