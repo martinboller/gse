@@ -503,7 +503,7 @@ prestage_scan_data() {
     tar -xzf scandata.tar.gz > /dev/null 2>&1; 
     /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... copying feed data to correct locations\e[0m";
-    /bin/cp -r /root/GVM/openvas/plugins/* /var/lib/openvas/plugins/ > /dev/null 2>&1;
+    /bin/cp -r /root/GVM/openvas/* /var/lib/openvas/ > /dev/null 2>&1;
     /bin/cp -r /root/GVM/gvm/* /var/lib/gvm/ > /dev/null 2>&1;
     /bin/cp -r /root/GVM/notus/* /var/lib/notus/ > /dev/null 2>&1;
     echo -e "\e[1;36m ... Cleaning Up\e[0m";
@@ -1174,16 +1174,14 @@ get_scanner_status() {
 create_gvm_python_script() {
     /usr/bin/logger 'create_gvm_python_script' -t 'gse-22.4.0';
     echo -e "\e[1;32m - create_gvm_python_script()\e[0m";
-    mkdir /opt/gvm/scripts > /dev/null 2>&1;
     echo -e "\e[1;36m ... copying scripts and xml files\e[0m";
-    cp -r /root/gvm-cli-scripts/* /opt/gvm/scripts/ > /dev/null 2>&1;
+    git clone https://github.com/martinboller/greenbone-gmp-scripts.git /opt/gvm/scripts/ > /dev/null 2>&1;
     cp -r /root/XML-Files/ /opt/gvm/scripts/  > /dev/null 2>&1;
     sync;
     echo -e "\e[1;36m ... cleaning home dir for root\e[0m";
     rm -rf /root/XML-Files/ > /dev/null 2>&1;
     rm -rf /root/gvm-cli-scripts/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/scripts/ > /dev/null 2>&1;
-    chmod 755 /opt/gvm/scripts/*.sh;
     chmod 755 /opt/gvm/scripts/*.py;
     sync;
     echo -e "\e[1;32m - create_gvm_python_script() finished\e[0m";
