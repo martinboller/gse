@@ -891,6 +891,12 @@ __EOF__
 # updates feeds for Greenbone Vulnerability Manager
 # Using the Community feed require some significant delays between syncs, as only one session at a time is allowed for community feed
 
+# SCAP data
+su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type scap" > /dev/null 2>&1;
+/usr/bin/logger ''Scapdata Feed Version \$(su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type scap --feedversion")'' -t gse;
+# Debian keeps TCP sessions open for 60 seconds
+sleep 62;
+
 # NVT data
 su gvm -c "/opt/gvm/bin/greenbone-nvt-sync" > /dev/null 2>&1;
 /usr/bin/logger ''nvt data Feed Version \$(su gvm -c "/opt/gvm/bin/greenbone-nvt-sync --feedversion")'' -t gse;
@@ -900,12 +906,6 @@ sleep 62;
 # CERT data
 su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type cert" > /dev/null 2>&1;
 /usr/bin/logger ''Certdata Feed Version \$(su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type cert --feedversion")'' -t gse;
-# Debian keeps TCP sessions open for 60 seconds
-sleep 62;
-
-# SCAP data
-su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type scap" > /dev/null 2>&1;
-/usr/bin/logger ''Scapdata Feed Version \$(su gvm -c "/opt/gvm/sbin/greenbone-feed-sync --type scap --feedversion")'' -t gse;
 # Debian keeps TCP sessions open for 60 seconds
 sleep 62;
 
