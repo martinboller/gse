@@ -272,20 +272,7 @@ prepare_source() {
     mv /opt/gvm/src/greenbone/openvas-scanner-22.4.1 /opt/gvm/src/greenbone/openvas > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gvmd-22.4.2 /opt/gvm/src/greenbone/gvmd > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gsa-22.4.1 /opt/gvm/src/greenbone/gsa > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/gsad-22.4.1
-    wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v22.4.0.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..python-gvm' -t 'gse-22.9.1';
-    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v22.9.1.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..gvm-tools' -t 'gse-22.9.0';
-    wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v22.9.0.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..pg-gvm' -t 'gse-22.4.0';
-    wget -O pg-gvm.tar.gz https://github.com/greenbone/pg-gvm/archive/refs/tags/v22.4.0.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..notus-scanner' -t 'gse-22.4.1';
-    wget -O notus.tar.gz https://github.com/greenbone/notus-scanner/archive/refs/tags/v22.4.2.tar.gz > /dev/null 2>&1;
-  
-    # open and extract the tarballs
-    echo -e "\e[1;36m ... open and extract tarballs\e[0m";
-    /usr/bin/logger '..open and extract the tarballs' -t 'gse-22.4.0'; /opt/gvm/src/greenbone/gsad > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gsad-22.4.1 /opt/gvm/src/greenbone/gsad > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/openvas-smb-22.4.0 /opt/gvm/src/greenbone/openvas-smb > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/python-gvm-22.9.1 /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gvm-tools-22.9.0 /opt/gvm/src/greenbone/gvm-tools > /dev/null 2>&1;
