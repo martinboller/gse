@@ -27,6 +27,9 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ## Latest changes
 
+### 2023-01-23 - GVMD version 22.4.1 and more + updated scripts (Python GMP)
+ - Updated to Greenbone Community Edition 22.4.1 Bugfix release (2023-01-13).
+
 ### 2022-12-18 - GVMD version 22.4.1 and more + updated scripts (Python GMP)
  - Upgraded GVMD to version 22.4.1 and updated some of the scripts + added a few more.
 
