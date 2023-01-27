@@ -765,7 +765,7 @@ configure_gvm() {
     cat << __EOF__ > /lib/systemd/system/gvmd.service
 [Unit]
 Description=Greenbone Vulnerability Manager daemon (gvmd)
-After=network.target networking.service postgresql.service ospd-openvas.service
+After=network.target networking.service postgresql.service ospd-openvas.service systemd-tmpfiles.service
 Wants=postgresql.service ospd-openvas.service
 Documentation=man:gvmd(8)
 ConditionKernelCommandLine=!recovery
@@ -776,13 +776,23 @@ User=gvm
 Group=gvm
 PIDFile=/run/gvmd/gvmd.pid
 # feed-update lock must be shared between ospd, gvmd, and greenbone-nvt-sync/greenbone-feed-sync
-ExecStart=-/opt/gvm/sbin/gvmd --unix-socket=/run/gvmd/gvmd.sock --feed-lock-path=/run/gvmd/feed-update.lock --listen-group=gvm --client-watch-interval=0 --osp-vt-update=/run/ospd/ospd-openvas.sock
+ExecStart=/usr/bin/wrapper /opt/gvm/sbin/gvmd /etc/gvm/gvmd.conf
+#ExecStart=-/opt/gvm/sbin/gvmd --unix-socket=/run/gvmd/gvmd.sock --feed-lock-path=/run/gvmd/feed-update.lock --listen-group=gvm --client-watch-interval=0 --osp-vt-update=/run/ospd/ospd-openvas.sock
 Restart=always
 TimeoutStopSec=20
 
 [Install]
 WantedBy=multi-user.target
 Alias=greenbone-vulnerability-manager.service
+__EOF__
+
+    echo -e "\e[1;36m ... create GVM config-file\e[0m";
+    cat << __EOF__ > /etc/gvm/gvmd.conf
+--unix-socket=/run/gvmd/gvmd.sock 
+--feed-lock-path=/run/gvmd/feed-update.lock 
+--listen-group=gvm 
+--client-watch-interval=0 
+--osp-vt-update=/run/ospd/ospd-openvas.sock
 __EOF__
     sync;
     echo -e "\e[1;32m - configure_gvm() finished\e[0m";
@@ -803,10 +813,11 @@ ConditionKernelCommandLine=!recovery
 
 [Service]
 Type=forking
-User=gvm
-Group=gvm
+#User=gvm
+#Group=gvm
 # With NGINX listen on 127.0.0.1 and http only (https through NGINX)
-ExecStart=/opt/gvm/sbin/gsad --listen 127.0.0.1 --port=8443 --http-only
+ExecStart=/usr/bin/wrapper /opt/gvm/sbin/gsad /etc/gsad/gsad.conf
+#ExecStart=/opt/gvm/sbin/gsad --listen 127.0.0.1 --port=8443 --http-only
 # --drop-privileges=gvm
 # Without NGINX user: ExecStart=/opt/gvm/sbin/gsad --port=8443 --ssl-private-key=/var/lib/gvm/private/CA/serverkey.pem --ssl-certificate=/var/lib/gvm/CA/servercert.pem --munix-socket=/run/gvmd/gvmd.sock --no-redirect --secure-cookie --http-sts --timeout=60 --http-cors="https://%H:8443/" --gnutls-priorities=SECURE256:+SECURE128:-VERS-TLS-ALL:+VERS-TLS1.2
 Restart=always
@@ -816,11 +827,73 @@ TimeoutStopSec=10
 WantedBy=multi-user.target
 Alias=greenbone-security-assistant.service
 __EOF__
+
+    mkdir /etc/gsad/;
+    cat << __EOF__ > /etc/gsad/gsad.conf
+#--foreground
+--drop-privileges=gvm
+#--do-chroot
+--no-redirect
+--secure-cookie
+--listen=127.0.0.1
+--port=8443 
+--http-only 
+--timeout=2880
+__EOF__
     sync;
     touch /var/log/gvm/gsad.log > /dev/null 2>&1;
     chown -R gvm:gvm /var/log/gvm/ > /dev/null 2>&1;
     echo -e "\e[1;32m - configure_gsa() finished\e[0m";
-/usr/bin/logger 'configure_gsa finished' -t 'gse-22.4.0';
+    /usr/bin/logger 'configure_gsa finished' -t 'gse-22.4.0';
+}
+
+create_wrapper() {
+    echo -e "\e[1;32m - create_wrapper()\e[0m";
+    /usr/bin/logger 'create_wrapper' -t 'gse-22.4.0';
+    cat << __EOF__ > /usr/bin/wrapper
+#!/usr/bin/env python3
+
+import argparse
+import os
+
+def read_config_file(config):
+    parameters = []
+    if not config:
+        return parameters
+    if not os.path.exists(config):
+        return parameters
+    with open(config, "r") as configfile:
+        for line in configfile:
+            line = line.strip()
+            if line.startswith("#") or not line:
+                continue
+            parameters.append(line)
+    return parameters
+
+def run_command(command, parameters, prefix=[]):
+    command_line = prefix + [command] + parameters
+    os.execv(command_line[0], command_line)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("command", help="Path to executable")
+    parser.add_argument(
+        "config",
+        help="Path to configuration file"
+    )
+    parser.add_argument(
+        "--prefix",
+        help="Path to configuration file containing the prefix"
+    )
+    args = parser.parse_args()
+    prefix = read_config_file(args.prefix)
+    parameters = read_config_file(args.config)
+    run_command(args.command, parameters, prefix)
+__EOF__
+    sync;
+    chmod 755 /usr/bin/wrapper > /dev/null 2>&1;
+    echo -e "\e[1;32m - create_wrapper() finished\e[0m";
+    /usr/bin/logger 'create_wrapper finished' -t 'gse-22.4.0';
 }
 
 configure_feed_owner() {
@@ -1401,7 +1474,8 @@ main() {
     #install_nmap;
     
     apt-get -qq -y install --fix-broken > /dev/null 2>&1;
-    # Prepare postgresql for GVMD and redis for OpenVAS
+    # Create wrapper to start services with config files
+    create_wrapper;
     # Install everything needed for Greenbone Source Edition
     install_impacket;
     install_gvm_libs;
