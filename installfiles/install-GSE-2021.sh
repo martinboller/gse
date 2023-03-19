@@ -36,8 +36,9 @@ install_prerequisites() {
     . /etc/os-release
     OS=$NAME
     VER=$VERSION_ID
-    /usr/bin/logger "Operating System $OS Version $VER" -t 'gse-22.4.0';
-    echo -e "\e[1;36m ... Operating System $OS Version $VER\e[0m";
+    CODENAME=$VERSION_CODENAME
+    /usr/bin/logger "Operating System $OS Version $VER Codename $CODENAME" -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... Operating System $OS Version $VER Codename $CODENAME\e[0m";
     # Install prerequisites
     # Prepare package sources for NODEJS 16.x
     # GSAD works with node 16.x but NOT 17.x
@@ -101,6 +102,27 @@ install_prerequisites() {
                     python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
             echo -e "\e[1;36m ... installing yarn\e[0m";
             npm install -g yarn --force > /dev/null 2>&1;
+
+
+    elif [ $CODENAME -eq "bookworm" ] 
+        then
+            /usr/bin/logger '..install_prerequisites_debian_12_bookworm' -t 'gse-22.4.0';
+            echo -e "\e[1;36m ... install_prerequisites_debian_12_bookworm\e[0m";
+            # Install pre-requisites for gvmd on bookworm (debian 12)
+            apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
+                postgresql-server-dev-13 pkg-config libical-dev xsltproc > /dev/null 2>&1;        
+            # Removed doxygen for now
+            # Other pre-requisites for GSE - Bullseye / Debian 11
+            /usr/bin/logger '....Other prerequisites for Greenbone Source Edition on Debian 11' -t 'gse-22.4.0';
+            echo -e "\e[1;36m ... installing prequisites for Greenbone Source Edition\e[0m";
+            apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
+                bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
+                sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
+                xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
+                    python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
+            echo -e "\e[1;36m ... installing yarn\e[0m";
+            npm install -g yarn --force > /dev/null 2>&1;
+
     elif [ $VER -eq "10" ]
         then
             /usr/bin/logger '..install_prerequisites_debian_10_buster' -t 'gse-22.4.0';

@@ -36,8 +36,9 @@ install_prerequisites() {
     . /etc/os-release
     OS=$NAME
     VER=$VERSION_ID
-    /usr/bin/logger "Operating System: $OS Version: $VER" -t 'gse-21.4.4';
-    echo -e "\e[1;36m ... Operating System: $OS Version: $VER\e[0m";
+    CODENAME=$VERSION_CODENAME
+    /usr/bin/logger "Operating System: $OS Version: $VER: $CODENAME" -t 'gse-21.4.4';
+    echo -e "\e[1;36m ... Operating System: $OS Version: $VER: $CODENAME\e[0m";
     # Install prerequisites
     apt-get -qq update > /dev/null 2>&1;
     # Install some basic tools on a Debian net install
@@ -76,7 +77,7 @@ install_prerequisites() {
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                 python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
         
-    elif [ $VER -eq "12" ]
+    elif [ $CODENAME -eq "bookworm" ]
         then
             /usr/bin/logger '..install_prerequisites_debian_12_bookworm' -t 'gse-21.4.4';
             echo -e "\e[1;36m ... installing prequisites Debian 12 Bookworm\e[0m";
