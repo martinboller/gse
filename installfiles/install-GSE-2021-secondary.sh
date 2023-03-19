@@ -69,30 +69,28 @@ install_prerequisites() {
             echo -e "\e[1;36m ... other prerequisites for Greenbone Source Edition\e[0m";
             # Other pre-requisites for GSE - Bullseye / Debian 11
             /usr/bin/logger '....Other prerequisites for Greenbone Source Edition on Debian 11' -t 'gse-21.4.4';
-            apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
-                postgresql-server-dev-13 pkg-config libical-dev xsltproc > /dev/null 2>&1;        
+            apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc > /dev/null 2>&1;        
             apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                 python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
         
-    elif [ $VER -eq "10" ]
+    elif [ $VER -eq "12" ]
         then
-            /usr/bin/logger '..install_prerequisites_debian_10_buster' -t 'gse-21.4.4';
-            # Install pre-requisites for gvmd on buster (debian 10)
-            echo -e "\e[1;36m ... installing prequisites Debian 10\e[0m";
-            apt-get -qq -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc doxygen > /dev/null 2>&1;
-            
-            # Other pre-requisites for GSE - Buster / Debian 10
+            /usr/bin/logger '..install_prerequisites_debian_12_bookworm' -t 'gse-21.4.4';
+            echo -e "\e[1;36m ... installing prequisites Debian 12 Bookworm\e[0m";
+            # Install pre-requisites for gvmd on Bookworm (debian 12)
+            apt-get -qq -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc doxygen > /dev/null 2>&1;        
             echo -e "\e[1;36m ... other prerequisites for Greenbone Source Edition\e[0m";
-            /usr/bin/logger '....Other prerequisites for Greenbone Source Edition on Debian 10' -t 'gse-21.4.4';
+            # Other pre-requisites for GSE - Bookworm / Debian 12
+            /usr/bin/logger '....Other prerequisites for Greenbone Source Edition on Debian 12' -t 'gse-21.4.4';
+            apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc > /dev/null 2>&1;        
             apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-                python3-defusedxml python3-pip python3-psutil virtualenv python-impacket python-scapy > /dev/null 2>&1;
-        
+                python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1        
         else
             /usr/bin/logger "Operating System $OS Version $VER" -t 'gse-21.4.4';
             # Untested but let's try like it is buster (debian 10)
