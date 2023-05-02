@@ -5,8 +5,8 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Email:        martin                                                      #
-# Last Update:  2022-01-08                                                  #
-# Version:      2.10                                                        #
+# Last Update:  2023-05-02                                                  #
+# Version:      2.70                                                        #
 #                                                                           #
 # Changes:      Initial Version (1.00)                                      #
 #               2021-05-07 Update to 21.4.0 (1.50)                          #
@@ -15,6 +15,7 @@
 #               2021-10-25 Correct ospd-openvas.sock                        #
 #               2021-12-17 Create secondary cert w hostname not *           #
 #               2022-01-08 Improved console output during install (2.10)    #
+#               2023-05-02 Latest versions and greenbone-feed-sync          #
 #                                                                           #
 # Info:         https://sadsloth.net/post/install-gvm-20_08-src-on-debian/  #
 #                                                                           #
@@ -177,51 +178,66 @@ __EOF__
     echo -e "\e[1;32m - prepare_nix() finished\e[0m";
 }
 
-prepare_source_secondary() {    
-    /usr/bin/logger 'prepare_source_secondary' -t 'gse-21.4.4';
+prepare_source() {    
+    /usr/bin/logger 'prepare_source' -t 'gse-22.4.0';
     echo -e "\e[1;32m - prepare_source()\e[0m";
     echo -e "\e[1;32mPreparing GSE Source files\e[0m";
     echo -e "\e[1;36m ... preparing directories\e[0m";
     mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
-
     #Get all packages (the python elements can be installed w/o, but downloaded and used for install anyway)
-    /usr/bin/logger '..gvm libraries' -t 'gse-21.4.4';
-    /usr/bin/logger '..gvm-libs 22.4.0' -t 'gse-22.4.2';
-    wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v22.4.2.tar.gz > /dev/null 2>&1;
+    /usr/bin/logger '..gvm libraries' -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... downloading released packages for Greenbone Source Edition\e[0m";
+    /usr/bin/logger '..gvm-libs 22.5.2' -t 'gse-22.4.2';
+    wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v22.5.2.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..ospd-openvas' -t 'gse-22.4.2';
-    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v22.4.3.tar.gz > /dev/null 2>&1;
+    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v22.5.0.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..openvas-scanner' -t 'gse-22.4.0';
-    wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v22.4.1.tar.gz > /dev/null 2>&1;
+    wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v22.6.1.tar.gz > /dev/null 2>&1;
+    /usr/bin/logger '..gvm daemon' -t 'gse-22.4.0';
+    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v22.4.2.tar.gz> /dev/null 2>&1;
+    /usr/bin/logger '..gsa daemon (gsad)' -t 'gse-22.4.0';
+    wget -O gsad.tar.gz https://github.com/greenbone/gsad/archive/refs/tags/v22.4.1.tar.gz > /dev/null 2>&1;
+    /usr/bin/logger '..gsa webserver' -t 'gse-22.4.0';
+    wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/refs/tags/v22.4.1.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..openvas-smb' -t 'gse-22.4.0';
-    wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v22.4.0.tar.gz > /dev/null 2>&1;
+    wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v22.5.0.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..python-gvm' -t 'gse-22.9.1';
-    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v22.9.1.tar.gz > /dev/null 2>&1;
+    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v23.4.2.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gvm-tools' -t 'gse-22.9.0';
-    wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v22.9.0.tar.gz > /dev/null 2>&1;
+    wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v23.4.0.tar.gz > /dev/null 2>&1;
+    /usr/bin/logger '..pg-gvm' -t 'gse-22.4.0';
+    wget -O pg-gvm.tar.gz https://github.com/greenbone/pg-gvm/archive/refs/tags/v22.4.0.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..notus-scanner' -t 'gse-22.4.1';
-    wget -O notus.tar.gz https://github.com/greenbone/notus-scanner/archive/refs/tags/v22.4.2.tar.gz > /dev/null 2>&1;
+    wget -O notus.tar.gz https://github.com/greenbone/notus-scanner/archive/refs/tags/v22.5.0.tar.gz > /dev/null 2>&1;
   
     # open and extract the tarballs
     echo -e "\e[1;36m ... open and extract tarballs\e[0m";
+    /usr/bin/logger '..open and extract the tarballs' -t 'gse-22.4.0';
     find *.gz | xargs -n1 tar zxvfp > /dev/null 2>&1;
     sync;
 
     # Naming of directories w/o version
-    /usr/bin/logger '..re-naming directories' -t 'gse-21.4.4';
+    /usr/bin/logger '..rename directories' -t 'gse-22.4.0';    
     echo -e "\e[1;36m ... renaming package directories\e[0m";
-    mv /opt/gvm/src/greenbone/gvm-libs-22.4.2 /opt/gvm/src/greenbone/gvm-libs > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/ospd-openvas-22.4.3 /opt/gvm/src/greenbone/ospd-openvas > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/openvas-scanner-22.4.1 /opt/gvm/src/greenbone/openvas > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/openvas-smb-22.4.0 /opt/gvm/src/greenbone/openvas-smb > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/python-gvm-22.9.1 /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/gvm-tools-22.9.0 /opt/gvm/src/greenbone/gvm-tools > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/notus-scanner-22.4.2 /opt/gvm/src/greenbone/notus > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gvm-libs-22.5.2 /opt/gvm/src/greenbone/gvm-libs > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/ospd-openvas-22.5.0 /opt/gvm/src/greenbone/ospd-openvas > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/openvas-scanner-22.6.1 /opt/gvm/src/greenbone/openvas > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gvmd-22.4.2 /opt/gvm/src/greenbone/gvmd > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gsa-22.4.1 /opt/gvm/src/greenbone/gsa > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gsad-22.4.1 /opt/gvm/src/greenbone/gsad > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/openvas-smb-22.5.0 /opt/gvm/src/greenbone/openvas-smb > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/python-gvm-23.4.2 /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gvm-tools-23.4.0 /opt/gvm/src/greenbone/gvm-tools > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/pg-gvm-22.4.0 /opt/gvm/src/greenbone/pg-gvm > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/notus-scanner-22.5.0 /opt/gvm/src/greenbone/notus > /dev/null 2>&1;
+
     sync;
     echo -e "\e[1;36m ... configuring permissions\e[0m";
-    chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
-    /usr/bin/logger 'prepare_source_secondary finished' -t 'gse-21.4.4';
+    chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
+    echo -e "\e[1;32m - prepare_source() finished\e[0m";
+    /usr/bin/logger 'prepare_source finished' -t 'gse-22.4.0';
 }
 
 install_poetry() {
@@ -379,6 +395,14 @@ install_nmap() {
     /usr/bin/logger 'install_nmap finished' -t 'gse-21.4.4';
 }
 
+install_greenbone_feed_sync() {
+    /usr/bin/logger 'install_greenbone_feed_sync()' -t 'gse-22.4.0';
+    echo -e "\e[1;32m - install_greenbone_feed_sync() \e[0m";
+    python3 -m pip install greenbone-feed-sync > /dev/null 2>&1;
+    /usr/bin/logger 'install_greenbone_feed_sync() finished' -t 'gse-22.4.0';
+    echo -e "\e[1;32m - install_greenbone_feed_sync() finished\e[0m";
+}
+
 prestage_scan_data() {
     /usr/bin/logger 'prestage_scan_data' -t 'gse-22.4.0';
     echo -e "\e[1;32m - prestage_scan_data() \e[0m";
@@ -402,8 +426,8 @@ update_feed_data() {
     echo -e "\e[1;32m - update_feed_data() \e[0m";
     ## This relies on the configure_greenbone_updates script
     echo -e "\e[1;36m ... updating feed data\e[0m";
-    echo -e "\e[1;36m ... this may take a long time\e[0m";
-    /opt/gvm/gse-updater/gse-updater.sh > /dev/null 2>&1;
+    echo -e "\e[1;36m ... this could take a while\e[0m";
+    /usr/local/bin/greenbone-feed-sync --type notus,nvt,nasl  --user gvm --group gvm > /dev/null 2>&1;
     echo -e "\e[1;32m - update_feed_data() finished\e[0m";
     /usr/bin/logger 'update_feed_data finished' -t 'gse-21.4.4';
 }
@@ -589,7 +613,6 @@ configure_greenbone_updates() {
     /usr/bin/logger 'configure_greenbone_updates' -t 'gse-21.4.4';
     echo -e "\e[1;32m - configure_greenbone_updates() \e[0m";
    # Configure daily GVM updates timer and service
-    mkdir -p /opt/gvm/gse-updater > /dev/null 2>&1;
     # Timer
     echo -e "\e[1;36m ... create gse-update timer\e[0m";
     cat << __EOF__ > /lib/systemd/system/gse-update.timer
@@ -618,21 +641,11 @@ After=network.target networking.service
 Documentation=man:gvmd(8)
 
 [Service]
-ExecStart=/opt/gvm/gse-updater/gse-updater.sh
+ExecStart=/usr/local/bin/greenbone-feed-sync --type notus,nvt,nasl --user gvm --group gvm
 TimeoutSec=300
 
 [Install]
 WantedBy=multi-user.target
-__EOF__
-
-    # Create script for gse-update.service
-    echo -e "\e[1;36m ... create gse-update script\e[0m";
-    cat << __EOF__  > /opt/gvm/gse-updater/gse-updater.sh;
-#! /bin/bash
-# updates feeds for openvas on secondary server
-# NVT data
-su gvm -c "/opt/gvm/bin/greenbone-nvt-sync";
-/usr/bin/logger ''nvt data Feed Version \$(su gvm -c "/opt/gvm/bin/greenbone-nvt-sync --feedversion")'' -t gse;
 __EOF__
     sync;
     chmod +x /opt/gvm/gse-updater/gse-updater.sh > /dev/null 2>&1;
@@ -852,7 +865,7 @@ main() {
    # Shared components
     install_prerequisites;
     prepare_nix;
-    prepare_source_secondary;
+    prepare_source;
     
     # Installation of specific components
     # Only install poetry when testing
@@ -863,6 +876,7 @@ main() {
     install_openvas;
     install_ospd_openvas;
     install_notus;
+    install_greenbone_feed_sync;
     prepare_gpg;
  
     # Configuration of installed components
