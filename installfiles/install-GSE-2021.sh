@@ -79,7 +79,7 @@ install_prerequisites() {
     /usr/bin/logger '..Prerequisites for Greenbone Security Assistant' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... prequisites for Greenbone Security Assistant\e[0m";
     apt-get -qq -y install libmicrohttpd-dev clang;
-    apt-get -qq -y install python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg;
+    apt-get -qq -y install python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg python3-venv;
 
 
     # Other pre-requisites for GSE
@@ -167,7 +167,11 @@ install_prerequisites() {
     /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... installing texlive required for PDF report generation\e[0m";
     echo -e "\e[1;36m ... please be patient, this could take quite a while depending on your system\e[0m";
-    apt-get -qq -y install texlive-full texlive-fonts-recommended > /dev/null 2>&1;
+ 
+    # Speed up installation without texlive (but then PDF reports wont work)
+    #apt-get -qq -y install texlive-full texlive-fonts-recommended > /dev/null 2>&1;
+   
+   
     # Install other preferences and clean up APT
     /usr/bin/logger '....Install some preferences on Debian and clean up apt' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... installing some preferences on Debian\e[0m";
@@ -214,7 +218,7 @@ prepare_nix() {
     mkdir /opt/gvm > /dev/null 2>&1;
     chown gvm:gvm /opt/gvm;
     # Update the PATH environment variable
-    echo "PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin" > /etc/profile.d/gvm.sh;
+    echo "PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin:opt/gvm/gvmpy/bin" > /etc/profile.d/gvm.sh;
     # Add GVM library path to /etc/ld.so.conf.d
 
     echo -e "\e[1;36m ... configuring ld for greenbone libraries\e[0m";
@@ -348,7 +352,7 @@ install_notus() {
     cd notus/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1
     echo -e "\e[1;36m ... Install notus scanner Python pip module (notus-scanner) \e[0m";
-    /usr/bin/python3 -m pip install . > /dev/null 2>&1; 
+    su gvm -c 'cd ~; source gvmpy/bin/activate; python3 -m pip install notus-scanner' > /dev/null 2>&1; 
     sync;
     echo -e "\e[1;32m - install_notus() finished\e[0m";
     /usr/bin/logger 'install_notus finished' -t 'gse-22.4.0';
@@ -383,10 +387,10 @@ install_python_gvm() {
     echo -e "\e[1;32m - install_python_gvm()\e[0m";
     # Installing from repo
     echo -e "\e[1;36m ... installing python-gvm\e[0m";
-    #/usr/bin/python3 -m pip install python-gvm;
-    cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
-    cd python-gvm/ > /dev/null 2>&1;
-    /usr/bin/python3 -m pip install . > /dev/null 2>&1;
+    su gvm -c 'cd ~; source gvmpy/bin/activate; /usr/bin/python3 -m pip install python-gvm';
+    #cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
+    #cd python-gvm/ > /dev/null 2>&1;
+    #/usr/bin/python3 -m pip install . > /dev/null 2>&1;
     #/usr/poetry/bin/poetry install;
     echo -e "\e[1;32m - install_python_gvm() finished\e[0m";
     /usr/bin/logger 'install_python_gvm finished' -t 'gse-22.4.0';
@@ -421,13 +425,13 @@ install_ospd() {
     /usr/bin/logger 'install_ospd' -t 'gse-22.4.0';
     echo -e "\e[1;32m - install_ospd()\e[0m";
     # Install from repo
-    #/usr/bin/python3 -m pip install ospd;
+    su gvm -c 'cd ~; source gvmpy/bin/activate; python3 -m pip install ospd';
     # Uncomment below for install from source
-    cd /opt/gvm/src/greenbone > /dev/null 2>&1;
+#    cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # Configure and build scanner
-    cd ospd > /dev/null 2>&1;
-    echo -e "\e[1;36m ... installing ospd\e[0m";
-    /usr/bin/python3 -m pip install . > /dev/null 2>&1 
+    #cd ospd > /dev/null 2>&1;
+    #echo -e "\e[1;36m ... installing ospd\e[0m";
+    #/usr/bin/python3 -m pip install . > /dev/null 2>&1 
     # For use when testing (just comment uncomment poetry install in "main" and here)
     #/usr/poetry/bin/poetry install;
     echo -e "\e[1;32m - install_ospd() finished\e[0m";
@@ -438,13 +442,13 @@ install_ospd_openvas() {
     /usr/bin/logger 'install_ospd_openvas' -t 'gse-22.4.0';
     echo -e "\e[1;32m - install_ospd_openvas()\e[0m";
     # Install from repo
-    #/usr/bin/python3 -m pip install ospd-openvas
-    cd /opt/gvm/src/greenbone > /dev/null 2>&1;
+    su gvm -c 'cd ~; source gvmpy/bin/activate; python3 -m pip install ospd-openvas';
+    #cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # Configure and build scanner
     # install from source
     echo -e "\e[1;36m ... installing ospd-openvas\e[0m";
-    cd ospd-openvas > /dev/null 2>&1;
-    /usr/bin/python3 -m pip install . > /dev/null 2>&1
+    #cd ospd-openvas > /dev/null 2>&1;
+    #/usr/bin/python3 -m pip install . > /dev/null 2>&1
     sync 
     # For use when testing (just comment uncomment poetry install in "main" and here)
     #/usr/poetry/bin/poetry install;
@@ -518,7 +522,8 @@ install_nmap() {
 install_greenbone_feed_sync() {
     /usr/bin/logger 'install_greenbone_feed_sync()' -t 'gse-22.4.0';
     echo -e "\e[1;32m - install_greenbone_feed_sync() \e[0m";
-    python3 -m pip install greenbone-feed-sync > /dev/null 2>&1;
+    su gvm -c 'cd ~; source gvmpy/bin/activate; python3 -m pip install greenbone-feed-sync';
+    #python3 -m pip install greenbone-feed-sync > /dev/null 2>&1;
     /usr/bin/logger 'install_greenbone_feed_sync() finished' -t 'gse-22.4.0';
     echo -e "\e[1;32m - install_greenbone_feed_sync() finished\e[0m";
 }
@@ -621,13 +626,17 @@ __EOF__
 install_gvm_tools() {
     /usr/bin/logger 'install_gvm_tools' -t 'gse-22.4.0';
     echo -e "\e[1;32m - install_gvm_tools() \e[0m";
-    cd /opt/gvm/src/greenbone > /dev/null 2>&1
+#    cd /opt/gvm/src/greenbone > /dev/null 2>&1
     # Install gvm-tools
-    cd gvm-tools/ > /dev/null 2>&1;
+#    cd gvm-tools/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     echo -e "\e[1;36m ... installing GVM-tools\e[0m";
-    python3 -m pip install . > /dev/null 2>&1;
-    /usr/poetry/bin/poetry install > /dev/null 2>&1;
+    su gvm -c 'cd ~; source gvmpy/bin/activate; python3 -m pip install gvm-tools';
+#    python3 -m pip install . > /dev/null 2>&1;
+#    /usr/poetry/bin/poetry install > /dev/null 2>&1;
+    # Increase default timeouts from 60 secs to 600 secs
+    sed -ie 's/DEFAULT_READ_TIMEOUT = 60/DEFAULT_READ_TIMEOUT = 600/' /opt/gvm/gvmpy/lib/python3.9/site-packages/gvm/connections.py
+    sed -ie 's/DEFAULT_TIMEOUT = 60/DEFAULT_TIMEOUT = 600/' /opt/gvm/gvmpy/lib/python3.9/site-packages/gvm/connections.py
     echo -e "\e[1;32m - install_gvm_tools() finished\e[0m";
     /usr/bin/logger 'install_gvm_tools finished' -t 'gse-22.4.0';
 }
@@ -636,9 +645,17 @@ install_impacket() {
     /usr/bin/logger 'install_impacket' -t 'gse-22.4.0';
     echo -e "\e[1;32m - install_impacket() \e[0m";
     # Install impacket
-    python3 -m pip install impacket > /dev/null 2>&1;
+    su gvm -c 'cd ~; source gvmpy/bin/activate; python3 -m pip install impacket' > /dev/null 2>&1;
     echo -e "\e[1;32m - install_impacket() finished\e[0m";
     /usr/bin/logger 'install_impacket finished' -t 'gse-22.4.0';
+}
+
+prepare_gvmpy() {
+    /usr/bin/logger 'prepare_gvmpy' -t 'gse-22.4.0';
+    echo -e "\e[1;32m - prepare_gvmpy() \e[0m";
+    su gvm -c 'cd ~; ; python3 -m pip install --upgrade pip; python3 -m pip install --user virtualenv; python3 -m venv gvmpy';
+    /usr/bin/logger 'prepare_gvmpy finished' -t 'gse-22.4.0';
+    echo -e "\e[1;32m - prepare_gvmpy() finished\e[0m";
 }
 
 prepare_postgresql() {
@@ -723,7 +740,7 @@ User=gvm
 RuntimeDirectory=notus-scanner
 RuntimeDirectoryMode=2775
 PIDFile=/run/notus-scanner/notus-scanner.pid
-ExecStart=/usr/local/bin/notus-scanner --products-directory /var/lib/notus/products --log-file /var/log/gvm/notus-scanner.log
+ExecStart=/opt/gvm/gvmpy/bin/notus-scanner --products-directory /var/lib/notus/products --log-file /var/log/gvm/notus-scanner.log
 SuccessExitStatus=SIGKILL
 Restart=always
 RestartSec=60
@@ -748,7 +765,7 @@ Environment="PATH=/opt/gvm/sbin:/opt/gvm/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 User=gvm
 Group=gvm
 # Change log-level to info before production
-ExecStart=/usr/local/bin/ospd-openvas --config=/etc/ospd/ospd-openvas.conf --log-file=/var/log/gvm/ospd-openvas.log
+ExecStart=/opt/gvm/gvmpy/bin/ospd-openvas --config=/etc/ospd/ospd-openvas.conf --log-file=/var/log/gvm/ospd-openvas.log
 # log level can be debug too, info is default
 # This works asynchronously, but does not take the daemon down during the reload so it is ok.
 Restart=always
@@ -980,7 +997,7 @@ After=network.target networking.service
 Documentation=man:gvmd(8)
 
 [Service]
-ExecStart=/usr/local/bin/greenbone-feed-sync --type all --user gvm --group gvm
+ExecStart=/opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm
 TimeoutSec=900
 
 [Install]
@@ -1472,6 +1489,8 @@ main() {
     #install_nmap;
     
     apt-get -qq -y install --fix-broken > /dev/null 2>&1;
+    # Prepare Python Virtual Evironment for gvm python tools and utilities.
+    prepare_gvmpy;
     # Create wrapper to start services with config files
     create_wrapper;
     # Install everything needed for Greenbone Source Edition

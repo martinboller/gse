@@ -27,8 +27,8 @@ Vagrant.configure("2") do |config|
     cfg.vm.provider "virtualbox" do |vb, override|
       vb.gui = false
       vb.name = "manticore"
-      vb.customize ["modifyvm", :id, "--memory", 6144]
-      vb.customize ["modifyvm", :id, "--cpus", 4]
+      vb.customize ["modifyvm", :id, "--memory", 10240]
+      vb.customize ["modifyvm", :id, "--cpus", 6]
       vb.customize ["modifyvm", :id, "--vram", "4"]
       vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
       vb.customize ["setextradata", "global", "GUI/SuppressMessages", "all" ]
@@ -63,7 +63,7 @@ Vagrant.configure("2") do |config|
       vb.gui = false
       vb.name = "aboleth"
       vb.customize ["modifyvm", :id, "--memory", 2048]
-      vb.customize ["modifyvm", :id, "--cpus", 2]
+      vb.customize ["modifyvm", :id, "--cpus", 4]
       vb.customize ["modifyvm", :id, "--vram", "4"]
       vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
       vb.customize ["setextradata", "global", "GUI/SuppressMessages", "all" ]
