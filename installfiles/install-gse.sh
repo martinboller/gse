@@ -653,7 +653,7 @@ install_impacket() {
 prepare_gvmpy() {
     /usr/bin/logger 'prepare_gvmpy' -t 'gse-22.4.0';
     echo -e "\e[1;32m - prepare_gvmpy() \e[0m";
-    su gvm -c 'cd ~; ; python3 -m pip install --upgrade pip; python3 -m pip install --user virtualenv; python3 -m venv gvmpy';
+    su gvm -c 'cd ~; python3 -m pip install --upgrade pip; python3 -m pip install --user virtualenv; python3 -m venv gvmpy';
     /usr/bin/logger 'prepare_gvmpy finished' -t 'gse-22.4.0';
     echo -e "\e[1;32m - prepare_gvmpy() finished\e[0m";
 }
