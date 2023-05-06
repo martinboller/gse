@@ -410,7 +410,7 @@ install_openvas_smb() {
     echo -e "\e[1;36m ... make OpenVAS SMB\e[0m";
     make > /dev/null 2>&1;                
     /usr/bin/logger '..make Openvas SMB Documentation' -t 'gse-22.4.0';
-    make doc-full;
+    #make doc-full;
     /usr/bin/logger '..make install OpenVAS SMB' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... make install OpenVAS SMB\e[0m";
     make install > /dev/null 2>&1;
@@ -469,7 +469,7 @@ install_openvas() {
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
     /usr/bin/logger '..make OpenVAS Scanner' -t 'gse-22.4.0';
     /usr/bin/logger '..make Openvas Scanner Documentation' -t 'gse-22.4.0';
-    make doc-full;
+    #make doc-full;
     echo -e "\e[1;36m ... make OpenVAS Scanner\e[0m";
     # make it
     make > /dev/null 2>&1;
@@ -554,7 +554,7 @@ update_feed_data() {
     ## This relies on the configure_greenbone_updates script
     echo -e "\e[1;36m ... updating feed data\e[0m";
     echo -e "\e[1;36m ... please be patient. This could take a while\e[0m";
-    /usr/local/bin/greenbone-feed-sync --type all > /dev/null 2>&1;
+    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all > /dev/null 2>&1;
     echo -e "\e[1;32m - update_feed_data() finished\e[0m";
     /usr/bin/logger 'update_feed_data finished' -t 'gse-22.4.0';
 }
