@@ -539,9 +539,12 @@ prestage_scan_data() {
     tar -xzf scandata.tar.gz > /dev/null 2>&1; 
     /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... copying feed data to correct locations\e[0m";
-    /bin/cp -r /root/GVM/openvas/* /var/lib/openvas/ > /dev/null 2>&1;
-    /bin/cp -r /root/GVM/gvm/* /var/lib/gvm/ > /dev/null 2>&1;
-    /bin/cp -r /root/GVM/notus/* /var/lib/notus/ > /dev/null 2>&1;
+    /usr/bin/rsync -aAXv /root/GVM/openvas/ /var/lib/openvas/
+    #/bin/cp -r /root/GVM/openvas/* /var/lib/openvas/ > /dev/null 2>&1;
+    /usr/bin/rsync -aAXv /root/GVM/gvm/ /var/lib/gvm/ 
+    #/bin/cp -r /root/GVM/gvm/* /var/lib/gvm/ > /dev/null 2>&1;
+    /usr/bin/rsync -aAXv /root/GVM/notus/ /var/lib/notus/
+    #/bin/cp -r /root/GVM/notus/* /var/lib/notus/ > /dev/null 2>&1;
     echo -e "\e[1;36m ... Cleaning Up\e[0m";
     rm -rf /root/GVM;
     echo -e "\e[1;32m - prestage_scan_data() finished\e[0m";
