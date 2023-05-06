@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
     cfg.vm.provision :file, source: './installfiles', destination: "/tmp/installfiles"
     cfg.vm.provision :shell, path: "bootstrap.sh"
     cfg.vm.provision "reload"
-    cfg.vm.provision :shell, path: "installfiles/install-GSE-2021.sh"
+    cfg.vm.provision :shell, path: "installfiles/install-gse.sh"
 
     cfg.vm.provider "vmware_fusion" do |v, override|
       v.vmx["displayname"] = "manticore"
@@ -43,7 +43,7 @@ Vagrant.configure("2") do |config|
     cfg.vm.provision :file, source: './installfiles', destination: "/tmp/installfiles"
     cfg.vm.provision :shell, path: "bootstrap.sh"
     cfg.vm.provision "reload"
-    cfg.vm.provision :shell, path: "installfiles/install-GSE-2021-secondary.sh"
+    cfg.vm.provision :shell, path: "installfiles/install-gse-secondary.sh"
 
     cfg.vm.provider "vmware_fusion" do |v, override|
       v.vmx["displayname"] = "aboleth"

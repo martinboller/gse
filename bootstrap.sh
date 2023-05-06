@@ -103,12 +103,12 @@ main() {
     if [ "$HOSTNAME" = "manticore" ];
     then
       echo -e "\e[36m ... Installing primary server\e[0m";    
-      #/root/install-GSE-2021.sh
+      #/root/install-gse.sh
     fi
     if [ "$HOSTNAME" = "aboleth" ];
     then
       echo -e "\e[36m ... Installing secondary server\e[0m";    
-      #/root/install-GSE-2021-secondary.sh
+      #/root/install-gse-secondary.sh
     fi
     echo -e "\e[32m - GSE Bootstrap main() finished\e[0m";
     /usr/bin/logger 'GSE Bootstrap main() finished' -t 'gse';

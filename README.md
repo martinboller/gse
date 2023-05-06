@@ -102,14 +102,14 @@ The overall components are depicted in the figure below. All dotted lines are tr
 ## Production Installation
 ### 1. Install a basic (net-install) Debian 11 (Bullseye) or 10 (Buster) server for the primary
 
-Run <i>install-GSE-2021.sh</i> and wait for a (long) while. 
+Run <i>install-gse.sh</i> and wait for a (long) while. 
 - The primary needs at least 4Gb of RAM, preferably more. The testlab (Vagrant) assigns 5120 MB.
 - Don't skimp on the hardware for the primary, however you don't need extreme performance. Test according to your requirements and select haeware based on that.
 
 <b>Note:</b> Several issues with TEX, currently resolved by installing texlive-full. Installing texlive-full takes a lot of time compared to everything else installed, but Debian has a quirk here that sometimes breaks apt when not installing texlive-full.
 
 ### 2. Install as many basic (net-install) Debian 11 (Bullseye) or 10 (Buster) servers needed for secondaries
-Run <i>install-GSE-2021-secondary.sh</i> and wait for installation to finish. 
+Run <i>install-gse-secondary.sh</i> and wait for installation to finish. 
 - This works in 1Gb of RAM, but more is recommended.
 - Raspberry Pi's work well, however only tested on RPi 4's with 2Gb and more. Feel free to perform your own testing on other SBC's and report back here.
 - The latest RaspiOS is based on Bullseye, use the *Raspberry Pi OS Lite* version (it is supposed to run as a server after all, you don't want a Desktop Environment on that.
@@ -118,7 +118,7 @@ Run <i>install-GSE-2021-secondary.sh</i> and wait for installation to finish.
 Run <i>add-secondary-2-primary.sh</i> on the primary.
 - You need to provide the folowing to the script (both will be provided when the installation of the secondary finishes).
     - hostname or IP address of the secondary.
-    - Pasword of the user Greenbone on the secondary. This is shown in the terminal when the script *install-GSE-2021-secondary.sh' finishes.
+    - Pasword of the user Greenbone on the secondary. This is shown in the terminal when the script *install-gse-secondary.sh' finishes.
 - This will add the new secondary to GVMD.
 - Provided the primary can connect to the secondary over ssh (22/TCP) the certs and key needed will be copied to the secondary and ospd-openvas restarted.
 
@@ -216,7 +216,7 @@ So do <b><u>not</b></u> delete this account, unless you reconfigure it to be ano
 #### <i><b><u>Without a feed owner there will be no feeds!!</b></u> (ask me how I know)</i>
 
 
-If you want to change feedowner, the following commands can be used to create another account and make that the feedowner. You can also just change it in install-GSE-2021.sh <u>before</u> running it the first time.
+If you want to change feedowner, the following commands can be used to create another account and make that the feedowner. You can also just change it in install-gse.sh <u>before</u> running it the first time.
 
 ```
 su gvm -c '/opt/gvm/sbin/gvmd --create-user=MyOwnUser'
