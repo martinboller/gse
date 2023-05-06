@@ -218,7 +218,7 @@ prepare_nix() {
     mkdir /opt/gvm > /dev/null 2>&1;
     chown gvm:gvm /opt/gvm;
     # Update the PATH environment variable
-    echo "PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin:opt/gvm/gvmpy/bin" > /etc/profile.d/gvm.sh;
+    echo "PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/gvmpy/bin" > /etc/profile.d/gvm.sh;
     # Add GVM library path to /etc/ld.so.conf.d
 
     echo -e "\e[1;36m ... configuring ld for greenbone libraries\e[0m";
