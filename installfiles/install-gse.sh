@@ -169,7 +169,7 @@ install_prerequisites() {
     echo -e "\e[1;36m ... please be patient, this could take quite a while depending on your system\e[0m";
  
     # Speed up installation without texlive (but then PDF reports wont work)
-    #apt-get -qq -y install texlive-full texlive-fonts-recommended > /dev/null 2>&1;
+    apt-get -qq -y install texlive-full texlive-fonts-recommended > /dev/null 2>&1;
    
    
     # Install other preferences and clean up APT
