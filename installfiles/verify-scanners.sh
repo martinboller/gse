@@ -35,7 +35,8 @@ show_scanner_status() {
     echo -e 
     echo -e "\e[1;36m-------------------------------------------------------------------------------------------------\e[0m"
     echo -e "\e[1;36mEnumerated all scanners on $HOSTNAME\e[0m"
-    echo -e "\e[1;36mPlease check that they're replying and run a recent version\e[0m"
+    echo -e "\e[1;36mPlease check that they're replying and are recent versions\e[0m"
+    echo -e "\e[1;36mfor \e[0m"
     echo -e "\e[1;36m-------------------------------------------------------------------------------------------------\e[0m"
     /usr/bin/logger 'show_scanner_status() finished' -t 'gse-21.4';
 }

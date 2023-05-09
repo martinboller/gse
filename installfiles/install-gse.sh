@@ -260,14 +260,14 @@ prepare_source() {
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     #Get all packages (the python elements can be installed w/o, but downloaded and used for install anyway)
-    /usr/bin/logger '..gvm libraries' -t 'gse-22.4.0';
+    /usr/bin/logger '..gvm libraries' -t 'gse-22.4.2';
     echo -e "\e[1;36m ... downloading released packages for Greenbone Source Edition\e[0m";
     /usr/bin/logger '..gvm-libs 22.5.2' -t 'gse-22.4.2';
     wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v22.5.2.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..ospd-openvas' -t 'gse-22.4.2';
     wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v22.5.0.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..openvas-scanner' -t 'gse-22.4.0';
-    wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v22.6.1.tar.gz > /dev/null 2>&1;
+    wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v22.6.2.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gvm daemon' -t 'gse-22.4.0';
     wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v22.4.2.tar.gz> /dev/null 2>&1;
     /usr/bin/logger '..gsa daemon (gsad)' -t 'gse-22.4.0';
@@ -296,7 +296,7 @@ prepare_source() {
     echo -e "\e[1;36m ... renaming package directories\e[0m";
     mv /opt/gvm/src/greenbone/gvm-libs-22.5.2 /opt/gvm/src/greenbone/gvm-libs > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/ospd-openvas-22.5.0 /opt/gvm/src/greenbone/ospd-openvas > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/openvas-scanner-22.6.1 /opt/gvm/src/greenbone/openvas > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/openvas-scanner-22.6.2 /opt/gvm/src/greenbone/openvas > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gvmd-22.4.2 /opt/gvm/src/greenbone/gvmd > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gsa-22.4.1 /opt/gvm/src/greenbone/gsa > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gsad-22.4.1 /opt/gvm/src/greenbone/gsad > /dev/null 2>&1;

@@ -27,6 +27,12 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ## Latest changes
 
+### 2023-05-09 - OpenVAS Scanner upgrade, current versions
+ - OpenVAS-scanner 22.6.2.
+ - GVM 22.4.2.
+ - greenbone-feed-sync 23.4.0
+ - Greenbone Security Assistant 22.04.1~git
+
 ### 2023-05-06 - gvmpy Virtual Environment and latest versions of several components
  - OpenVAS-scanner 22.6.1.
  - GVM 22.4.2.
