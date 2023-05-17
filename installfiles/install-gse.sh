@@ -789,7 +789,7 @@ socket_mode = 0o766
 unix_socket = /run/ospd/ospd-openvas.sock
 pid_file = /run/ospd/ospd-openvas.pid
 ; default = /run/ospd
-lock_file_dir = /run/gvmd
+lock_file_dir = /var/run/gvmd
 
 ; max_scans, is the number of scan/task to be started before start to queuing.
 max_scans = 0
@@ -1000,7 +1000,7 @@ After=network.target networking.service
 Documentation=man:gvmd(8)
 
 [Service]
-ExecStart=/opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm
+ExecStart=/opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm --gvmd-lock-file /var/run/gvmd/feed-update.lock --openvas-lock-file /var/run/gvmd/feed-update.lock
 TimeoutSec=900
 
 [Install]
