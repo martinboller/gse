@@ -190,7 +190,7 @@ prepare_source() {
     /usr/bin/logger '..gse components needed' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... downloading released packages for Greenbone Source Edition\e[0m";
     /usr/bin/logger '..gvm-libs' -t 'gse-22.4.2';
-    wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v22.5.2.tar.gz > /dev/null 2>&1;
+    wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v22.6.0.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..ospd-openvas' -t 'gse-22.4.2';
     wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v22.5.0.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..openvas-scanner' -t 'gse-22.4.2';
@@ -221,7 +221,7 @@ prepare_source() {
     # Naming of directories w/o version
     /usr/bin/logger '..rename directories' -t 'gse-22.4.0';    
     echo -e "\e[1;36m ... renaming package directories\e[0m";
-    mv /opt/gvm/src/greenbone/gvm-libs-22.5.2 /opt/gvm/src/greenbone/gvm-libs > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gvm-libs-22.6.0 /opt/gvm/src/greenbone/gvm-libs > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/ospd-openvas-22.5.0 /opt/gvm/src/greenbone/ospd-openvas > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/openvas-scanner-22.7.0 /opt/gvm/src/greenbone/openvas > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gvmd-22.4.2 /opt/gvm/src/greenbone/gvmd > /dev/null 2>&1;
