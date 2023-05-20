@@ -29,6 +29,7 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ### 2023-05-2o - OpenVAS Scanner upgrade.
  - OpenVAS-scanner 22.7.0 from May 16th 2023.
+ - gvm-libs version 22.6.0 from May 16th 2023.
 
 ### 2023-05-09 - OpenVAS Scanner upgrade, current versions
  - OpenVAS-scanner 22.6.2.
