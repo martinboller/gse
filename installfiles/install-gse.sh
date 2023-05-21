@@ -315,6 +315,27 @@ prepare_source() {
     echo -e "\e[1;32m - prepare_source() finished\e[0m";
     /usr/bin/logger 'prepare_source finished' -t 'gse-22.4.0';
 }
+install_libxml2() {
+    /usr/bin/logger 'install_libxml2' -t 'gse-22.4.0';
+    echo -e "\e[1;32m - install_libxml2()\e[0m";
+    cd /opt/gvm/src;
+    /usr/bin/logger '..git clone libxml2' -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... git clone libxml2()\e[0m";
+    git clone https://gitlab.gnome.org/GNOME/libxml2
+    cd libxml2;
+    /usr/bin/logger '..autogen libxml2' -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... autogen libxml2()\e[0m";
+    ./autogen.sh
+    /usr/bin/logger '..make libxml2' -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... make libxml2()\e[0m";
+    make;
+    /usr/bin/logger '..make install libxml2' -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... make install libxml2()\e[0m";
+    make install;
+    /usr/bin/logger '..ldconfig libxml2' -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... ldconfig libxml2()\e[0m";
+    ldconfig;
+}
 
 install_poetry() {
     /usr/bin/logger 'install_poetry' -t 'gse-22.4.0';
@@ -560,7 +581,7 @@ update_feed_data() {
     ## This relies on the configure_greenbone_updates script
     echo -e "\e[1;36m ... updating feed data\e[0m";
     echo -e "\e[1;36m ... please be patient. This could take a while\e[0m";
-    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all > /dev/null 2>&1;
+    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --compression-level 6 > /dev/null 2>&1;
     echo -e "\e[1;32m - update_feed_data() finished\e[0m";
     /usr/bin/logger 'update_feed_data finished' -t 'gse-22.4.0';
 }
@@ -1003,7 +1024,7 @@ After=network.target networking.service
 Documentation=man:gvmd(8)
 
 [Service]
-ExecStart=/opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm --gvmd-lock-file /run/gvmd/feed-update.lock --openvas-lock-file /run/gvmd/feed-update.lock
+ExecStart=/opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm --gvmd-lock-file /run/gvmd/feed-update.lock --openvas-lock-file /run/gvmd/feed-update.lock --compression-level 6
 TimeoutSec=900
 
 [Install]
@@ -1502,6 +1523,7 @@ main() {
     # Install everything needed for Greenbone Source Edition
     install_impacket;
     install_gvm_libs;
+    install_libxml2;
     install_openvas_smb;
     #install_openvas_from_github;
     install_openvas;
