@@ -250,6 +250,28 @@ install_poetry() {
     /usr/bin/logger 'install_poetry finished' -t 'gse-21.4.4';
 }
 
+install_libxml2() {
+    /usr/bin/logger 'install_libxml2' -t 'gse-22.4.0';
+    echo -e "\e[1;32m - install_libxml2()\e[0m";
+    cd /opt/gvm/src;
+    /usr/bin/logger '..git clone libxml2' -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... git clone libxml2()\e[0m";
+    git clone https://gitlab.gnome.org/GNOME/libxml2
+    cd libxml2;
+    /usr/bin/logger '..autogen libxml2' -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... autogen libxml2()\e[0m";
+    ./autogen.sh
+    /usr/bin/logger '..make libxml2' -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... make libxml2()\e[0m";
+    make;
+    /usr/bin/logger '..make install libxml2' -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... make install libxml2()\e[0m";
+    make install;
+    /usr/bin/logger '..ldconfig libxml2' -t 'gse-22.4.0';
+    echo -e "\e[1;36m ... ldconfig libxml2()\e[0m";
+    ldconfig;
+}
+
 install_gvm_libs() {
     /usr/bin/logger 'install_gvmlibs' -t 'gse-21.4.4';
     echo -e "\e[1;32m - install_gvmlibs()\e[0m";
@@ -883,6 +905,7 @@ main() {
     # Only install poetry when testing
     #install_poetry;
     install_gvm_libs;
+    install_libxml2;
     install_openvas_smb;
     #install_openvas_from_github;
     install_openvas;

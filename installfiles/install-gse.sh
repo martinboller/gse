@@ -315,6 +315,7 @@ prepare_source() {
     echo -e "\e[1;32m - prepare_source() finished\e[0m";
     /usr/bin/logger 'prepare_source finished' -t 'gse-22.4.0';
 }
+
 install_libxml2() {
     /usr/bin/logger 'install_libxml2' -t 'gse-22.4.0';
     echo -e "\e[1;32m - install_libxml2()\e[0m";
