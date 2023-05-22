@@ -27,7 +27,7 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ## Latest changes
 
-### 2023-05-21 - OpenVAS Scanner upgrade.
+### 2023-05-21 - libxml2 from source.
  - libxml2 2.12 installed from source (https://gitlab.gnome.org/GNOME/libxml2) to be able to increase LIBXML_MAX_NODESET_LENGTH from the default of 10M.
  - added export LIBXML_MAX_NODESET_LENGTH=40000000 to /etc/profile.d/gvm.sh.
 
