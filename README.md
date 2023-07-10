@@ -1,6 +1,6 @@
 # Greenbone Vulnerability Manager 22.4.x Source Code Edition Installation script
 
-### Bash script automating the installation of Greenbone Vulnerability Manager 22.4.0 (July 2022 release) on Debian 11 (Bullseye)
+### Bash script automating the installation of Greenbone Vulnerability Manager Community Version on Debian 11 (Bullseye)
 
 Installation will be located in 
 - /opt/gvm/ for binaries.
@@ -27,14 +27,16 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ## Latest changes
 
+### 2023-07-10 - Several modules updated.
+ - gvm-libs version 22.6.3, openvas-scanner 22.7.2, gvmd 22.5.1 (22.5.2 and 22.5.3 exhaust resources spawning a huge number of instances of gvmd), gsad 22.5.1, pg-gvm 22.5.1 (to work with postgresql 15)
+ - Started testing on Debian 12 Bookworm, however had some vagrant box issues.
 ### 2023-05-24 - gvm-libs version 22.6.1.
- - gvm-libs version 22.6.1 - Fix: Parse XML with XML_PARSE_HUGE option. (https://github.com/greenbone/gvm-libs/pull/774   )
+ - gvm-libs version 22.6.1 - Fix: Parse XML with XML_PARSE_HUGE option. (https://github.com/greenbone/gvm-libs/pull/774)
  - Left code to install newer version of libxml2, but not called.
 
 ### 2023-05-21 - libxml2 from source.
  - libxml2 2.12 installed from source (https://gitlab.gnome.org/GNOME/libxml2) to be able to increase LIBXML_MAX_NODESET_LENGTH from the default of 10M.
  - added export LIBXML_MAX_NODESET_LENGTH=40000000 to /etc/profile.d/gvm.sh.
-
 
 ### 2023-05-20 - OpenVAS Scanner upgrade.
  - OpenVAS-scanner 22.7.0 from May 16th 2023.

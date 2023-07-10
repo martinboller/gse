@@ -38,19 +38,12 @@ install_prerequisites() {
     OS=$NAME
     VER=$VERSION_ID
     CODENAME=$VERSION_CODENAME
+    DISTRIBUTION=$VERSION_CODENAME
     /usr/bin/logger "Operating System $OS Version $VER Codename $CODENAME" -t 'gse-22.4.0';
+    export DISTRIBUTION="$(lsb_release -s -c)"
     echo -e "\e[1;36m ... Operating System $OS Version $VER Codename $CODENAME\e[0m";
     # Install prerequisites
-    # Prepare package sources for NODEJS 16.x
-    # GSAD works with node 16.x but NOT 17.x
-    echo -e "\e[1;36m ... Installing node 14.x\e[0m";
-    export VERSION=node_14.x
-    export KEYRING=/usr/share/keyrings/nodesource.gpg
-    export DISTRIBUTION="$(lsb_release -s -c)"
-    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$KEYRING"  > /dev/null 2>&1
-    gpg --no-default-keyring --keyring "$KEYRING" --list-keys > /dev/null 2>&1
-    echo "deb [signed-by=$KEYRING] https://deb.nodesource.com/$VERSION $DISTRIBUTION main" | sudo tee /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
-    echo "deb-src [signed-by=$KEYRING] https://deb.nodesource.com/$VERSION $DISTRIBUTION main" | sudo tee -a /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
+    # Some APT gymnastics to ensure it is all cleaned up
     apt-get -qq update > /dev/null 2>&1;
     apt-get -qq -y install --fix-broken > /dev/null 2>&1;
     apt-get -qq -y install --fix-missing > /dev/null 2>&1;
@@ -78,8 +71,8 @@ install_prerequisites() {
     # Install pre-requisites for gsad
     /usr/bin/logger '..Prerequisites for Greenbone Security Assistant' -t 'gse-22.4.0';
     echo -e "\e[1;36m ... prequisites for Greenbone Security Assistant\e[0m";
-    apt-get -qq -y install libmicrohttpd-dev clang;
-    apt-get -qq -y install python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg python3-venv;
+    apt-get -qq -y install libmicrohttpd-dev clang cmake;
+    apt-get -qq -y install python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg python3-venv python3-wheel;
 
 
     # Other pre-requisites for GSE
@@ -89,6 +82,16 @@ install_prerequisites() {
         then
             /usr/bin/logger '..install_prerequisites_debian_11_bullseye' -t 'gse-22.4.0';
             echo -e "\e[1;36m ... install_prerequisites_debian_11_bullseye\e[0m";
+             # Prepare package sources for NODEJS 16.x
+            # GSAD works with node 16.x but NOT 17.x
+            echo -e "\e[1;36m ... Installing node 14.x\e[0m";
+            export VERSION=node_14.x
+            export KEYRING=/usr/share/keyrings/nodesource.gpg
+            curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$KEYRING"  > /dev/null 2>&1
+            gpg --no-default-keyring --keyring "$KEYRING" --list-keys > /dev/null 2>&1
+            echo "deb [signed-by=$KEYRING] https://deb.nodesource.com/$VERSION $DISTRIBUTION main" | sudo tee /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
+            echo "deb-src [signed-by=$KEYRING] https://deb.nodesource.com/$VERSION $DISTRIBUTION main" | sudo tee -a /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
+            apt update > /dev/null 2>&1
             # Install pre-requisites for gvmd on bullseye (debian 11)
             apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
                 postgresql-server-dev-13 pkg-config libical-dev xsltproc > /dev/null 2>&1;        
@@ -105,13 +108,14 @@ install_prerequisites() {
             npm install -g yarn --force > /dev/null 2>&1;
 
 
-    elif [ $CODENAME -eq "bookworm" ] 
+    elif [ $VER -eq "12" ] 
         then
             /usr/bin/logger '..install_prerequisites_debian_12_bookworm' -t 'gse-22.4.0';
             echo -e "\e[1;36m ... install_prerequisites_debian_12_bookworm\e[0m";
             # Install pre-requisites for gvmd on bookworm (debian 12)
+            apt update > /dev/null 2>&1
             apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
-                postgresql-server-dev-13 pkg-config libical-dev xsltproc > /dev/null 2>&1;        
+                postgresql-server-dev-15 pkg-config libical-dev xsltproc > /dev/null 2>&1;        
             # Removed doxygen for now
             # Other pre-requisites for GSE - Bullseye / Debian 11
             /usr/bin/logger '....Other prerequisites for Greenbone Source Edition on Debian 11' -t 'gse-22.4.0';
@@ -120,27 +124,7 @@ install_prerequisites() {
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-                    python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
-            echo -e "\e[1;36m ... installing yarn\e[0m";
-            npm install -g yarn --force > /dev/null 2>&1;
-
-    elif [ $VER -eq "10" ]
-        then
-            /usr/bin/logger '..install_prerequisites_debian_10_buster' -t 'gse-22.4.0';
-            echo -e "\e[1;36m ... install_prerequisites_debian_10_buster\e[0m";
-            # Install pre-requisites for gvmd on buster (debian 10)
-            echo -e "\e[1;36m ... installing prequisites for Greenbone Vulnerability Manager\e[0m";
-            apt-get -qq -y install mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
-                postgresql-server-dev-11 pkg-config libical-dev xsltproc doxygen > /dev/null 2>&1;
-            
-            # Other pre-requisites for GSE - Buster / Debian 10
-            /usr/bin/logger '....Other prerequisites for Greenbone Source Edition on Debian 10' -t 'gse-22.4.0';
-            echo -e "\e[1;36m ... installing prequisites for Greenbone Source Edition\e[0m";
-            apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
-                bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
-                sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
-                xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-                python3-defusedxml python3-pip python3-psutil virtualenv python-impacket python-scapy > /dev/null 2>&1;
+                    python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy cmdtest npm > /dev/null 2>&1;
             echo -e "\e[1;36m ... installing yarn\e[0m";
             npm install -g yarn --force > /dev/null 2>&1;
         else
@@ -265,25 +249,26 @@ prepare_source() {
     /usr/bin/logger '..gvm libraries' -t 'gse-22.4.2';
     echo -e "\e[1;36m ... downloading released packages for Greenbone Source Edition\e[0m";
     /usr/bin/logger '..gvm-libs' -t 'gse-22.4.2';
-    wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v22.6.1.tar.gz > /dev/null 2>&1;
+    wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v22.6.3.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..ospd-openvas' -t 'gse-22.4.2';
-    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v22.5.0.tar.gz > /dev/null 2>&1;
+    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v22.5.1.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..openvas-scanner' -t 'gse-22.4.0';
-    wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v22.7.0.tar.gz > /dev/null 2>&1;
+    wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v22.7.2.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gvm daemon' -t 'gse-22.4.0';
-    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v22.4.2.tar.gz> /dev/null 2>&1;
+    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v22.5.1.tar.gz> /dev/null 2>&1;
+    # Note: gvmd 22.5.2 and 22.5.3 spawns a huge number of instances and exhaust system resources 
     /usr/bin/logger '..gsa daemon (gsad)' -t 'gse-22.4.0';
-    wget -O gsad.tar.gz https://github.com/greenbone/gsad/archive/refs/tags/v22.4.1.tar.gz > /dev/null 2>&1;
+    wget -O gsad.tar.gz https://github.com/greenbone/gsad/archive/refs/tags/v22.5.1.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gsa webserver' -t 'gse-22.4.0';
-    wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/refs/tags/v22.4.1.tar.gz > /dev/null 2>&1;
+    wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/refs/tags/v22.5.0.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..openvas-smb' -t 'gse-22.4.0';
-    wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v22.5.0.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..python-gvm' -t 'gse-22.9.1';
-    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v23.4.2.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..gvm-tools' -t 'gse-22.9.0';
+    wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v22.5.3.tar.gz > /dev/null 2>&1;
+    /usr/bin/logger '..python-gvm' -t 'gse-22.4.0';
+    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v23.5.1.tar.gz > /dev/null 2>&1;
+    /usr/bin/logger '..gvm-tools' -t 'gse-22.4.0';
     wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v23.4.0.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..pg-gvm' -t 'gse-22.4.0';
-    wget -O pg-gvm.tar.gz https://github.com/greenbone/pg-gvm/archive/refs/tags/v22.4.0.tar.gz > /dev/null 2>&1;
+    wget -O pg-gvm.tar.gz https://github.com/greenbone/pg-gvm/archive/refs/tags/v22.5.1.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..notus-scanner' -t 'gse-22.4.1';
     wget -O notus.tar.gz https://github.com/greenbone/notus-scanner/archive/refs/tags/v22.5.0.tar.gz > /dev/null 2>&1;
   
@@ -296,16 +281,16 @@ prepare_source() {
     # Naming of directories w/o version
     /usr/bin/logger '..rename directories' -t 'gse-22.4.0';    
     echo -e "\e[1;36m ... renaming package directories\e[0m";
-    mv /opt/gvm/src/greenbone/gvm-libs-22.6.1 /opt/gvm/src/greenbone/gvm-libs > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/ospd-openvas-22.5.0 /opt/gvm/src/greenbone/ospd-openvas > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/openvas-scanner-22.7.0 /opt/gvm/src/greenbone/openvas > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/gvmd-22.4.2 /opt/gvm/src/greenbone/gvmd > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/gsa-22.4.1 /opt/gvm/src/greenbone/gsa > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/gsad-22.4.1 /opt/gvm/src/greenbone/gsad > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/openvas-smb-22.5.0 /opt/gvm/src/greenbone/openvas-smb > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/python-gvm-23.4.2 /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gvm-libs-22.6.3 /opt/gvm/src/greenbone/gvm-libs > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/ospd-openvas-22.5.1 /opt/gvm/src/greenbone/ospd-openvas > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/openvas-scanner-22.7.2 /opt/gvm/src/greenbone/openvas > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gvmd-22.5.1 /opt/gvm/src/greenbone/gvmd > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gsa-22.5.0 /opt/gvm/src/greenbone/gsa > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/gsad-22.5.1 /opt/gvm/src/greenbone/gsad > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/openvas-smb-22.5.3 /opt/gvm/src/greenbone/openvas-smb > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/python-gvm-23.5.1 /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gvm-tools-23.4.0 /opt/gvm/src/greenbone/gvm-tools > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/pg-gvm-22.4.0 /opt/gvm/src/greenbone/pg-gvm > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/pg-gvm-22.5.1 /opt/gvm/src/greenbone/pg-gvm > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/notus-scanner-22.5.0 /opt/gvm/src/greenbone/notus > /dev/null 2>&1;
 
     sync;

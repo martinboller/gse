@@ -45,7 +45,7 @@ gse_bootstrap_prerequisites() {
   echo -e "\e[32m - gse_bootstrap_prerequisites()\e[0m";
   # Install prerequisites and useful tools
   export DEBIAN_FRONTEND=noninteractive;
-  sed -ie s/http/https/ /etc/apt/sources.list;
+  #sed -ie s/http/https/ /etc/apt/sources.list;
   apt-get update;
   # Removing some of the cruft installed by default in the Vagrant images
   echo -e "\e[36m ... removing unneeded packages\e[0m";
