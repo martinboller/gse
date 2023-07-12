@@ -27,6 +27,9 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ## Latest changes
 
+### 2023-07-12 - Several modules updated.
+ - gvmd 22.5.4
+
 ### 2023-07-10 - Several modules updated.
  - gvm-libs version 22.6.3, openvas-scanner 22.7.2, gvmd 22.5.1 (22.5.2 and 22.5.3 exhaust resources spawning a huge number of instances of gvmd), gsad 22.5.1, pg-gvm 22.5.1 (to work with postgresql 15)
  - Started testing on Debian 12 Bookworm, however had some vagrant box issues.
