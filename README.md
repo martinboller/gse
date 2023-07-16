@@ -27,7 +27,10 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ## Latest changes
 
-### 2023-07-12 - Several modules updated.
+### 2023-07-15 - GVMD updated to 22.5.5.
+ - gvmd 22.5.5
+
+### 2023-07-12 - GVMD updated to working version.
  - gvmd 22.5.4
 
 ### 2023-07-10 - Several modules updated.
