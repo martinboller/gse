@@ -27,6 +27,14 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ## Latest changes
 
+### 2023-09-16 - Latest versions.
+ - gvm-libs 22.7.1
+ - gvmd 22.9.0
+ - OpenVAS 22.7.5
+ - gsad 22.6.0
+ - gsa 22.7.0
+ - Node 16.x 
+ 
 ### 2023-07-15 - GVMD updated to 22.5.5.
  - gvmd 22.5.5
 
