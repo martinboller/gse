@@ -27,6 +27,10 @@ To create a secondary see instructions later - but running the script _add-secon
 
 ## Latest changes
 
+### 2023-11-04 - Latest versions.
+ - gsa 22.8.1
+ - Otherwise like the version below (2023-10-29)
+
 ### 2023-10-29 - Latest versions.
  - gvm-libs 22.7.3
  - gvmd 23.0.1
