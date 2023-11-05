@@ -31,6 +31,8 @@ To create a secondary see instructions later - but running the script _add-secon
  - gsa 22.8.1
  - Otherwise like the version below (2023-10-29)
 
+ **Note**: Used to be able to run the secondaries on 1 GB RAM and 1 shared CPU, but now need 2-4G B RAM and (preferably) 2 CPU's or better.
+
 ### 2023-10-29 - Latest versions.
  - gvm-libs 22.7.3
  - gvmd 23.0.1
