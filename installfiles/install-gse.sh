@@ -82,10 +82,10 @@ install_prerequisites() {
         then
             /usr/bin/logger '..install_prerequisites_debian_11_bullseye' -t 'gse-22.4.0';
             echo -e "\e[1;36m ... install_prerequisites_debian_11_bullseye\e[0m";
-             # Prepare package sources for NODEJS 16.x
-            # GSAD works with node 16.x but NOT 17.x
-            echo -e "\e[1;36m ... Installing node 16.x\e[0m";
-            export VERSION=node_16.x
+             # Prepare package sources for NODEJS 18.x
+            # GSA works with node 18.x but NOT 17.x
+            echo -e "\e[1;36m ... Installing node 18.x\e[0m";
+            export VERSION=node_18.x
             export KEYRING=/usr/share/keyrings/nodesource.gpg
             curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$KEYRING"  > /dev/null 2>&1
             gpg --no-default-keyring --keyring "$KEYRING" --list-keys > /dev/null 2>&1
