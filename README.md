@@ -23,15 +23,34 @@ To create a secondary see instructions later - but running the script _add-secon
 
 <sup>1</sup> You can install the complete installation on a secondary, that is include GSAD etc, but there's no good reason to. The secondary with ospd-openvas and openvas only is a small efficient thing with a smaller attack surface.
 
+**Note 2023-11-04**: Used to be able to run the secondaries on 1 GB RAM and 1 shared CPU, but now need 2-4G B RAM and (preferably) 2 CPU's or better.
+
 ----
 
 ## Latest changes
+
+### 2023-11-15 - Latest versions.
+Name | URL | Version
+---|---|---
+gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.7.3
+ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.6.1
+openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 22.7.6
+GVM Daemon | https://github.com/greenbone/gvmd/ | 23.1.0
+GSA Daemon | https://github.com/greenbone/gsad/ | 22.8.0
+GSA | https://github.com/greenbone/gsa/ | 22.9.0
+openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.4
+python-gvm | https://github.com/greenbone/python-gvm/ | 23.11.0
+gvm-tools | https://github.com/greenbone/gvm-tools/ | 23.11.0
+pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.1
+notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.0
+
+--- 
 
 ### 2023-11-04 - Latest versions.
  - gsa 22.8.1
  - Otherwise like the version below (2023-10-29)
 
- **Note**: Used to be able to run the secondaries on 1 GB RAM and 1 shared CPU, but now need 2-4G B RAM and (preferably) 2 CPU's or better.
+---
 
 ### 2023-10-29 - Latest versions.
  - gvm-libs 22.7.3
@@ -43,8 +62,12 @@ To create a secondary see instructions later - but running the script _add-secon
  - python-gvm 23.10.1
  - GVM Tools 23.10.0 
 
+---
+
 ### 2023-09-28 - GSA Update.
  - gsa 22.7.1
+
+----
 
 ### 2023-09-16 - Latest versions.
  - gvm-libs 22.7.1
@@ -53,27 +76,42 @@ To create a secondary see instructions later - but running the script _add-secon
  - gsad 22.6.0
  - gsa 22.7.0
  - Node 16.x 
- 
+
+---
+
 ### 2023-07-15 - GVMD updated to 22.5.5.
  - gvmd 22.5.5
+
+---
 
 ### 2023-07-12 - GVMD updated to working version.
  - gvmd 22.5.4
 
+---
+
 ### 2023-07-10 - Several modules updated.
  - gvm-libs version 22.6.3, openvas-scanner 22.7.2, gvmd 22.5.1 (22.5.2 and 22.5.3 exhaust resources spawning a huge number of instances of gvmd), gsad 22.5.1, pg-gvm 22.5.1 (to work with postgresql 15)
  - Started testing on Debian 12 Bookworm, however had some vagrant box issues.
+
+---
+
 ### 2023-05-24 - gvm-libs version 22.6.1.
  - gvm-libs version 22.6.1 - Fix: Parse XML with XML_PARSE_HUGE option. (https://github.com/greenbone/gvm-libs/pull/774)
  - Left code to install newer version of libxml2, but not called.
+
+---
 
 ### 2023-05-21 - libxml2 from source.
  - libxml2 2.12 installed from source (https://gitlab.gnome.org/GNOME/libxml2) to be able to increase LIBXML_MAX_NODESET_LENGTH from the default of 10M.
  - added export LIBXML_MAX_NODESET_LENGTH=40000000 to /etc/profile.d/gvm.sh.
 
+---
+
 ### 2023-05-20 - OpenVAS Scanner upgrade.
  - OpenVAS-scanner 22.7.0 from May 16th 2023.
  - gvm-libs version 22.6.0 from May 16th 2023.
+
+---
 
 ### 2023-05-09 - OpenVAS Scanner upgrade, current versions
  - OpenVAS-scanner 22.6.2.
@@ -81,34 +119,52 @@ To create a secondary see instructions later - but running the script _add-secon
  - greenbone-feed-sync 23.4.0
  - Greenbone Security Assistant 22.04.1~git
 
+---
+
 ### 2023-05-06 - gvmpy Virtual Environment and latest versions of several components
  - OpenVAS-scanner 22.6.1.
  - GVM 22.4.2.
  - greenbone-feed-sync 23.4.0
  - Greenbone Security Assistant 22.04.1~git
 
+---
+
 ### 2023-01-23 - GVMD version 22.4.1 and more + updated scripts (Python GMP)
  - Updated to Greenbone Community Edition 22.4.1 Bugfix release (2023-01-13).
+
+---
 
 ### 2022-12-18 - GVMD version 22.4.1 and more + updated scripts (Python GMP)
  - Upgraded GVMD to version 22.4.1 and updated some of the scripts + added a few more.
 
+---
+
 ### 2022-12-05 - Scripts and updated readme
  - Added scripts: Example create Targets and export reports in pdf and csv format
+
+---
 
 ### 2022-10-28 - Latest version 22.4.x
  - Upgraded installation to 22.4.0 requiring notus-scanner and mosquitto
 
+---
+
 ### 2022-03-18 - GSAD Couldn't create pid file after restart
   - Creating /run/gsd/ with tmpfiles
+
+---
 
 ### 2022-03-05 - Updated to 21.4.4 released February 24th 2022
   - GSA Web components and GSA Daemon 2 separate packages. Installation now also handles that as two functions.
   - Minor changes to gsad.service, now using --drop-privileges
 
+---
+
 ### 2021-12-19 - Greenbone Security Assistant Daemon (GSAD) behind NGINX Proxy
   - In order to benefit from the security features of NGINX, GSAD is now being proxied through that.
   - Connect directly to https://servername/ and NGINX will proxy to GSAD as well as redirect if you forget to specify https.
+
+---
 
 ### 2021-12-18 - Automated addition of secondary
   - The script *add-secondary-2-primary.sh* now does everything needed to get a secondary up and running.
@@ -118,14 +174,22 @@ To create a secondary see instructions later - but running the script _add-secon
 
 <sup>2</sup> I've successfully used 3389/TCP on networks that wouldn't allow port 9390 *"for security reasons"* but allowed RDP across all networks. (Yeah, those stupid rules do exist).
 
+---
+
 ### 2021-12-12 - NodeJS 14 instead of 12.x with Buster and Bullseye
   - Add packages for nodesource to install node 14.x instead of the lesser versions in the Debian repos. According to Greenbone documentation Node >= 14 is required.
+
+---
 
 ### 2021-11-14 - Vagrantfile and bootstrap for testing with vagrant
   - VirtualBox and Vagrant support files.
 
+---
+
 ### 2021-10-25 - Correct ospd.sock patch. Without this NVTs, scan configs, and compliance policies do not sync
   - Version 2.0 was borked with wrong path to the ospd socket causing NVT's, scan configs and policies to not synchronize across Openvas/Redis and GVMD/Postgres.
+
+---
 
 ### 2021-10-23 - oct 13 bugfixes, moved install to /opt/gvm/ & /var/lib/gvm/ instead of /usr/local/ and use yarn from Deb repo
   - https://community.greenbone.net/t/new-releases-for-gvm-20-08-and-gvm-21-04/10385
@@ -138,12 +202,18 @@ To create a secondary see instructions later - but running the script _add-secon
   - gvm-tools 21.10.0
   - python-gvm 21.11.0 (as of December 2021)
 
+---
+
 #### 2021-09-14 - Debian 11 support
   - Works with Debian 10 (Buster) and Debian 11 (Bullseye). Likely to work with most Debian based distros, but some checks in the scripts expect Debian 10 or 11.
   - Debian 11 (Bullseye) is the preferred distro and the one most tests are run against.
 
+---
+
 #### 2021-05-08 - updated to 21.04.
   - Changed to 21.4.0 versions, as all older versions are retired as of 2021-12-03: https://community.greenbone.net/t/greenbone-os-20-08-retired/10873.
+
+---
 
 #### 2021-09-24 - August Greenbone releases
   - Modified to work with the latest releases from Greenbone: https://community.greenbone.net/t/new-releases-for-gvm-20-08-and-gvm-21-04/10385.
