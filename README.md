@@ -43,6 +43,7 @@ python-gvm | https://github.com/greenbone/python-gvm/ | 23.11.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 23.11.0
 pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.1
 notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.0
+Node.js | https://deb.nodesource.com/ | 20.x
 
 --- 
 
