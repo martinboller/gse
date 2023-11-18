@@ -25,11 +25,7 @@ To create a secondary see instructions later - but running the script _add-secon
 
 **Note 2023-11-04**: Used to be able to run the secondaries on 1 GB RAM and 1 shared CPU, but now need 2-4G B RAM and (preferably) 2 CPU's or better.
 
-----
-
-## Latest changes
-
-### 2023-11-15 - Latest versions.
+Versions used:
 Name | URL | Version
 ---|---|---
 gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.7.3
@@ -38,12 +34,22 @@ openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 22.7.6
 GVM Daemon | https://github.com/greenbone/gvmd/ | 23.1.0
 GSA Daemon | https://github.com/greenbone/gsad/ | 22.8.0
 GSA | https://github.com/greenbone/gsa/ | 22.9.0
-openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.4
+openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.5
 python-gvm | https://github.com/greenbone/python-gvm/ | 23.11.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 23.11.0
 pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.1
 notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.0
 Node.js | https://deb.nodesource.com/ | 20.x
+
+----
+
+## Latest changes
+
+### 2023-11-18 - OpenVAS-SMB.
+ - OpenVAS SMB updated to 22.5.5
+
+### 2023-11-15 - Latest versions.
+ - Multiple updates, gvmd, gsad, gsa and node.js
 
 --- 
 
