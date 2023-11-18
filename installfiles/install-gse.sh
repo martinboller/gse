@@ -263,26 +263,26 @@ prepare_source() {
     /usr/bin/logger '..gvm-libs' -t 'gse-22.4.2';
     wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v$GVMLIBS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..ospd-openvas' -t 'gse-22.4.2';
-    wget https://github.com/greenbone/ospd-openvas/archive/refs/tags/v$OSPDOPENVAS.tar.gz > /dev/null 2>&1;
+    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v$OSPDOPENVAS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..openvas-scanner' -t 'gse-22.4.0';
-    wget https://github.com/greenbone/openvas-scanner/archive/refs/tags/v$OPENVAS.gz > /dev/null 2>&1;
+    wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v$OPENVAS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gvm daemon' -t 'gse-22.4.0';
-    wget https://github.com/greenbone/gvmd/archive/refs/tags/v$GVMD.tar.gz> /dev/null 2>&1;
+    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v$GVMD.tar.gz> /dev/null 2>&1;
     # Note: gvmd 22.5.2 and 22.5.3 spawns a huge number of instances and exhaust system resources 
     /usr/bin/logger '..gsa daemon (gsad)' -t 'gse-22.4.0';
-    wget https://github.com/greenbone/gsad/archive/refs/tags/v$GSAD.tar.gz > /dev/null 2>&1;
+    wget -O gsad.tar.gz https://github.com/greenbone/gsad/archive/refs/tags/v$GSAD.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gsa webserver' -t 'gse-22.4.0';
-    wget https://github.com/greenbone/gsa/archive/refs/tags/v$GSA.tar.gz > /dev/null 2>&1;
+    wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/refs/tags/v$GSA.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..openvas-smb' -t 'gse-22.4.0';
-    wget https://github.com/greenbone/openvas-smb/archive/refs/tags/v$OPENVASSMB.tar.gz > /dev/null 2>&1;
+    wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v$OPENVASSMB.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..python-gvm' -t 'gse-22.4.0';
-    wget https://github.com/greenbone/python-gvm/archive/refs/tags/v$PGVM.tar.gz > /dev/null 2>&1;
+    wget -O pythongvm.tar-gz https://github.com/greenbone/python-gvm/archive/refs/tags/v$PGVM.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gvm-tools' -t 'gse-22.4.0';
-    wget https://github.com/greenbone/gvm-tools/archive/refs/tags/v$GVMTOOLS.tar.gz > /dev/null 2>&1;
+    wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v$GVMTOOLS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..pg-gvm' -t 'gse-22.4.0';
-    wget https://github.com/greenbone/pg-gvm/archive/refs/tags/v$POSTGREGVM.tar.gz > /dev/null 2>&1;
+    wget -O pg-gvm.tar.gz https://github.com/greenbone/pg-gvm/archive/refs/tags/v$POSTGREGVM.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..notus-scanner' -t 'gse-22.4.1';
-    wget https://github.com/greenbone/notus-scanner/archive/refs/tags/v$NOTUS.tar.gz > /dev/null 2>&1;
+    wget -O notus.tar.gz https://github.com/greenbone/notus-scanner/archive/refs/tags/v$NOTUS.tar.gz > /dev/null 2>&1;
   
     # open and extract the tarballs
     echo -e "\e[1;36m ... open and extract tarballs\e[0m";
