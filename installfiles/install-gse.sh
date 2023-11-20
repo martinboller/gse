@@ -83,7 +83,7 @@ install_prerequisites() {
             /usr/bin/logger '..install_prerequisites_debian_11_bullseye' -t 'gce-23.1.0';
             echo -e "\e[1;36m ... install_prerequisites_debian_11_bullseye\e[0m";
             # Prepare package sources for NODEJS 18.x or newer (now running with 20.x)
-            echo -e "\e[1;36m ... Installing node 30.x\e[0m";
+            echo -e "\e[1;36m ... Installing node 20\e[0m";
             export VERSION=node_20.x
             export KEYRING=/usr/share/keyrings/nodesource.gpg
             curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$KEYRING"  > /dev/null 2>&1
@@ -702,6 +702,11 @@ prepare_postgresql() {
     su postgres -c 'psql gvmd -c "create extension \"uuid-ossp\";"'
     su postgres -c 'psql gvmd -c "create extension \"pgcrypto\";"'
     su postgres -c 'psql gvmd -c "create extension \"pg-gvm\";"'
+    # Disable JIT for postgresql
+        cat << __EOF__ > /etc/postgresql/13/main/conf.d/99-nojit.conf
+jit = off    
+__EOF__
+
     echo -e "\e[1;32m - prepare_postgresql() finished\e[0m";
     /usr/bin/logger 'prepare_postgresql finished' -t 'gce-23.1.0';
 }
@@ -792,8 +797,8 @@ Group=gvm
 ExecStart=/opt/gvm/gvmpy/bin/ospd-openvas --config=/etc/ospd/ospd-openvas.conf --log-file=/var/log/gvm/ospd-openvas.log
 # log level can be debug too, info is default
 # This works asynchronously, but does not take the daemon down during the reload so it is ok.
-Restart=always
-RestartSec=60
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
@@ -1184,9 +1189,9 @@ __EOF__
     # Redis requirements - overcommit memory and TCP backlog setting > 511
     echo -e "\e[1;36m ... configuring sysctl for Greenbone Community Edition, Redis\e[0m";
     sysctl -w vm.overcommit_memory=1 > /dev/null 2>&1;
-    sysctl -w net.core.somaxconn=1024 > /dev/null 2>&1;
+    sysctl -w net.core.somaxconn=2048 > /dev/null 2>&1;
     echo "vm.overcommit_memory=1" >> /etc/sysctl.d/60-gse-redis.conf;
-    echo "net.core.somaxconn=1024" >> /etc/sysctl.d/60-gse-redis.conf;
+    echo "net.core.somaxconn=2048" >> /etc/sysctl.d/60-gse-redis.conf;
     # Disable THP
     echo never > /sys/kernel/mm/transparent_hugepage/enabled;
     cat << __EOF__  > /etc/default/grub.d/99-transparent-huge-page.cfg
@@ -1198,6 +1203,30 @@ __EOF__
     sync;
     echo -e "\e[1;32m - configure_redis() finished\e[0m";
     /usr/bin/logger 'configure_redis finished' -t 'gce-23.1.0';
+}
+
+prepare_db_maintenance() {
+    echo -e "\e[1;32m - prepare_db_maintenance()\e[0m";
+    /usr/bin/logger 'prepare_db_maintenance()' -t 'gce-23.1.0';
+    ## Weekly maintenance
+    cat << __EOF__ > /etc/cron.weekly/gvmd-maintenance
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=vacuum'
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=analyze'
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-result-nvts'
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-config-prefs'
+# End of maintenance
+__EOF__
+
+    ## Daily Maintenance
+    cat << __EOF__  > /etc/cron.daily/gvmd-maintenance
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-result-severities'
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=update-report-cache'
+__EOF__
+    chmod 744 /etc/cron.weekly/gvmd-maintenance
+    chmod 744 /etc/cron.daily/gvmd-maintenance
+    sync;
+    echo -e "\e[1;32m - prepare_db_maintenance() finished\e[0m";
+    /usr/bin/logger 'prepare_db_maintenance() finished' -t 'gce-23.1.0';
 }
 
 prepare_gpg() {
@@ -1543,6 +1572,8 @@ main() {
     configure_gsa;
     ## Some PGP stuff
     prepare_gpg;
+    ## DB Maintenance
+    prepare_db_maintenance;
     ## Add a simple GVM script as example
     create_gvm_python_script;
     #browserlist_update;

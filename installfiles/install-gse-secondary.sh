@@ -206,7 +206,7 @@ prepare_source() {
     wget -O gvmlibs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v$GVMLIBS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..ospd-openvas' -t 'gce-23.1.0';
     wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v$OSPDOPENVAS.gz > /dev/null 2>&1;
-    /usr/zbin/logger '..openvas-scanner' -t 'gce-23.1.0';
+    /usr/bin/logger '..openvas-scanner' -t 'gce-23.1.0';
     wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v$OPENVAS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gsa daemon (gsad)' -t 'gce-23.1.0';
     wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v$OPENVASSMB.tar.gz > /dev/null 2>&1;
@@ -580,8 +580,8 @@ Group=gvm
 ExecStart=/opt/gvm/gvmpy/bin/ospd-openvas --port=9390 --bind-address=0.0.0.0 --pid-file=/run/gvm/ospd-openvas.pid --lock-file-dir=/run/gvm/ --key-file=/var/lib/gvm/private/CA/secondary-key.pem --cert-file=/var/lib/gvm/CA/secondary-cert.pem --ca-file=/var/lib/gvm/CA/cacert.pem --log-file=/var/log/gvm/ospd-openvas.log
 # --log-level in ospd-openvas.conf can be debug too, info is default
 # This works asynchronously, but does not take the daemon down during the reload so it is ok.
-Restart=always
-RestartSec=60
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
@@ -798,9 +798,9 @@ aof-rewrite-incremental-fsync yes
 __EOF__
     # Redis requirements - overcommit memory and TCP backlog setting > 511
     sysctl -w vm.overcommit_memory=1 > /dev/null 2>&1;
-    sysctl -w net.core.somaxconn=1024 > /dev/null 2>&1;
+    sysctl -w net.core.somaxconn=2048 > /dev/null 2>&1;
     echo "vm.overcommit_memory=1" >> /etc/sysctl.d/60-gse-redis.conf;
-    echo "net.core.somaxconn=1024" >> /etc/sysctl.d/60-gse-redis.conf;
+    echo "net.core.somaxconn=2048" >> /etc/sysctl.d/60-gse-redis.conf;
     # Disable THP
     echo never > /sys/kernel/mm/transparent_hugepage/enabled;
     cat << __EOF__  > /etc/default/grub.d/99-transparent-huge-page.cfg
