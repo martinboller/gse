@@ -203,6 +203,7 @@ prepare_nix() {
     cat << __EOF__ > /etc/profile.d/gvm.sh
 # Add GVM library path to /etc/ld.so.conf.d
 PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/gvmpy/bin
+# Lib XML issues when the feeds grew beyond the original limit in lib xml. Solved in newer builds.
 export LIBXML_MAX_NODESET_LENGTH=40000000
 __EOF__
 
@@ -229,7 +230,7 @@ d /run/gvmd/gse 1775 root root
 d /run/ospd 1775 gvm gvm
 d /run/ospd/gse 1775 root root
 __EOF__
-    # start systemd-tmpfiles to create directories
+    # start systemd-tmpfiles to create directories as specificed in tmpfiles.d/greenbone.conf
     echo -e "\e[1;36m ... starting systemd-tmpfiles to create directories\e[0m";
     systemd-tmpfiles --create > /dev/null 2>&1;
     echo -e "\e[1;32m - prepare_nix() finished\e[0m";
@@ -391,8 +392,8 @@ install_gvm_libs() {
     /usr/bin/logger '..make Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... make Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
     make > /dev/null 2>&1;
-    /usr/bin/logger '..make gvm libraries Documentation' -t 'gce-23.1.0';
-    make doc-full;
+    #/usr/bin/logger '..make gvm libraries Documentation' -t 'gce-23.1.0';
+    #make doc-full;
     /usr/bin/logger '..make install Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... make install gvm libraries\e[0m";
     make install > /dev/null 2>&1;
@@ -489,7 +490,7 @@ install_openvas() {
     echo -e "\e[1;36m ... cmake OpenVAS Scanner\e[0m";
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
     /usr/bin/logger '..make OpenVAS Scanner' -t 'gce-23.1.0';
-    /usr/bin/logger '..make Openvas Scanner Documentation' -t 'gce-23.1.0';
+    #/usr/bin/logger '..make Openvas Scanner Documentation' -t 'gce-23.1.0';
     #make doc-full;
     echo -e "\e[1;36m ... make OpenVAS Scanner\e[0m";
     # make it
@@ -521,8 +522,8 @@ install_gvm() {
     /usr/bin/logger '..make GVM Daemon' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... make Greenbone Vulnerability Manager (GVM)\e[0m";
     make > /dev/null 2>&1;
-    /usr/bin/logger '..make documentation for GVM Daemon' -t 'gce-23.1.0';
-    make doc-full;
+    #/usr/bin/logger '..make documentation for GVM Daemon' -t 'gce-23.1.0';
+    #make doc-full;
     /usr/bin/logger '..make install GVM Daemon' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... make install Greenbone Vulnerability Manager (GVM)\e[0m";
     make install > /dev/null 2>&1;
@@ -535,7 +536,7 @@ install_nmap() {
     /usr/bin/logger 'install_nmap' -t 'gce-23.1.0';
     cd /opt/gvm/src/greenbone;
     # Install NMAP
-    apt-get -qq -y install ./nmap.deb --fix-missing > /dev/null 2>&1;
+    apt-get -qq -y install nmap --fix-missing > /dev/null 2>&1;
     sync;
     /usr/bin/logger 'install_nmap finished' -t 'gce-23.1.0';
 }
@@ -598,8 +599,8 @@ install_gsad() {
     /usr/bin/logger '..make GSA Daemon' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... make Greenbone Security Assistant Daemon (GSAD)\e[0m";
     make > /dev/null 2>&1;                # build the libraries
-    /usr/bin/logger '..make documentation for GSA Daemon' -t 'gce-23.1.0';
-    make doc-full;       # build more developer-oriented documentation
+    #/usr/bin/logger '..make documentation for GSA Daemon' -t 'gce-23.1.0';
+    #make doc-full;       # build more developer-oriented documentation
     /usr/bin/logger '..make install GSA Daemon' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... make install Greenbone Security Assistant Daemon (GSAD)\e[0m";
     make install > /dev/null 2>&1;        # install the build
@@ -738,7 +739,7 @@ timeout_retry = 3
 vendor_version = Greenbone Community Edition 23.1.0
 plugins_folder = /var/lib/openvas/plugins
 config_file = /etc/openvas/openvas.conf
-max_hosts = 30
+max_hosts = 40
 db_address = /run/redis/redis.sock
 report_host_details = yes
 expand_vhosts = yes
@@ -751,7 +752,6 @@ test_alive_hosts_only = yes
 unscanned_closed_udp = yes
 non_simult_ports = 139, 445, 3389, Services/irc
 __EOF__
-
 
     # Create NOTUS Scanner service
     echo -e "\e[1;36m ... creating NOTUS scanner service\e[0m";
@@ -771,8 +771,8 @@ RuntimeDirectoryMode=2775
 PIDFile=/run/notus-scanner/notus-scanner.pid
 ExecStart=/opt/gvm/gvmpy/bin/notus-scanner --products-directory /var/lib/notus/products --log-file /var/log/gvm/notus-scanner.log
 SuccessExitStatus=SIGKILL
-Restart=always
-RestartSec=60
+Restart=on-failure
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
@@ -855,7 +855,8 @@ PIDFile=/run/gvmd/gvmd.pid
 # feed-update lock must be shared between ospd, gvmd, and greenbone-nvt-sync/greenbone-feed-sync
 ExecStart=/usr/bin/wrapper /opt/gvm/sbin/gvmd /etc/gvm/gvmd.conf
 #ExecStart=-/opt/gvm/sbin/gvmd --unix-socket=/run/gvmd/gvmd.sock --feed-lock-path=/run/gvmd/feed-update.lock --listen-group=gvm --client-watch-interval=0 --osp-vt-update=/run/ospd/ospd-openvas.sock
-Restart=always
+Restart=on-failure
+RestartSec=10
 TimeoutStopSec=20
 
 [Install]
@@ -1210,20 +1211,20 @@ prepare_db_maintenance() {
     /usr/bin/logger 'prepare_db_maintenance()' -t 'gce-23.1.0';
     ## Weekly maintenance
     cat << __EOF__ > /etc/cron.weekly/gvmd-maintenance
-su gvm -c '/opt/gvm/sbin/gvmd --optimize=vacuum'
-su gvm -c '/opt/gvm/sbin/gvmd --optimize=analyze'
-su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-result-nvts'
-su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-config-prefs'
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=vacuum' > /dev/null 2>&1;
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=analyze' > /dev/null 2>&1;
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-result-nvts' > /dev/null 2>&1;
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-config-prefs' > /dev/null 2>&1;
 # End of maintenance
 __EOF__
 
     ## Daily Maintenance
     cat << __EOF__  > /etc/cron.daily/gvmd-maintenance
-su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-result-severities'
-su gvm -c '/opt/gvm/sbin/gvmd --optimize=update-report-cache'
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-result-severities' > /dev/null 2>&1;
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=update-report-cache' > /dev/null 2>&1;
 __EOF__
-    chmod 744 /etc/cron.weekly/gvmd-maintenance
-    chmod 744 /etc/cron.daily/gvmd-maintenance
+    chmod 755 /etc/cron.weekly/gvmd-maintenance
+    chmod 755 /etc/cron.daily/gvmd-maintenance
     sync;
     echo -e "\e[1;32m - prepare_db_maintenance() finished\e[0m";
     /usr/bin/logger 'prepare_db_maintenance() finished' -t 'gce-23.1.0';
@@ -1498,8 +1499,8 @@ main() {
     # Locality
     export GVM_CERTIFICATE_LOCALITY="Germany"
     # Organization
-    export GVM_CERTIFICATE_ORG="Greenbone Community Edition 22.4"
-    # (Organization unit)
+    export GVM_CERTIFICATE_ORG="Greenbone Community Edition 23.1"
+    # (Organizational unit)
     export GVM_CERTIFICATE_ORG_UNIT="Certificate Authority for $GVM_CERTIFICATE_ORG"
     # State
     export GVM_CA_CERTIFICATE_STATE="Bavaria"
@@ -1532,11 +1533,11 @@ main() {
     configure_cmake;
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH
     # For latest builds use prepare_source_latest instead of prepare_source
-    # It is likely to break, so Don't.
+    # It is likely to break, so only use if you're feeling really lucky.
     #prepare_source_latest;
     
     # Installation of specific components
-    # This is the master server so install GSAD
+    # This is the master server so install GVMD, GSAD, and GSA
     # Only install poetry when testing
     #install_poetry;
     #install_nmap;
