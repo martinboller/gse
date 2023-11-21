@@ -418,6 +418,14 @@ install_python_gvm() {
     /usr/bin/logger 'install_python_gvm finished' -t 'gce-23.1.0';
 }
 
+install_python_ical() {
+    /usr/bin/logger 'install_python_ical()' -t 'gce-23.1.0';
+    # Required/useful for python-gvm (GMP) create_schedule
+    # Installing from python repo
+    su gvm -c 'cd ~; source gvmpy/bin/activate; python3 -m pip install icalendar';
+    /usr/bin/logger 'install_python_ical finished' -t 'gce-23.1.0';
+}
+
 install_openvas_smb() {
     /usr/bin/logger 'install_openvas_smb' -t 'gce-23.1.0';
     echo -e "\e[1;32m - install_openvas_smb()\e[0m";
@@ -1564,6 +1572,7 @@ main() {
     install_notus;
     install_gvm_tools;
     install_python_gvm;
+    install_python_ical;
     install_greenbone_feed_sync;
     # Configuration of installed components
     prepare_postgresql;
