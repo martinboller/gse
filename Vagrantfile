@@ -28,8 +28,8 @@ Vagrant.configure("2") do |config|
       vb.gui = false
       vb.name = "manticore"
       vb.customize ["modifyvm", :id, "--memory", 10240]
-      vb.customize ["modifyvm", :id, "--cpus", 6]
-      vb.customize ["modifyvm", :id, "--vram", "4"]
+      vb.customize ["modifyvm", :id, "--cpus", 4]
+      vb.customize ["modifyvm", :id, "--vram", "8"]
       vb.customize ["modifyvm", :id, "--clipboard", "bidirectional"]
       vb.customize ["setextradata", "global", "GUI/SuppressMessages", "all" ]
     end
