@@ -184,17 +184,17 @@ prepare_source() {
     echo -e "\e[1;32mPreparing GSE Source files\e[0m";
     echo -e "\e[1;36m ... preparing directories\e[0m";
     echo -e "\e[1;36m ... Versions\e[0m";
-    export GVMLIBS='22.7.3'
-    export OSPDOPENVAS='22.6.1'
-    export OPENVAS='22.7.6'
+     export GVMLIBS='22.7.3'
+    export OSPDOPENVAS='22.6.2'
+    export OPENVAS='22.7.7'
     export GVMD='23.1.0'
     export GSAD='22.8.0'
-    export GSA='22.9.0'
-    export OPENVASSMB='22.5.5'
+    export GSA='22.9.1'
+    export OPENVASSMB='22.5.6'
     export PGVM='23.11.0'
     export GVMTOOLS='23.11.0'
     export POSTGREGVM='22.6.1'
-    export NOTUS='22.6.0'
+    export NOTUS='22.6.2'
 
     mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
