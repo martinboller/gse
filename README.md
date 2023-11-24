@@ -1,4 +1,4 @@
-# Greenbone Vulnerability Manager 22.4.x Source Code Edition Installation script
+# Greenbone Vulnerability Manager 22.4.x Community Edition Installation script
 
 ### Bash script automating the installation of Greenbone Vulnerability Manager Community Version on Debian 11 (Bullseye)
 
