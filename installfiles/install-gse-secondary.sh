@@ -184,7 +184,7 @@ prepare_source() {
     echo -e "\e[1;32mPreparing GSE Source files\e[0m";
     echo -e "\e[1;36m ... preparing directories\e[0m";
     echo -e "\e[1;36m ... Versions\e[0m";
-     export GVMLIBS='22.7.3'
+    export GVMLIBS='22.7.3'
     export OSPDOPENVAS='22.6.2'
     export OPENVAS='22.7.7'
     export GVMD='23.1.0'
@@ -205,7 +205,7 @@ prepare_source() {
     /usr/bin/logger '..gvm-libs' -t 'gce-23.1.0';
     wget -O gvmlibs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v$GVMLIBS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..ospd-openvas' -t 'gce-23.1.0';
-    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v$OSPDOPENVAS.gz > /dev/null 2>&1;
+    wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v$OSPDOPENVAS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..openvas-scanner' -t 'gce-23.1.0';
     wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v$OPENVAS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gsa daemon (gsad)' -t 'gce-23.1.0';
