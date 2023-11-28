@@ -1496,13 +1496,13 @@ configure_exim() {
     cat << __EOF__  > /etc/exim4/update-exim4.conf.conf
 # This is a Debian Firewall specific file
 dc_eximconfig_configtype='smarthost'
-dc_other_hostnames=''
+dc_other_hostnames='$MAIL_SERVER_DOMAIN'
 dc_local_interfaces='127.0.0.1'
 dc_readhost='$MAIL_DOMAIN'
 dc_relay_domains=''
 dc_minimaldns='false'
 dc_relay_nets='192.168.10.0/24, 192.168.20.0/24, 192.168.30.0/24, 192.168.40.0/24'
-dc_smarthost='$MAIL_SERVER::$MAIL_ADDRESS'
+dc_smarthost='$MAIL_SERVER::$MAIL_SERVER_PORT'
 CFILEMODE='644'
 dc_use_split_config='true'
 dc_hide_mailname='true'
@@ -1543,7 +1543,8 @@ main() {
     # Shared variables
 
     # Mail specific variables
-    export MAIL_SERVER="mailserver";
+    export MAIL_SERVER="mailserverfqdn";
+    export MAIL_SERVER_DOMAIN="mailserverdomain"
     export MAIL_SERVER_PORT="587";
     export MAIL_ADDRESS="someone@maildomain";
     export MAIL_PASSWORD="secretpassword";
