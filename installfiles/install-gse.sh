@@ -1475,6 +1475,61 @@ install_openvas_from_github() {
     mv ./openvas-scanner ./openvas;
 }
 
+install_exim() {
+    ## Installs Exim4 to allow for sending GCE alerts over e-mail
+    /usr/bin/logger 'install_exim()' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - install_exim()\e[0m";
+    # remove postfix if installed
+    apt-get -qq -y purge postfix* > /dev/null 2>&1;
+    apt-get -qq -y install exim4 > /dev/null 2>&1;
+    /usr/bin/logger 'install_exim() finished' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - install_exim() finished\e[0m";    
+}
+
+configure_exim() {
+    ## Installs Exim4
+    /usr/bin/logger 'configure_exim()' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - configure_exim()\e[0m";
+        /usr/bin/logger 'configure_exim()' -t 'Debian-FW-20220519';
+    echo -e "\e[32mconfigure_exim()\e[0m";
+    echo -e "\e[36m-Configure exim4.conf.conf\e[0m";
+    cat << __EOF__  > /etc/exim4/update-exim4.conf.conf
+# This is a Debian Firewall specific file
+dc_eximconfig_configtype='smarthost'
+dc_other_hostnames=''
+dc_local_interfaces='127.0.0.1'
+dc_readhost='$MAIL_DOMAIN'
+dc_relay_domains=''
+dc_minimaldns='false'
+dc_relay_nets='192.168.10.0/24, 192.168.20.0/24, 192.168.30.0/24, 192.168.40.0/24'
+dc_smarthost='$MAIL_SERVER::$MAIL_ADDRESS'
+CFILEMODE='644'
+dc_use_split_config='true'
+dc_hide_mailname='true'
+dc_mailname_in_oh='true'
+dc_localdelivery='mail_spool'
+__EOF__
+
+    echo -e "\e[36m-Configure mail access\e[0m";
+    cat << __EOF__  > /etc/exim4/passwd.client
+    # password file used when the local exim is authenticating to a remote
+# host as a client.
+#
+# see exim4_passwd_client(5) for more documentation
+$SMTP_SERVER:$MAIL_ADDRESS:$MAIL_PASSWORD
+__EOF__
+
+    echo -e "\e[36m-Configure mail addresses\e[0m";
+    cat << __EOF__  > /etc/email-addresses
+<my local user>: $MAIL_ADDRESS
+root: $MAIL_ADDRESS
+__EOF__
+    # Time to reconfigure exim4
+    dpkg-reconfigure -fnoninteractive exim4-config > /dev/null 2>&1
+    /usr/bin/logger 'configure_exim() finished' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - configure_exim() finished\e[0m";    
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -1486,6 +1541,14 @@ main() {
     echo -e "\e[1;36m ... $HOSTNAME will also be the Certificate Authority for itself and all secondaries\e[0m"
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------\e[0m"
     # Shared variables
+
+    # Mail specific variables
+    export MAIL_SERVER = "mailserver";
+    export MAIL_SERVER_PORT="587";
+    export MAIL_ADDRESS="someone@maildomain";
+    export MAIL_PASSWORD="secretpassword";
+    export INTERNAL_DOMAIN="internaldomain";
+    
     # GSE Certificate options
    
     # Lifetime in days
