@@ -71,8 +71,8 @@ install_prerequisites() {
     # Install pre-requisites for gsad
     /usr/bin/logger '..Prerequisites for Greenbone Security Assistant' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... prequisites for Greenbone Security Assistant\e[0m";
-    apt-get -qq -y install libmicrohttpd-dev clang cmake;
-    apt-get -qq -y install python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg python3-venv python3-wheel;
+    apt-get -qq -y install libmicrohttpd-dev clang cmake > /dev/null 2>&1;
+    apt-get -qq -y install python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg python3-venv python3-wheel > /dev/null 2>&1;
 
 
     # Other pre-requisites for GSE
@@ -415,7 +415,7 @@ install_python_gvm() {
     #su gvm -c 'source ~/gvmpy/bin/activate; /usr/bin/python3 -m pip install python-gvm';
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd python-gvm/ > /dev/null 2>&1;
-    su gvm -c 'source ~/gvmpy/bin/activate; /usr/bin/python3 -m pip install .';
+    su gvm -c 'source ~/gvmpy/bin/activate; /usr/bin/python3 -m pip install .' > /dev/null 2>&1;
     #/usr/poetry/bin/poetry install;
     echo -e "\e[1;32m - install_python_gvm() finished\e[0m";
     /usr/bin/logger 'install_python_gvm finished' -t 'gce-23.1.0';
@@ -1516,7 +1516,7 @@ __EOF__
 # host as a client.
 #
 # see exim4_passwd_client(5) for more documentation
-$SMTP_SERVER:$MAIL_ADDRESS:$MAIL_PASSWORD
+$MAIL_SERVER:$MAIL_ADDRESS:$MAIL_PASSWORD
 __EOF__
 
     echo -e "\e[36m-Configure mail addresses\e[0m";
@@ -1615,7 +1615,6 @@ main() {
     install_openvas_smb;
     #install_openvas_from_github;
     install_openvas;
-#   install_ospd;
     install_ospd_openvas;
     install_gvm;
     install_pggvm;
@@ -1624,7 +1623,7 @@ main() {
     install_notus;
     install_gvm_tools;
     install_python_gvm;
-    install_python_ical;
+    #install_python_ical;
     install_greenbone_feed_sync;
     install_exim;
     configure_exim;
