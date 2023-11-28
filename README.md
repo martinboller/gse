@@ -30,7 +30,7 @@ Name | URL | Version
 ---|---|---
 gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.7.3
 ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.6.2
-openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 22.7.7
+openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 22.7.8
 GVM Daemon | https://github.com/greenbone/gvmd/ | 23.1.0
 GSA Daemon | https://github.com/greenbone/gsad/ | 22.8.0
 GSA | https://github.com/greenbone/gsa/ | 22.9.1
@@ -44,6 +44,9 @@ Node.js | https://deb.nodesource.com/ | 20.x
 ----
 
 ## Latest changes
+
+### 2023-11-28 - OpenVAS-Scanner updated
+ - OpenVAS 22.7.8
 
 ### 2023-11-24 - Updates to GSA, ospd-openvas, NOTUS-Scanner, and pg-gvm.
 
