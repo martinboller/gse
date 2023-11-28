@@ -1543,7 +1543,7 @@ main() {
     # Shared variables
 
     # Mail specific variables
-    export MAIL_SERVER = "mailserver";
+    export MAIL_SERVER="mailserver";
     export MAIL_SERVER_PORT="587";
     export MAIL_ADDRESS="someone@maildomain";
     export MAIL_PASSWORD="secretpassword";
