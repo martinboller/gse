@@ -1625,6 +1625,8 @@ main() {
     install_python_gvm;
     install_python_ical;
     install_greenbone_feed_sync;
+    install_exim;
+    configure_exim;
     # Configuration of installed components
     prepare_postgresql;
     configure_redis;
