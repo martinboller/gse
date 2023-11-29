@@ -78,7 +78,7 @@ install_prerequisites() {
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                 python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
         
-    elif [ $CODENAME -eq "bookworm" ]
+    elif [ $VER -eq "12" ]
         then
             /usr/bin/logger '..install_prerequisites_debian_12_bookworm' -t 'gce-23.1.0';
             echo -e "\e[1;36m ... installing prequisites Debian 12 Bookworm\e[0m";
