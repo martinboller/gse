@@ -852,12 +852,12 @@ __EOF__
 }
 
 update_openvas_feed () {
-    /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gse';
+    /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gce-23.1.0';
     echo -e "\e[1;32m - update_openvas_feed()\e[0m";
     echo -e "\e[1;36m ... updating NVT information on $HOSTNAME\e[0m";
     su gvm -c '/opt/gvm/sbin/openvas --update-vt-info' > /dev/null 2>&1;
     echo -e "\e[1;32m - update_openvas_feed() finished\e[0m";
-    /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gse';
+    /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gce-23.1.0';
 }
 
 install_openvas_from_github() {
@@ -865,6 +865,24 @@ install_openvas_from_github() {
     rm -rf openvas
     git clone https://github.com/greenbone/openvas-scanner.git
     mv ./openvas-scanner ./openvas;
+}
+
+toggle_vagrant_nic() {
+    /usr/bin/logger 'toggle_vagrant_nic()' -t 'gce-23.1.0';
+    echo -e "\e[1;32mtoggle_vagrant_nic()\e[0m";
+    echo -e "\e[1;32m - is this started by Vagrant\e[0m";
+    if ! [[ -z "${VAGRANT_ENV}" ]]; then
+    /usr/bin/logger 'ifdown eth0' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - ifdown eth0\e[0m";
+    ifdown eth0;
+    /usr/bin/logger 'ifup eth0' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - ifup eth0\e[0m";
+    ifup eth0;
+else
+    echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
+fi
+    echo -e "\e[1;32mtoggle_vagrant_nic() finished\e[0m";
+    /usr/bin/logger 'toggle_vagrant_nic() finished' -t 'gce-23.1.0';
 }
 
 ##################################################################################################################
@@ -877,7 +895,10 @@ main() {
     echo -e "\e[1;36m ... Starting installation of secondary Greenbone Community Edition Server version 23.1.0\e[0m"
     echo -e "\e[1;36m ... $HOSTNAME will run ospd-openvas and openvas-scanner only, managed from a primary\e[0m"
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------\e[0m"
-   # Shared components
+    # Vagrant acts up at times with eth0, so check if running Vagrant and toggle it down/up
+    toggle_vagrant_nic;
+
+    # Shared components
     install_prerequisites;
     prepare_nix;
     prepare_source;

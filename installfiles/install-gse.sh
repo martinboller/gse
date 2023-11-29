@@ -1530,6 +1530,24 @@ __EOF__
     echo -e "\e[1;32m - configure_exim() finished\e[0m";    
 }
 
+toggle_vagrant_nic() {
+    /usr/bin/logger 'toggle_vagrant_nic()' -t 'gce-23.1.0';
+    echo -e "\e[1;32mtoggle_vagrant_nic()\e[0m";
+    echo -e "\e[1;32m - is this started by Vagrant\e[0m";
+    if ! [[ -z "${VAGRANT_ENV}" ]]; then
+    /usr/bin/logger 'ifdown eth0' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - ifdown eth0\e[0m";
+    ifdown eth0;
+    /usr/bin/logger 'ifup eth0' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - ifup eth0\e[0m";
+    ifup eth0;
+else
+    echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
+fi
+    echo -e "\e[1;32mtoggle_vagrant_nic() finished\e[0m";
+    /usr/bin/logger 'toggle_vagrant_nic() finished' -t 'gce-23.1.0';
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -1578,6 +1596,9 @@ main() {
     ## Install Prefix
     export INSTALL_PREFIX=/opt/gvm
     export SOURCE_DIR=/opt/gvm/src/greenbone
+
+    # Vagrant acts up at times with eth0, so check if running Vagrant and toggle it down/up
+    toggle_vagrant_nic;
 
     ################################
     ## Start actual installation

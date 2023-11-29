@@ -15,6 +15,7 @@
 #####################################################################
 
 configure_locale() {
+  /usr/bin/logger 'configure_locale()' -t 'gse';
   echo -e "\e[32m - configure_locale()\e[0m";
   echo -e "\e[36m ... configure locale (default:C.UTF-8)\e[0m";
   export DEBIAN_FRONTEND=noninteractive;
@@ -26,10 +27,11 @@ LC_ALL=C.UTF-8
 EOF";
   update-locale > /dev/null 2>&1;
   echo -e "\e[32m - configure_locale() finished\e[0m";
-  /usr/bin/logger 'configure_locale()' -t 'gse';
+  /usr/bin/logger 'configure_locale() finished' -t 'gse';
 }
 
 configure_timezone() {
+  /usr/bin/logger 'configure_timezone()' -t 'gse';
   echo -e "\e[32m - configure_timezone()\e[0m";
   echo -e "\e[36m ... set timezone to Etc/UTC\e[0m";
   export DEBIAN_FRONTEND=noninteractive;
@@ -38,10 +40,11 @@ configure_timezone() {
   echo 'Etc/UTC' > /etc/timezone > /dev/null 2>&1;
   dpkg-reconfigure -f noninteractive tzdata > /dev/null 2>&1;
   echo -e "\e[32m - configure_timezone() finished\e[0m";
-  /usr/bin/logger 'configure_timezone()' -t 'gse';
+  /usr/bin/logger 'configure_timezone() finished' -t 'gse';
 }
 
 gse_bootstrap_prerequisites() {
+  /usr/bin/logger 'gse_bootstrap_prerequisites()' -t 'gse';
   echo -e "\e[32m - gse_bootstrap_prerequisites()\e[0m";
   # Install prerequisites and useful tools
   export DEBIAN_FRONTEND=noninteractive;
@@ -67,10 +70,11 @@ gse_bootstrap_prerequisites() {
   echo -e "\e[36m ... copying instalation scripts\e[0m";
   /bin/cp -r /tmp/installfiles/* /root/ > /dev/null 2>&1;
   chmod 744 /root/*.sh > /dev/null 2>&1;
-  /usr/bin/logger 'gse_bootstrap_prerequisites()' -t 'gse';
+  /usr/bin/logger 'gse_bootstrap_prerequisites() finished' -t 'gse';
 }
 
 install_public_ssh_keys() {
+  /usr/bin/logger 'install_public_ssh_keys()' -t 'gse';
   echo -e "\e[32m - install_public_ssh_key()\e[0m";
   # Echo add SSH public key for root logon
   export DEBIAN_FRONTEND=noninteractive;
@@ -83,6 +87,14 @@ install_public_ssh_keys() {
   /usr/bin/logger 'install_public_ssh_keys() finished' -t 'gse';
 }
 
+configure_vagrant() {
+  /usr/bin/logger 'configure_vagrant()' -t 'gse';
+  echo -e "\e[32mconfigure_vagrant()\e[0m";
+  echo "export VAGRANT_ENV=TRUE" > /etc/profile.d/vagrant.sh;
+  echo -e "\e[32mconfigure_vagrant() finished\e[0m";
+  /usr/bin/logger 'configure_vagrant() finished' -t 'gse';
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -93,6 +105,7 @@ main() {
     #prepare_files;
     export myPublicSSHKey="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIHJYsxpawSLfmIAZTPWdWe2xLAH758JjNs5/Z2pPWYm"
     /usr/bin/logger 'GSE Bootstrap main()' -t 'gse';
+    configure_vagrant;
     install_public_ssh_keys;
     configure_timezone;
     gse_bootstrap_prerequisites;
