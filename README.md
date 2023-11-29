@@ -17,7 +17,7 @@ Installation will be located in
 
 During installation a GVM user called *'admin'* is created. The generated password for user admin is
 stored in the file */var/lib/gvm/adminuser*. It is recommended that this password is changed and/or
-the file deleted. Do NOT delete the user admin unless you also change the feedowner to another user. This is described in the section **Feed Owner**.
+the file deleted. Do NOT delete the user admin unless you also change the feedowner to another user. This is described in the section [Feed Owner](#without-a-feed-owner-there-will-be-no-feeds-ask-me-how-i-know).
 
 To create a secondary see instructions later - but running the script _add-secondary-2-primary.sh_ does the work required on the primary as well as on the secondary, hence this is the preferred method<sup>1</sup>.
 
