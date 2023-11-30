@@ -138,6 +138,15 @@ install_prerequisites() {
     /usr/bin/logger 'install_prerequisites finished' -t 'gce-23.1.0';
 }
 
+clean_env() {
+     /usr/bin/logger 'clean_env()' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - clean_env()\e[0m";
+    ## Deleting file with variables environment variables from env
+    rm $SCRIPT_DIR/env;
+    /usr/bin/logger 'clean_env() finished' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - clean_env() finished\e[0m";
+}
+
 prepare_nix() {
     echo -e "\e[1;32m - prepare_nix()\e[0m";
     echo -e "\e[1;32mCreating Users, configuring sudoers, and setting locale\e[0m";
@@ -895,6 +904,13 @@ main() {
     echo -e "\e[1;36m ... Starting installation of secondary Greenbone Community Edition Server version 23.1.0\e[0m"
     echo -e "\e[1;36m ... $HOSTNAME will run ospd-openvas and openvas-scanner only, managed from a primary\e[0m"
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------\e[0m"
+    # Environment
+    export SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+    
+    ## Install Prefix
+    export INSTALL_PREFIX=/opt/gvm
+    export SOURCE_DIR=/opt/gvm/src/greenbone
+
     # Vagrant acts up at times with eth0, so check if running Vagrant and toggle it down/up
     toggle_vagrant_nic;
 
@@ -930,6 +946,7 @@ main() {
     update_openvas_feed;
     start_services;
     create_scan_user;
+    clean_env;
     echo -e;
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
     echo -e "\e[1;36m  Run add-secondary-2-primary on the primary server to configure this secondary\e[0m";

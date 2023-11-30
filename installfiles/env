@@ -1,0 +1,9 @@
+# Can be manually added with: export $(cat .env | grep -v "#" | xargs)
+# Mail specific variables
+MAIL_SERVER="mailserverfqdn"
+MAIL_SERVER_DOMAIN="mailserverdomain"
+MAIL_SERVER_PORT="587"
+MAIL_ADDRESS="someone@maildomain"
+MAIL_PASSWORD="secretpassword"
+INTERNAL_DOMAIN="internaldomain"
+RELAY_NETS="subnets"

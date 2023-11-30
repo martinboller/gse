@@ -107,10 +107,9 @@ main() {
     /usr/bin/logger 'GSE Bootstrap main()' -t 'gse';
     configure_vagrant;
     install_public_ssh_keys;
-    configure_timezone;
+    #configure_timezone;
     gse_bootstrap_prerequisites;
-    configure_locale;
-    configure_timezone;
+    #configure_locale;
     # NAT Network adapter weirdness, so give it a kick.
     #ifdown eth0 > /dev/null 2>&1; ifup eth0 > /dev/null 2>&1;
     if [ "$HOSTNAME" = "manticore" ];

@@ -30,7 +30,7 @@ install_prerequisites() {
     /usr/bin/logger 'install_prerequisites' -t 'gce-23.1.0';
     echo -e "\e[1;32m - install_prerequisites()\e[0m";
     echo -e "\e[1;32m--------------------------------------------\e[0m";
-    echo -e "\e[1;36m ... installing perequisite packages\e[0m";
+    echo -e "\e[1;36m ... installing prerequisite packages\e[0m";
     export DEBIAN_FRONTEND=noninteractive;
     # OS Version
     # freedesktop.org and systemd
@@ -70,7 +70,7 @@ install_prerequisites() {
         libgcrypt20-dev redis-server libunistring-dev libxml2-dev > /dev/null 2>&1;
     # Install pre-requisites for gsad
     /usr/bin/logger '..Prerequisites for Greenbone Security Assistant' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... prequisites for Greenbone Security Assistant\e[0m";
+    echo -e "\e[1;36m ... prerequisites for Greenbone Security Assistant\e[0m";
     apt-get -qq -y install libmicrohttpd-dev clang cmake > /dev/null 2>&1;
     apt-get -qq -y install python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg python3-venv python3-wheel > /dev/null 2>&1;
 
@@ -97,7 +97,7 @@ install_prerequisites() {
             # Removed doxygen for now
             # Other pre-requisites for GSE - Bullseye / Debian 11
             /usr/bin/logger '....Other prerequisites for Greenbone Community Edition on Debian 11' -t 'gce-23.1.0';
-            echo -e "\e[1;36m ... installing prequisites for Greenbone Community Edition\e[0m";
+            echo -e "\e[1;36m ... installing prerequisites for Greenbone Community Edition\e[0m";
             apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
@@ -118,7 +118,7 @@ install_prerequisites() {
             # Removed doxygen for now
             # Other pre-requisites for GSE - Bullseye / Debian 11
             /usr/bin/logger '....Other prerequisites for Greenbone Community Edition on Debian 11' -t 'gce-23.1.0';
-            echo -e "\e[1;36m ... installing prequisites for Greenbone Community Edition\e[0m";
+            echo -e "\e[1;36m ... installing prerequisites for Greenbone Community Edition\e[0m";
             apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
@@ -128,14 +128,14 @@ install_prerequisites() {
             npm install -g yarn --force > /dev/null 2>&1;
         else
             /usr/bin/logger '..install_prerequisites_debian_Untested' -t 'gce-23.1.0';
-            echo -e "\e[1;36m ... installing prequisites for unsupported Debian version\e[0m";
-            echo -e "\e[1;36m ... installing prequisites for gvmd\e[0m";
+            echo -e "\e[1;36m ... installing prerequisites for unsupported Debian version\e[0m";
+            echo -e "\e[1;36m ... installing prerequisites for gvmd\e[0m";
             # Untested but let's try like it is buster (debian 10)
             apt-get -qq -y install mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
                 postgresql-server-dev-11 pkg-config libical-dev xsltproc doxygen > /dev/null 2>&1;
             
             # Other pre-requisites for GSE - Buster / Debian 10
-            echo -e "\e[1;36m ... installing prequisites for Greenbone Community Edition\e[0m";
+            echo -e "\e[1;36m ... installing prerequisites for Greenbone Community Edition\e[0m";
             /usr/bin/logger '....Other prerequisites for Greenbone Community Edition on unknown OS' -t 'gce-23.1.0';
             apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
@@ -186,6 +186,16 @@ install_prerequisites() {
     /usr/bin/logger 'install_prerequisites finished' -t 'gce-23.1.0';
 }
 
+clean_env() {
+     /usr/bin/logger 'clean_env()' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - clean_env()\e[0m";
+    ## Deleting file with variables environment variables from env
+    export ENV_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+    rm $ENV_DIR/env;
+    rm $HOME/env;
+    /usr/bin/logger 'clean_env() finished' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - clean_env() finished\e[0m";
+}
 
 prepare_nix() {
     /usr/bin/logger 'prepare_nix()' -t 'gce-23.1.0';
@@ -463,7 +473,7 @@ install_ospd_openvas() {
     echo -e "\e[1;36m ... installing ospd-openvas\e[0m";
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     cd ospd-openvas > /dev/null 2>&1;
-    su gvm -c 'source ~/gvmpy/bin/activate;python3 -m pip install .';
+    su gvm -c 'source ~/gvmpy/bin/activate;python3 -m pip install .' > /dev/null 2>&1;
     sync
     # For use when testing (just comment uncomment poetry install in "main" and here)
     #/usr/poetry/bin/poetry install;
@@ -652,7 +662,7 @@ install_gvm_tools() {
     # From Python PyPi Repo
     #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install gvm-tools';
     # From downloaded sources
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .';
+    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
 #    python3 -m pip install . > /dev/null 2>&1;
 #    /usr/poetry/bin/poetry install > /dev/null 2>&1;
     # Increase default timeouts from 60 secs to 600 secs
@@ -674,7 +684,7 @@ install_impacket() {
 prepare_gvmpy() {
     /usr/bin/logger 'prepare_gvmpy' -t 'gce-23.1.0';
     echo -e "\e[1;32m - prepare_gvmpy() \e[0m";
-    su gvm -c 'cd ~; python3 -m pip install --upgrade pip; python3 -m pip install --user virtualenv; python3 -m venv gvmpy';
+    su gvm -c 'cd ~; python3 -m pip install --upgrade pip; python3 -m pip install --user virtualenv; python3 -m venv gvmpy' > /dev/null 2>&1;
     /usr/bin/logger 'prepare_gvmpy finished' -t 'gce-23.1.0';
     echo -e "\e[1;32m - prepare_gvmpy() finished\e[0m";
 }
@@ -1480,28 +1490,39 @@ install_exim() {
     /usr/bin/logger 'install_exim()' -t 'gce-23.1.0';
     echo -e "\e[1;32m - install_exim()\e[0m";
     # remove postfix if installed
+    apt-get -qq -y update > /dev/null 2>&1;
     apt-get -qq -y purge postfix* > /dev/null 2>&1;
+    apt-get -qq -y update > /dev/null 2>&1;
     apt-get -qq -y install exim4 > /dev/null 2>&1;
     /usr/bin/logger 'install_exim() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32m - install_exim() finished\e[0m";    
 }
 
 configure_exim() {
-    ## Installs Exim4
+    ## Configures Exim4 from the env variables specified
     /usr/bin/logger 'configure_exim()' -t 'gce-23.1.0';
     echo -e "\e[1;32m - configure_exim()\e[0m";
-        /usr/bin/logger 'configure_exim()' -t 'Debian-FW-20220519';
     echo -e "\e[32mconfigure_exim()\e[0m";
+    # configure environment variables
+    echo -e "\e[1;32m - check if started by Vagrant\e[0m";
+    if ! [[ -z "${VAGRANT_ENV}" ]]; then
+        /usr/bin/logger 'Use env file in home' -t 'gce-23.1.0';
+        echo -e "\e[1;32m - Use env file in home\e[0m";
+        export ENV_DIR=$HOME;
+    else
+        export ENV_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+    fi
+    export $(cat $ENV_DIR/env | grep -v "#" | xargs)
     echo -e "\e[36m-Configure exim4.conf.conf\e[0m";
     cat << __EOF__  > /etc/exim4/update-exim4.conf.conf
 # This is a Debian Firewall specific file
 dc_eximconfig_configtype='smarthost'
 dc_other_hostnames='$MAIL_SERVER_DOMAIN'
 dc_local_interfaces='127.0.0.1'
-dc_readhost='$MAIL_DOMAIN'
+dc_readhost='$INTERNAL_DOMAIN'
 dc_relay_domains=''
 dc_minimaldns='false'
-dc_relay_nets='192.168.10.0/24, 192.168.20.0/24, 192.168.30.0/24, 192.168.40.0/24'
+dc_relay_nets='$RELAY_NETS'
 dc_smarthost='$MAIL_SERVER::$MAIL_SERVER_PORT'
 CFILEMODE='644'
 dc_use_split_config='true'
@@ -1525,7 +1546,7 @@ __EOF__
 root: $MAIL_ADDRESS
 __EOF__
     # Time to reconfigure exim4
-    dpkg-reconfigure -fnoninteractive exim4-config > /dev/null 2>&1
+    dpkg-reconfigure -fnoninteractive exim4-config > /dev/null 2>&1;
     /usr/bin/logger 'configure_exim() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32m - configure_exim() finished\e[0m";    
 }
@@ -1533,14 +1554,14 @@ __EOF__
 toggle_vagrant_nic() {
     /usr/bin/logger 'toggle_vagrant_nic()' -t 'gce-23.1.0';
     echo -e "\e[1;32mtoggle_vagrant_nic()\e[0m";
-    echo -e "\e[1;32m - is this started by Vagrant\e[0m";
+    echo -e "\e[1;32m - check if started by Vagrant\e[0m";
     if ! [[ -z "${VAGRANT_ENV}" ]]; then
     /usr/bin/logger 'ifdown eth0' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - ifdown eth0\e[0m";
-    ifdown eth0;
+    echo -e "\e[1;32m - Started by Vagrant ifdown eth0\e[0m";
+    ifdown eth0 > /dev/null 2>&1;
     /usr/bin/logger 'ifup eth0' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - ifup eth0\e[0m";
-    ifup eth0;
+    echo -e "\e[1;32m - Started by Vagrant, ifup eth0\e[0m";
+    ifup eth0 > /dev/null 2>&1;
 else
     echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
 fi
@@ -1559,17 +1580,9 @@ main() {
     echo -e "\e[1;36m ... $HOSTNAME will also be the Certificate Authority for itself and all secondaries\e[0m"
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------\e[0m"
     # Shared variables
+    export SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-    # Mail specific variables
-    export MAIL_SERVER="mailserverfqdn";
-    export MAIL_SERVER_DOMAIN="mailserverdomain"
-    export MAIL_SERVER_PORT="587";
-    export MAIL_ADDRESS="someone@maildomain";
-    export MAIL_PASSWORD="secretpassword";
-    export INTERNAL_DOMAIN="internaldomain";
-    
     # GSE Certificate options
-   
     # Lifetime in days
     export GVM_CERTIFICATE_LIFETIME=3650
     # Country
@@ -1671,6 +1684,7 @@ main() {
     start_services;
     configure_feed_owner;
     get_scanner_status;
+    clean_env;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gce-23.1.0';
     echo -e;
     echo -e "\e[1;32mInstallation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot\e[0m";
