@@ -195,7 +195,7 @@ prepare_source() {
     echo -e "\e[1;36m ... Versions\e[0m";
     export GVMLIBS='22.7.3'
     export OSPDOPENVAS='22.6.2'
-    export OPENVAS='22.7.8'
+    export OPENVAS='22.7.9'
     export GVMD='23.1.0'
     export GSAD='22.8.0'
     export GSA='22.9.1'
