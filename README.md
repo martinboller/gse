@@ -45,7 +45,7 @@ Node.js | https://deb.nodesource.com/ | 20.x
 
 ## Latest changes
 
-### 2023-11-28 - OpenVAS-Scanner updated
+### 2023-11-30 - OpenVAS-Scanner updated
  - OpenVAS 22.7.9
 
 ### 2023-11-28 - OpenVAS-Scanner updated
