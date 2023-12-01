@@ -49,7 +49,7 @@ Node.js | https://deb.nodesource.com/ | 20.x
  - Debian 12 Bookworm will be the preferred baseline OS
  - libcgreen1 for unit testing not available in package repo for Debian 12, but "only" used for unit testing so not installing.
  - env file contain all variables that should be set - most of them can be left as default, however if you want to use mail, configure that section according to your requirements.
-
+ - EXIM4 mailserver installed and configured with values from env file allowing Alerts to send mails. Don't forget to configure correctly for your mailserver
 
 ### 2023-11-30 - OpenVAS-Scanner updated
  - OpenVAS 22.7.9
