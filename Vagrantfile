@@ -2,7 +2,7 @@ Vagrant.configure("2") do |config|
 
 # manticore Greenbone Vuln Scanner (Primary)
   config.vm.define "manticore" do |cfg|
-    cfg.vm.box = "generic/debian11"
+    cfg.vm.box = "generic/debian12"
     cfg.vm.hostname = "manticore"
     cfg.vm.network "public_network", type: "dhcp", bridge: 'enp1s0', mac: "0020911E0007"
     cfg.vm.provision :file, source: './installfiles', destination: "/tmp/installfiles"
@@ -37,7 +37,7 @@ Vagrant.configure("2") do |config|
 
 # Aboleth Greenbone Vuln Scanner (Secondary)
   config.vm.define "aboleth" do |cfg|
-    cfg.vm.box = "generic/debian11"
+    cfg.vm.box = "generic/debian12"
     cfg.vm.hostname = "aboleth"
     cfg.vm.network "public_network", type: "dhcp", bridge: 'enp1s0', mac: "0020911E0008"
     cfg.vm.provision :file, source: './installfiles', destination: "/tmp/installfiles"

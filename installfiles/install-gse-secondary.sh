@@ -142,7 +142,7 @@ clean_env() {
      /usr/bin/logger 'clean_env()' -t 'gce-23.1.0';
     echo -e "\e[1;32m - clean_env()\e[0m";
     ## Deleting file with variables environment variables from env
-    rm $SCRIPT_DIR/env;
+    rm $ENV_DIR/env;
     /usr/bin/logger 'clean_env() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32m - clean_env() finished\e[0m";
 }
@@ -192,18 +192,19 @@ prepare_source() {
     echo -e "\e[1;32m - prepare_source()\e[0m";
     echo -e "\e[1;32mPreparing GSE Source files\e[0m";
     echo -e "\e[1;36m ... preparing directories\e[0m";
-    echo -e "\e[1;36m ... Versions\e[0m";
-    export GVMLIBS='22.7.3'
-    export OSPDOPENVAS='22.6.2'
-    export OPENVAS='22.7.9'
-    export GVMD='23.1.0'
-    export GSAD='22.8.0'
-    export GSA='22.9.1'
-    export OPENVASSMB='22.5.6'
-    export PGVM='23.11.0'
-    export GVMTOOLS='23.11.0'
-    export POSTGREGVM='22.6.1'
-    export NOTUS='22.6.2'
+    echo -e "\e[1;36m ... Installation Versions";
+    echo " .... gvmlibs: $GVMLIBS"
+    echo " .... ospd-openvas: $OSPDOPENVAS"
+    echo " .... openvas-scanner: $OPENVAS"
+    echo " .... gvm daemon: $GVMD"
+    echo " .... GSA Daemon: $GSAD"
+    echo " .... GSA Web: $GSA"
+    echo " .... openvas-smb: $OPENVASSMB"
+    echo " .... python-gvm: $PGVM"
+    echo " .... gvm-tools: $GVMTOOLS"
+    echo " .... postgre gvm (pg-gvm): $POSTGREGVM"
+    echo " .... notus-scanner: $NOTUS"
+    echo -e "\e[0m";
 
     mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
@@ -503,11 +504,9 @@ prepare_gpg() {
     echo -e "\e[1;36m ... Fully trust Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Fully trust Greenbone Community Signing Key (PGP)' -t 'gce-23.1.0';
     echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt;
-    export GNUPGHOME=/tmp/openvas-gnupg;
     mkdir -p $GNUPGHOME;
     gpg --import /tmp/GBCommunitySigningKey.asc;
     gpg --import-ownertrust < /tmp/ownertrust.txt;
-    export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg;
     sudo mkdir -p $OPENVAS_GNUPG_HOME;
     sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/;
     sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME;
@@ -880,16 +879,18 @@ toggle_vagrant_nic() {
     /usr/bin/logger 'toggle_vagrant_nic()' -t 'gce-23.1.0';
     echo -e "\e[1;32mtoggle_vagrant_nic()\e[0m";
     echo -e "\e[1;32m - is this started by Vagrant\e[0m";
-    if ! [[ -z "${VAGRANT_ENV}" ]]; then
-    /usr/bin/logger 'ifdown eth0' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - ifdown eth0\e[0m";
-    ifdown eth0;
-    /usr/bin/logger 'ifup eth0' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - ifup eth0\e[0m";
-    ifup eth0;
-else
-    echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
-fi
+    
+    if test -f "/etc/VAGRANT_ENV"; then
+        /usr/bin/logger 'ifdown eth0' -t 'gce-23.1.0';
+        echo -e "\e[1;32m - ifdown eth0\e[0m";
+        ifdown eth0;
+        /usr/bin/logger 'ifup eth0' -t 'gce-23.1.0';
+        echo -e "\e[1;32m - ifup eth0\e[0m";
+        ifup eth0;
+    else
+        echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
+    fi
+    
     echo -e "\e[1;32mtoggle_vagrant_nic() finished\e[0m";
     /usr/bin/logger 'toggle_vagrant_nic() finished' -t 'gce-23.1.0';
 }
@@ -904,12 +905,23 @@ main() {
     echo -e "\e[1;36m ... Starting installation of secondary Greenbone Community Edition Server version 23.1.0\e[0m"
     echo -e "\e[1;36m ... $HOSTNAME will run ospd-openvas and openvas-scanner only, managed from a primary\e[0m"
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------\e[0m"
-    # Environment
+    # Shared variables
     export SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-    
-    ## Install Prefix
-    export INSTALL_PREFIX=/opt/gvm
-    export SOURCE_DIR=/opt/gvm/src/greenbone
+    # Check if started by Vagrant
+    /usr/bin/logger 'Vagrant Environment Check for file' -t 'gce-23.1.0';
+    echo -e "\e[1;32mcheck if started by Vagrant\e[0m";
+    if test -f "/etc/VAGRANT_ENV"; then
+        /usr/bin/logger 'Use env file in HOME' -t 'gce-23.1.0';
+        echo -e "\e[1;32m - Use env file in home\e[0m";
+        export ENV_DIR=$HOME;
+    else
+        /usr/bin/logger 'Use env file SCRIPT_DIR' -t 'gce-23.1.0';
+        echo -e "\e[1;32m - Use env file in SCRIPT_DIR\e[0m";
+        export ENV_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+    fi
+
+    # Configure environment from env file
+    set -a; source $ENV_DIR/env;
 
     # Vagrant acts up at times with eth0, so check if running Vagrant and toggle it down/up
     toggle_vagrant_nic;

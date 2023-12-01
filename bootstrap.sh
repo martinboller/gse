@@ -61,8 +61,8 @@ gse_bootstrap_prerequisites() {
   apt-get -qq -y --purge autoremove > /dev/null 2>&1
   apt-get -qq autoclean > /dev/null 2>&1
   sync > /dev/null 2>&1
-  apt-get -y --fix-broken install;
-  apt-get -y --fix-missing install;
+#  apt-get -y --fix-broken install;
+#  apt-get -y --fix-missing install;
   /usr/bin/logger 'install_updates()' -t 'gse';
   echo -e "\e[36m ... removing nameserver from interfaces file\e[0m";
   sed -i '/dns-nameserver/d' /etc/network/interfaces > /dev/null 2>&1;
@@ -91,6 +91,7 @@ configure_vagrant() {
   /usr/bin/logger 'configure_vagrant()' -t 'gse';
   echo -e "\e[32mconfigure_vagrant()\e[0m";
   echo "export VAGRANT_ENV=TRUE" > /etc/profile.d/vagrant.sh;
+  touch /etc/VAGRANT_ENV;
   echo -e "\e[32mconfigure_vagrant() finished\e[0m";
   /usr/bin/logger 'configure_vagrant() finished' -t 'gse';
 }

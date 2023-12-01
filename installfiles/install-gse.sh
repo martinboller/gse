@@ -84,12 +84,10 @@ install_prerequisites() {
             echo -e "\e[1;36m ... install_prerequisites_debian_11_bullseye\e[0m";
             # Prepare package sources for NODEJS 18.x or newer (now running with 20.x)
             echo -e "\e[1;36m ... Installing node 20\e[0m";
-            export VERSION=node_20.x
-            export KEYRING=/usr/share/keyrings/nodesource.gpg
-            curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$KEYRING"  > /dev/null 2>&1
-            gpg --no-default-keyring --keyring "$KEYRING" --list-keys > /dev/null 2>&1
-            echo "deb [signed-by=$KEYRING] https://deb.nodesource.com/$VERSION $DISTRIBUTION main" | sudo tee /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
-            echo "deb-src [signed-by=$KEYRING] https://deb.nodesource.com/$VERSION $DISTRIBUTION main" | sudo tee -a /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
+            curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$NODE_KEYRING"  > /dev/null 2>&1
+            gpg --no-default-keyring --keyring "$NODE_KEYRING" --list-keys > /dev/null 2>&1
+            echo "deb [signed-by=$NODE_KEYRING] https://deb.nodesource.com/$NODE_VERSION $DISTRIBUTION main" | sudo tee /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
+            echo "deb-src [signed-by=$NODE_KEYRING] https://deb.nodesource.com/$NODE_VERSION $DISTRIBUTION main" | sudo tee -a /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
             apt update > /dev/null 2>&1
             # Install pre-requisites for gvmd on bullseye (debian 11)
             apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
@@ -111,6 +109,7 @@ install_prerequisites() {
         then
             /usr/bin/logger '..install_prerequisites_debian_12_bookworm' -t 'gce-23.1.0';
             echo -e "\e[1;36m ... install_prerequisites_debian_12_bookworm\e[0m";
+            # Going with default debian 12 package (node 18.x)
             # Install pre-requisites for gvmd on bookworm (debian 12)
             apt update > /dev/null 2>&1
             apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
@@ -190,9 +189,7 @@ clean_env() {
      /usr/bin/logger 'clean_env()' -t 'gce-23.1.0';
     echo -e "\e[1;32m - clean_env()\e[0m";
     ## Deleting file with variables environment variables from env
-    export ENV_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-    rm $ENV_DIR/env;
-    rm $HOME/env;
+    rm $ENV_DIR/env > /dev/null 2>&1;
     /usr/bin/logger 'clean_env() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32m - clean_env() finished\e[0m";
 }
@@ -251,20 +248,23 @@ prepare_source() {
     /usr/bin/logger 'prepare_source' -t 'gce-23.1.0';
     echo -e "\e[1;32m - prepare_source()\e[0m";
     echo -e "\e[1;32mPreparing GSE Source files\e[0m";
-    echo -e "\e[1;36m ... Versions\e[0m";
-    export GVMLIBS='22.7.3'
-    export OSPDOPENVAS='22.6.2'
-    export OPENVAS='22.7.9'
-    export GVMD='23.1.0'
-    export GSAD='22.8.0'
-    export GSA='22.9.1'
-    export OPENVASSMB='22.5.6'
-    export PGVM='23.11.0'
-    export GVMTOOLS='23.11.0'
-    export POSTGREGVM='22.6.1'
-    export NOTUS='22.6.2'
-    
+    echo -e "\e[1;36m ... Versions from env file\e[0m";
+    echo -e "\e[1;36m ... Certificate Organization: $GVM_CERTIFICATE_ORG $\e[0m";
     echo -e "\e[1;36m ... preparing directories\e[0m";
+    echo -e "\e[1;36m ... Installation Versions";
+    echo " .... gvmlibs: $GVMLIBS"
+    echo " .... ospd-openvas: $OSPDOPENVAS"
+    echo " .... openvas-scanner: $OPENVAS"
+    echo " .... gvm daemon: $GVMD"
+    echo " .... GSA Daemon: $GSAD"
+    echo " .... GSA Web: $GSA"
+    echo " .... openvas-smb: $OPENVASSMB"
+    echo " .... python-gvm: $PGVM"
+    echo " .... gvm-tools: $GVMTOOLS"
+    echo " .... postgre gvm (pg-gvm): $POSTGREGVM"
+    echo " .... notus-scanner: $NOTUS"
+    echo -e "\e[0m";
+
     mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
@@ -601,7 +601,7 @@ install_gsad() {
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
     /usr/bin/logger '..make GSA Daemon' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... make Greenbone Security Assistant Daemon (GSAD)\e[0m";
-    make > /dev/null 2>&1;                # build the libraries
+    make > /dev/null 2>&1; # build the libraries
     #/usr/bin/logger '..make documentation for GSA Daemon' -t 'gce-23.1.0';
     #make doc-full;       # build more developer-oriented documentation
     /usr/bin/logger '..make install GSA Daemon' -t 'gce-23.1.0';
@@ -709,8 +709,9 @@ prepare_postgresql() {
     su postgres -c 'psql gvmd -c "create extension \"uuid-ossp\";"'
     su postgres -c 'psql gvmd -c "create extension \"pgcrypto\";"'
     su postgres -c 'psql gvmd -c "create extension \"pg-gvm\";"'
+    export PGSQL_VERSION="$(ls /etc/postgresql/)"
     # Disable JIT for postgresql
-        cat << __EOF__ > /etc/postgresql/13/main/conf.d/99-nojit.conf
+        cat << __EOF__ > /etc/postgresql/$PGSQL_VERSION/main/conf.d/99-nojit.conf
 jit = off    
 __EOF__
 
@@ -1246,11 +1247,9 @@ prepare_gpg() {
     echo -e "\e[1;36m ... Fully trust Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Fully trust Greenbone Community Signing Key (PGP)' -t 'gce-23.1.0';
     echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" | tee -a /tmp/ownertrust.txt > /dev/null 2>&1;
-    export GNUPGHOME=/tmp/openvas-gnupg > /dev/null 2>&1; 
     mkdir -p $GNUPGHOME > /dev/null 2>&1;
     gpg --import /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
     gpg --import-ownertrust < /tmp/ownertrust.txt > /dev/null 2>&1;
-    export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg > /dev/null 2>&1;
     sudo mkdir -p $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
     sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/ > /dev/null 2>&1;
     sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
@@ -1260,16 +1259,16 @@ prepare_gpg() {
 }
 
 configure_feed_validation() {
-    export GNUPGHOME=/tmp/openvas-gnupg
+    /usr/bin/logger 'configure_feed_validation()' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - configure_feed_validation()\e[0m";
     mkdir -p $GNUPGHOME
-
     gpg --import /tmp/GBCommunitySigningKey.asc
     gpg --import-ownertrust < /tmp/ownertrust.txt
-
-    export OPENVAS_GNUPG_HOME=/etc/openvas/gnupg
     sudo mkdir -p $OPENVAS_GNUPG_HOME
     sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
     sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME
+    /usr/bin/logger 'configure_feed_validation() finished' -t 'gce-23.1.0';
+    echo -e "\e[1;32m - configure_feed_validation() finished\e[0m";
 }
 
 configure_permissions() {
@@ -1427,23 +1426,8 @@ nginx_certificates() {
     ## Use this if you want to create a request to send to corporate PKI for the web interface, also change the NGINX config to use that
     /usr/bin/logger 'nginx_certificates()' -t 'gce-23.1.0';
     echo -e "\e[1;32m - nginx_certificates()\e[0m";
-
     ## NGINX stuff
     ## Required information for NGINX certificates
-    # organization name
-    # (see also https://www.switch.ch/pki/participants/)
-    export ORGNAME=$GVM_CERTIFICATE_ORG
-    # the fully qualified server (or service) name, change if other servicename than hostname
-    export FQDN=$HOSTNAME;
-    # Local information
-    export ISOCOUNTRY=$GVM_CERTIFICATE_COUNTRY
-    export PROVINCE=$GVM_CA_CERTIFICATE_STATE
-    export LOCALITY=$GVM_CERTIFICATE_LOCALITY
-    # subjectAltName entries: to add DNS aliases to the CSR, delete
-    # the '#' character in the ALTNAMES line, and change the subsequent
-    # 'DNS:' entries accordingly. Please note: all DNS names must
-    # resolve to the same IP address as the FQDN.
-    export ALTNAMES=DNS:$HOSTNAME   # , DNS:bar.example.org , DNS:www.foo.example.org
     echo -e "\e[1;36m ... creating cert configuration file\e[0m";
     mkdir -p /etc/nginx/certs/ > /dev/null 2>&1;
     cat << __EOF__ > ./openssl.cnf
@@ -1503,16 +1487,6 @@ configure_exim() {
     /usr/bin/logger 'configure_exim()' -t 'gce-23.1.0';
     echo -e "\e[1;32m - configure_exim()\e[0m";
     echo -e "\e[32mconfigure_exim()\e[0m";
-    # configure environment variables
-    echo -e "\e[1;32m - check if started by Vagrant\e[0m";
-    if ! [[ -z "${VAGRANT_ENV}" ]]; then
-        /usr/bin/logger 'Use env file in home' -t 'gce-23.1.0';
-        echo -e "\e[1;32m - Use env file in home\e[0m";
-        export ENV_DIR=$HOME;
-    else
-        export ENV_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
-    fi
-    export $(cat $ENV_DIR/env | grep -v "#" | xargs)
     echo -e "\e[36m-Configure exim4.conf.conf\e[0m";
     cat << __EOF__  > /etc/exim4/update-exim4.conf.conf
 # This is a Debian Firewall specific file
@@ -1555,21 +1529,18 @@ toggle_vagrant_nic() {
     /usr/bin/logger 'toggle_vagrant_nic()' -t 'gce-23.1.0';
     echo -e "\e[1;32mtoggle_vagrant_nic()\e[0m";
     echo -e "\e[1;32m - check if started by Vagrant\e[0m";
-    if ! [[ -z "${VAGRANT_ENV}" ]]; then
-    /usr/bin/logger 'ifdown eth0' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - Started by Vagrant ifdown eth0\e[0m";
-    ifdown eth0 > /dev/null 2>&1;
-    /usr/bin/logger 'ifup eth0' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - Started by Vagrant, ifup eth0\e[0m";
-    ifup eth0 > /dev/null 2>&1;
-    cat << __EOF__ > /etc/network/if-up.d/nicspeed
-ethtool -s eth0 speed 1000 duplex full autoneg off > /dev/null 2>&1;
-__EOF__
 
-    chmod 755 /etc/network/if-up.d/nicspeed > /dev/null 2>&1;
-else
-    echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
-fi
+    if test -f "/etc/VAGRANT_ENV"; then
+        /usr/bin/logger 'ifdown eth0' -t 'gce-23.1.0';
+        echo -e "\e[1;32m - Started by Vagrant ifdown eth0\e[0m";
+        ifdown eth0 > /dev/null 2>&1;
+        /usr/bin/logger 'ifup eth0' -t 'gce-23.1.0';
+        echo -e "\e[1;32m - Started by Vagrant, ifup eth0\e[0m";
+        ifup eth0 > /dev/null 2>&1;
+    else
+        echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
+    fi
+    
     echo -e "\e[1;32mtoggle_vagrant_nic() finished\e[0m";
     /usr/bin/logger 'toggle_vagrant_nic() finished' -t 'gce-23.1.0';
 }
@@ -1586,34 +1557,21 @@ main() {
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------\e[0m"
     # Shared variables
     export SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+    # Check if started by Vagrant
+    /usr/bin/logger 'Vagrant Environment Check for file' -t 'gce-23.1.0';
+    echo -e "\e[1;32mcheck if started by Vagrant\e[0m";
+    if test -f "/etc/VAGRANT_ENV"; then
+        /usr/bin/logger 'Use env file in HOME' -t 'gce-23.1.0';
+        echo -e "\e[1;32m - Use env file in home\e[0m";
+        export ENV_DIR=$HOME;
+    else
+        /usr/bin/logger 'Use env file SCRIPT_DIR' -t 'gce-23.1.0';
+        echo -e "\e[1;32m - Use env file in SCRIPT_DIR\e[0m";
+        export ENV_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+    fi
 
-    # GSE Certificate options
-    # Lifetime in days
-    export GVM_CERTIFICATE_LIFETIME=3650
-    # Country
-    export GVM_CERTIFICATE_COUNTRY="DE"
-    # Locality
-    export GVM_CERTIFICATE_LOCALITY="Germany"
-    # Organization
-    export GVM_CERTIFICATE_ORG="Greenbone Community Edition 23.1"
-    # (Organizational unit)
-    export GVM_CERTIFICATE_ORG_UNIT="Certificate Authority for $GVM_CERTIFICATE_ORG"
-    # State
-    export GVM_CA_CERTIFICATE_STATE="Bavaria"
-    # Security Parameters
-    export GVM_CERTIFICATE_SECPARAM="high"
-    export GVM_CERTIFICATE_SIGNALG="SHA512"
-    # Hostname
-    export GVM_CERTIFICATE_HOSTNAME=$HOSTNAME
-    # CA Certificate Lifetime
-    export GVM_CA_CERTIFICATE_LIFETIME=3652
-    # Key & cert material locations
-    export GVM_KEY_LOCATION="/var/lib/gvm/private/CA"
-    export GVM_CERT_LOCATION="/var/lib/gvm/CA"
-
-    ## Install Prefix
-    export INSTALL_PREFIX=/opt/gvm
-    export SOURCE_DIR=/opt/gvm/src/greenbone
+    # Configure environment from env file
+    set -a; source $ENV_DIR/env;
 
     # Vagrant acts up at times with eth0, so check if running Vagrant and toggle it down/up
     toggle_vagrant_nic;
@@ -1630,7 +1588,6 @@ main() {
     prepare_nix;
     prepare_source;
     configure_cmake;
-    export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH
     # For latest builds use prepare_source_latest instead of prepare_source
     # It is likely to break, so only use if you're feeling really lucky.
     #prepare_source_latest;

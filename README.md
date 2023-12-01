@@ -45,6 +45,12 @@ Node.js | https://deb.nodesource.com/ | 20.x
 
 ## Latest changes
 
+### 2023-12-01 - Tested on Debian 12 Bookworm + Environment variables from separate file (env)
+ - Debian 12 Bookworm will be the preferred baseline OS
+ - libcgreen1 for unit testing not available in package repo for Debian 12, but "only" used for unit testing so not installing.
+ - env file contain all variables that should be set - most of them can be left as default, however if you want to use mail, configure that section according to your requirements.
+
+
 ### 2023-11-30 - OpenVAS-Scanner updated
  - OpenVAS 22.7.9
 

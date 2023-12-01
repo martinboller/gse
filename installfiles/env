@@ -1,4 +1,21 @@
-# Can be manually added with: export $(cat .env | grep -v "#" | xargs)
+# Change variables to accomodate your requirements and the latest released versions of Greenbone Community Edition
+
+# Greenbone Community Edition versions to install
+GVMLIBS='22.7.3'
+OSPDOPENVAS='22.6.2'
+OPENVAS='22.7.9'
+GVMD='23.1.0'
+GSAD='22.8.0'
+GSA='22.9.1'
+OPENVASSMB='22.5.6'
+PGVM='23.11.0'
+GVMTOOLS='23.11.0'
+POSTGREGVM='22.6.1'
+NOTUS='22.6.2'
+# Node version
+NODE_VERSION=node_20.x
+NODE_KEYRING=/usr/share/keyrings/nodesource.gpg
+
 # Mail specific variables
 MAIL_SERVER="mailserverfqdn"
 MAIL_SERVER_DOMAIN="mailserverdomain"
@@ -7,3 +24,55 @@ MAIL_ADDRESS="someone@maildomain"
 MAIL_PASSWORD="secretpassword"
 INTERNAL_DOMAIN="internaldomain"
 RELAY_NETS="subnets"
+
+# Certificate settings
+# GSE Certificate options
+# Lifetime in days
+GVM_CERTIFICATE_LIFETIME=3650
+# Country
+GVM_CERTIFICATE_COUNTRY="DE"
+# Locality
+GVM_CERTIFICATE_LOCALITY="Germany"
+# Organization
+GVM_CERTIFICATE_ORG="Greenbone Community Edition 23.1"
+# (Organizational unit)
+GVM_CERTIFICATE_ORG_UNIT="Certificate Authority for $GVM_CERTIFICATE_ORG"
+# State
+GVM_CA_CERTIFICATE_STATE="Bavaria"
+# Security Parameters
+GVM_CERTIFICATE_SECPARAM="high"
+GVM_CERTIFICATE_SIGNALG="SHA512"
+# Hostname
+GVM_CERTIFICATE_HOSTNAME=$HOSTNAME
+# CA Certificate Lifetime
+GVM_CA_CERTIFICATE_LIFETIME=3652
+# Key & cert material locations
+GVM_KEY_LOCATION="/var/lib/gvm/private/CA"
+GVM_CERT_LOCATION="/var/lib/gvm/CA"
+# for external PKI
+# organization name
+# (see also https://www.switch.ch/pki/participants/)
+ORGNAME=$GVM_CERTIFICATE_ORG
+# the fully qualified server (or service) name, change if other servicename than hostname
+FQDN=$HOSTNAME;
+# Local information
+ISOCOUNTRY=$GVM_CERTIFICATE_COUNTRY
+PROVINCE=$GVM_CA_CERTIFICATE_STATE
+LOCALITY=$GVM_CERTIFICATE_LOCALITY
+# subjectAltName entries: to add DNS aliases to the CSR, delete
+# the '#' character in the ALTNAMES line, and change the subsequent
+# 'DNS:' entries accordingly. Please note: all DNS names must
+# resolve to the same IP address as the FQDN.
+ALTNAMES=DNS:$HOSTNAME
+# , DNS:bar.example.org , DNS:www.foo.example.org
+
+## Install Prefix
+INSTALL_PREFIX=/opt/gvm
+SOURCE_DIR=/opt/gvm/src/greenbone
+
+## GNUPG
+GNUPGHOME=/tmp/openvas-gnupg
+OPENVAS_GNUPG_HOME=/etc/openvas/gnupg
+
+# Verification file found
+ENV_FILE="True"
