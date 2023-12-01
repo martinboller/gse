@@ -60,8 +60,8 @@ install_prerequisites() {
     echo -e "\e[1;36m ... setting locale\e[0m";
     locale-gen > /dev/null 2>&1;
     update-locale > /dev/null 2>&1;
-    # For development
-    apt-get -qq -y install libcgreen1;
+    # For development (unit tests)
+    #apt-get -qq -y install libcgreen1;
     # Install pre-requisites for 
     # libunistring is a new requirement from oct-13 updates
     /usr/bin/logger '..Tools for Development' -t 'gce-23.1.0';
@@ -1562,6 +1562,11 @@ toggle_vagrant_nic() {
     /usr/bin/logger 'ifup eth0' -t 'gce-23.1.0';
     echo -e "\e[1;32m - Started by Vagrant, ifup eth0\e[0m";
     ifup eth0 > /dev/null 2>&1;
+    cat << __EOF__ > /etc/network/if-up.d/nicspeed
+ethtool -s eth0 speed 1000 duplex full autoneg off > /dev/null 2>&1;
+__EOF__
+
+    chmod 755 /etc/network/if-up.d/nicspeed > /dev/null 2>&1;
 else
     echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
 fi
