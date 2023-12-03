@@ -59,7 +59,7 @@ install_prerequisites() {
     apt-get -qq -y install openssh-client gpgsm dpkg xmlstarlet libbsd-dev libjson-glib-dev gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
         libgcrypt20-dev redis-server libunistring-dev libxml2-dev > /dev/null 2>&1;    # Install pre-requisites for gsad
     /usr/bin/logger '..Prerequisites for notus-scanner' -t 'gce-23.1.0';
-    apt-get -qq -y install libpaho-mqtt-dev python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg python3-venv;
+    apt-get -qq -y install libpaho-mqtt-dev python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg python3-venv > /dev/null 2>&1;
     
     # Other pre-requisites for GSE
     if [ $VER -eq "11" ] 
@@ -200,7 +200,7 @@ prepare_source() {
     echo " .... GSA Daemon: $GSAD"
     echo " .... GSA Web: $GSA"
     echo " .... openvas-smb: $OPENVASSMB"
-    echo " .... python-gvm: $PGVM"
+    echo " .... python-gvm: $PGVM"  
     echo " .... gvm-tools: $GVMTOOLS"
     echo " .... postgre gvm (pg-gvm): $POSTGREGVM"
     echo " .... notus-scanner: $NOTUS"
@@ -349,7 +349,7 @@ install_ospd_openvas() {
     # install from source
     echo -e "\e[1;36m ... installing ospd-openvas\e[0m";
     cd ospd-openvas > /dev/null 2>&1;
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .';
+    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
     # For use when testing (just comment uncomment poetry install in "main" and here)
     #/usr/poetry/bin/poetry install;
     echo -e "\e[1;32m - install_ospd_openvas() finished\e[0m";
@@ -465,7 +465,6 @@ install_gvm_tools() {
  #   chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     echo -e "\e[1;36m ... installing GVM-tools\e[0m";
     su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install gvm-tools' > /dev/null 2>&1; 
-#   python3 -m pip install . > /dev/null 2>&1;
  #   /usr/poetry/bin/poetry install > /dev/null 2>&1;
     echo -e "\e[1;32m - install_gvm_tools() finished\e[0m";
     /usr/bin/logger 'install_gvm_tools finished' -t 'gce-23.1.0';
