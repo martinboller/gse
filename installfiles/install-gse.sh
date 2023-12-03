@@ -1555,7 +1555,7 @@ remove_vagrant_nic() {
     if test -f "/etc/VAGRANT_ENV"; then
         /usr/bin/logger 'Remove Vagrant eth0' -t 'gce-23.1.0';
         echo -e "\e[1;32m - Started by Vagrant remove Vagrant NIC\e[0m";
-        cat << __EOF__ > /etc/ld.so.conf.d/greenbone.conf;
+            cat << __EOF__ > /etc/network/interfaces;
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
 
