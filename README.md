@@ -49,7 +49,9 @@ Node.js | https://deb.nodesource.com/ | 20.x
 
 ### Install "manually" on Debian 11 or 12
 
-*apt update ; apt -y full-upgrade ; apt -y install git; git clone https://github.com/martinboller/git.gse; cd gse/installfiles/; chmod 755 *.sh; install-gse-secondary.sh*
+*apt update ; apt -y full-upgrade ; apt -y install git; git clone https://github.com/martinboller/git.gse; cd gse/installfiles/; chmod 755 *.sh; install-gse-secondary.sh*¹
+
+¹ Example installation of secondary, use install-gse.sh for the primary.
 
 ----
 
