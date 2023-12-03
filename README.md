@@ -1,6 +1,6 @@
 # Greenbone Vulnerability Manager 22.4.x Community Edition Installation script
 
-### Bash script automating the installation of Greenbone Vulnerability Manager Community Version on Debian 11 (Bullseye)
+### Bash script automating the installation of Greenbone Vulnerability Manager Community Version on Debian 12 (Bookworm) or Debian 11 (Bullseye)
 
 Installation will be located in 
 - /opt/gvm/ for binaries.
@@ -58,7 +58,7 @@ Node.js | https://deb.nodesource.com/ | 20.x
 ## Latest changes
 
 ### 2023-12-01 - Tested on Debian 12 Bookworm + Environment variables from separate file (env)
- - Debian 12 Bookworm will be the preferred baseline OS
+ - Debian 12 Bookworm will be the preferred baseline OS from now on (2023-12-01).
  - libcgreen1 for unit testing not available in package repo for Debian 12, but "only" used for unit testing so not installing.
  - env file contain all variables that should be set - most of them can be left as default, however if you want to use mail, configure that section according to your requirements.
  - EXIM4 mailserver installed and configured with values from env file allowing Alerts to send mails. Don't forget to configure correctly for your mailserver
@@ -263,7 +263,7 @@ The overall components are depicted in the figure below. All dotted lines are tr
 ---
 
 ## Production Installation
-### 1. Install a basic (net-install) Debian 11 (Bullseye) or 10 (Buster) server for the primary
+### 1. Install a basic (net-install) Debian 12 (Bookworm) or 11 (Bullseye) server for the primary
 
 Run <i>install-gse.sh</i> and wait for a (long) while. 
 - The primary needs at least 4Gb of RAM, preferably more. The testlab (Vagrant) assigns 5120 MB.
@@ -271,7 +271,7 @@ Run <i>install-gse.sh</i> and wait for a (long) while.
 
 <b>Note:</b> Several issues with TEX, currently resolved by installing texlive-full. Installing texlive-full takes a lot of time compared to everything else installed, but Debian has a quirk here that sometimes breaks apt when not installing texlive-full.
 
-### 2. Install as many basic (net-install) Debian 11 (Bullseye) or 10 (Buster) servers needed for secondaries
+### 2. Install as many basic (net-install) Debian 12 (Bookworm) or 11 (Bullseye) servers needed for secondaries
 Run <i>install-gse-secondary.sh</i> and wait for installation to finish. 
 - This works in 1Gb of RAM, but more is recommended.
 - Raspberry Pi's work well, however only tested on RPi 4's with 2Gb and more. Feel free to perform your own testing on other SBC's and report back here.
@@ -333,7 +333,7 @@ Prerequisite: A DHCP server on the network, alternatively change the NIC to use 
 You may have to select which NIC to use for this e.g. wl02p01.
 Logon to the website on the server https://manticore (if you have not changed the hostname and DNS works. If not, use the ip address).
  
-The first install will take longer, as it needs to download the Vagrant box for Debian 11 (which this build is based on) first, however that’ll be reused in subsequent installations.
+The first install will take longer, as it needs to download the Vagrant box for Debian 11 or (preferred) Debian 12 (which this build is based on) first, however that’ll be reused in subsequent installations.
 
 ---
 
