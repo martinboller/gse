@@ -1653,8 +1653,12 @@ main() {
     install_python_gvm;
     #install_python_ical;
     install_greenbone_feed_sync;
-    install_exim;
-    configure_exim;
+    if [ "$INSTALL_MAIL_SERVER" == "Yes" ]; then
+        install_exim;
+        configure_exim;
+    else
+        echo -e "\e[1;32mNot installing mailserver\e[0m";
+    fi
     # Configuration of installed components
     prepare_postgresql;
     configure_redis;
