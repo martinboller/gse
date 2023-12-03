@@ -857,14 +857,16 @@ ConditionKernelCommandLine=!recovery
 [Service]
 Type=forking
 User=gvm
-Group=gvm
+#Group=gvm
 PIDFile=/run/gvmd/gvmd.pid
+RuntimeDirectory=gvmd
+RuntimeDirectory=gvmd
 # feed-update lock must be shared between ospd, gvmd, and greenbone-nvt-sync/greenbone-feed-sync
 ExecStart=/usr/bin/wrapper /opt/gvm/sbin/gvmd /etc/gvm/gvmd.conf
 #ExecStart=-/opt/gvm/sbin/gvmd --unix-socket=/run/gvmd/gvmd.sock --feed-lock-path=/run/gvmd/feed-update.lock --listen-group=gvm --client-watch-interval=0 --osp-vt-update=/run/ospd/ospd-openvas.sock
 Restart=on-failure
 RestartSec=10
-TimeoutStopSec=20
+TimeoutStopSec=10
 
 [Install]
 WantedBy=multi-user.target

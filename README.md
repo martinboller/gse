@@ -43,6 +43,12 @@ Node.js | https://deb.nodesource.com/ | 20.x
 
 ----
 
+### References
+
+[API Reference for Greenbone GMP 22.4](https://docs.greenbone.net/API/GMP/gmp-22.4.html)
+
+----
+
 ## Latest changes
 
 ### 2023-12-01 - Tested on Debian 12 Bookworm + Environment variables from separate file (env)
