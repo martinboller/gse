@@ -47,6 +47,10 @@ Node.js | https://deb.nodesource.com/ | 20.x
 
 [API Reference for Greenbone GMP 22.4](https://docs.greenbone.net/API/GMP/gmp-22.4.html)
 
+### Install "manually" on Debian 11 or 12
+
+*apt update ; apt -y full-upgrade ; apt -y install git; git clone https://github.com/martinboller/git.gse; cd gse/installfiles/; chmod 755 *.sh; install-gse-secondary.sh*
+
 ----
 
 ## Latest changes
