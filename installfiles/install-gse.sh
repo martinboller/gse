@@ -1547,6 +1547,36 @@ toggle_vagrant_nic() {
     /usr/bin/logger 'toggle_vagrant_nic() finished' -t 'gce-23.1.0';
 }
 
+remove_vagrant_nic() {
+    /usr/bin/logger 'remove_vagrant_nic()' -t 'gce-23.1.0';
+    echo -e "\e[1;32mremove_vagrant_nic()\e[0m";
+    echo -e "\e[1;32m - check if started by Vagrant\e[0m";
+
+    if test -f "/etc/VAGRANT_ENV"; then
+        /usr/bin/logger 'Remove Vagrant eth0' -t 'gce-23.1.0';
+        echo -e "\e[1;32m - Started by Vagrant remove Vagrant NIC\e[0m";
+        cat << __EOF__ > /etc/ld.so.conf.d/greenbone.conf;
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+# The primary network interface
+auto lo
+iface lo inet loopback
+#iface eth0 inet dhcp
+pre-up sleep 2
+auto eth1
+iface eth1 inet dhcp
+__EOF__
+        ifdown eth1; ifup eth1;
+
+    else
+        echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
+    fi
+    /usr/bin/logger 'remove_vagrant_nic() finished' -t 'gce-23.1.0';
+    echo -e "\e[1;32mremove_vagrant_nic() finished\e[0m";
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -1649,10 +1679,12 @@ main() {
     configure_feed_owner;
     get_scanner_status;
     clean_env;
+    remove_vagrant_nic;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gce-23.1.0';
     echo -e;
     echo -e "\e[1;32mInstallation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot\e[0m";
     echo -e "\e[1;32m - Primary Server Install main() finished\e[0m";
+    sync; sleep 30; systemctl reboot;
 }
 
 main;

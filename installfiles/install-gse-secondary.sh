@@ -895,6 +895,34 @@ toggle_vagrant_nic() {
     /usr/bin/logger 'toggle_vagrant_nic() finished' -t 'gce-23.1.0';
 }
 
+remove_vagrant_nic() {
+    /usr/bin/logger 'remove_vagrant_nic()' -t 'gce-23.1.0';
+    echo -e "\e[1;32mremove_vagrant_nic()\e[0m";
+    echo -e "\e[1;32m - check if started by Vagrant\e[0m";
+
+    if test -f "/etc/VAGRANT_ENV"; then
+        /usr/bin/logger 'Remove Vagrant eth0' -t 'gce-23.1.0';
+        echo -e "\e[1;32m - Started by Vagrant remove Vagrant NIC\e[0m";
+    cat << __EOF__ > /etc/ld.so.conf.d/greenbone.conf;
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+# The primary network interface
+auto lo
+iface lo inet loopback
+#iface eth0 inet dhcp
+pre-up sleep 2
+auto eth1
+iface eth1 inet dhcp
+__EOF__
+    else
+        echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
+    fi
+    /usr/bin/logger 'remove_vagrant_nic() finished' -t 'gce-23.1.0';
+    echo -e "\e[1;32mremove_vagrant_nic() finished\e[0m";
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -959,6 +987,7 @@ main() {
     start_services;
     create_scan_user;
     clean_env;
+    remove_vagrant_nic;
     echo -e;
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
     echo -e "\e[1;36m  Run add-secondary-2-primary on the primary server to configure this secondary\e[0m";
@@ -967,6 +996,7 @@ main() {
     echo -e;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of Openvas feed data into Redis, then reboot' -t 'gce-23.1.0';
     echo -e "\e[1;32m - Secondary Server Install main() finished\e[0m";
+    sync; sleep 30; systemctl reboot;
 }
 
 main;
