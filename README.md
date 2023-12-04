@@ -47,11 +47,19 @@ Node.js | https://deb.nodesource.com/ | 20.x
 
 [API Reference for Greenbone GMP 22.4](https://docs.greenbone.net/API/GMP/gmp-22.4.html)
 
-### Install "manually" on Debian 11 or 12
+### Install on Debian 11 or 12 directly (not needed of using Vagrant)
 
-*apt update ; apt -y full-upgrade ; apt -y install git; git clone https://github.com/martinboller/gse.git; cd gse/installfiles/; chmod 755 *.sh; install-gse-secondary.sh*¹
+1. Modify env file to match your environment (only really needed if you need to send mail), however you may want to personalize it.
 
-¹ Example installation of secondary, use install-gse.sh for the primary.
+2. To install a primary, run: *apt update ; apt -y full-upgrade ; apt -y install git; git clone https://github.com/martinboller/gse.git; cd gse/installfiles/; chmod 755 \*.sh; install-gse.sh*
+
+3. Install secondaries by running: *apt update ; apt -y full-upgrade ; apt -y install git; git clone https://github.com/martinboller/gse.git; cd gse/installfiles/; chmod 755 \*.sh; install-gse-secondary.sh*¹ - When the secondary is finished installing the script returns the hostname and password needed to connect the secondary to the primary, however if you cleared the screen or forgot it, it can be found in /var/lib/gvm/greenboneuser on the secondary scanner in question.
+
+4. To connect the secondaries to the primary, on the primary, run: ./add-secondary-to-primary.sh and enter the hostname or ip and password for the secondary. 
+
+5. Now use the different scripts (automatically cloned from GitHub on the primary) to create Credentials, Schedules, Targets, and Tasks (or do it manually from the Web UI). Details on the GMP Scripts can be found on [GitHub](https://github.com/martinboller/greenbone-gmp-scripts).
+
+¹ Use install-gse-secondary.sh for all the secondaries you want to deploy.
 
 ----
 
