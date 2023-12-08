@@ -41,6 +41,7 @@ python-gvm | https://github.com/greenbone/python-gvm/ | 23.11.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 23.11.0
 pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.1
 notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.2
+greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 23.10.0 
 Node.js for Debian 11 | https://deb.nodesource.com/ | 20.x
 Node.js for Debian 12 | Debian Repo | 18.x
 

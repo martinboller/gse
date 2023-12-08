@@ -179,10 +179,10 @@ prepare_source() {
     echo -e "\e[1;35m------------------------------------------"
     echo -e "gvmlibs \t\t $GVMLIBS"
     echo -e "ospd-openvas \t $OSPDOPENVAS"
-    echo -e "openvas-scanner \t\t $OPENVAS"
-    echo -e "openvas-smb \t\t $OPENVASSMB"
+    echo -e "openvas-scanner \t $OPENVAS"
+    echo -e "openvas-smb \t $OPENVASSMB"
     echo -e "gvm-tools \t\t $GVMTOOLS"
-    echo -e "notus-scanner \t\t $NOTUS"
+    echo -e "notus-scanner \t $NOTUS"
     echo -e "------------------------------------------\e[0m";
 
     mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1
@@ -203,9 +203,11 @@ prepare_source() {
     wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v$PGVM.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gvm-tools' -t 'gce-23.1.0';
     wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v$GVMTOOLS.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..notus-scanner' -t 'gse-22.4.1';
+    /usr/bin/logger '..notus-scanner' -t 'gce-23.1.0';
     wget -O notus.tar.gz https://github.com/greenbone/notus-scanner/archive/refs/tags/v$NOTUS.tar.gz > /dev/null 2>&1;
-  
+    /usr/bin/logger '..greenbone-feed-sync' -t 'gce-23.1.0';
+    wget -O greenbone-feed-sync.tar.gz https://github.com/greenbone/greenbone-feed-sync/archive/refs/tags/v$FEEDSYNC.tar.gz > /dev/null 2>&1;
+
     # open and extract the tarballs
     echo -e "\e[1;36m ... open and extract tarballs\e[0m";
     /usr/bin/logger '..open and extract the tarballs' -t 'gce-23.1.0';
@@ -222,6 +224,7 @@ prepare_source() {
     mv /opt/gvm/src/greenbone/python-gvm-$PGVM /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gvm-tools-$GVMTOOLS /opt/gvm/src/greenbone/gvm-tools > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/notus-scanner-$NOTUS /opt/gvm/src/greenbone/notus > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/greenbone-feed-sync-$FEEDSYNC /opt/gvm/src/greenbone/greenbone-feed-sync > /dev/null 2>&1;
     sync;
     echo -e "\e[1;36m ... configuring permissions\e[0m";
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
@@ -391,7 +394,12 @@ install_nmap() {
 install_greenbone_feed_sync() {
     /usr/bin/logger 'install_greenbone_feed_sync()' -t 'gce-23.1.0';
     echo -e "\e[1;32m - install_greenbone_feed_sync() \e[0m";
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install greenbone-feed-sync' > /dev/null 2>&1;
+    cd /opt/gvm/src/greenbone > /dev/null 2>&1;
+    # install from source
+    echo -e "\e[1;36m ... installing greenbone-feed-sync\e[0m";
+    cd greenbone-feed-sync > /dev/null 2>&1;
+    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
+#    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install greenbone-feed-sync' > /dev/null 2>&1;
     /usr/bin/logger 'install_greenbone_feed_sync() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32m - install_greenbone_feed_sync() finished\e[0m";
 }
