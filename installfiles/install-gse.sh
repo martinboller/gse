@@ -238,11 +238,11 @@ prepare_source() {
     echo -e "\e[1;32mInstalling the following GCE versions\e[0m";
     echo -e "\e[1;35m------------------------------------------"
     echo -e "gvmlibs \t\t $GVMLIBS"
-    echo -e "ospd-openvas \t\t $OSPDOPENVAS"
-    echo -e "openvas-scanner \t $OPENVAS"
+    echo -e "ospd-openvas \t $OSPDOPENVAS"
+    echo -e "openvas-scanner \t\t $OPENVAS"
     echo -e "gvm daemon \t\t $GVMD"
     echo -e "GSA Daemon \t\t $GSAD"
-    echo -e "GSA Web \t\t $GSA"
+    echo -e "GSA Web \t\t\t $GSA"
     echo -e "openvas-smb \t\t $OPENVASSMB"
     echo -e "python-gvm \t\t $PGVM"
     echo -e "gvm-tools \t\t $GVMTOOLS"
@@ -549,7 +549,7 @@ prestage_scan_data() {
     tar -xzf scandata.tar.gz > /dev/null 2>&1; 
     /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... copying feed data to correct locations\e[0m";
-    /usr/bin/rsync -aAXv /root/GVM/openvas/ /var/lib/openvas/ 
+    /usr/bin/rsync -aAXv /root/GVM/openvas/ /var/lib/openvas/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/openvas/* /var/lib/openvas/ > /dev/null 2>&1;
     /usr/bin/rsync -aAXv /root/GVM/gvm/ /var/lib/gvm/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/gvm/* /var/lib/gvm/ > /dev/null 2>&1;
@@ -651,8 +651,9 @@ install_gvm_tools() {
 #    python3 -m pip install . > /dev/null 2>&1;
 #    /usr/poetry/bin/poetry install > /dev/null 2>&1;
     # Increase default timeouts from 60 secs to 600 secs
-    sed -ie 's/DEFAULT_READ_TIMEOUT = 60/DEFAULT_READ_TIMEOUT = 600/' /opt/gvm/gvmpy/lib/python3.9/site-packages/gvm/connections.py
-    sed -ie 's/DEFAULT_TIMEOUT = 60/DEFAULT_TIMEOUT = 600/' /opt/gvm/gvmpy/lib/python3.9/site-packages/gvm/connections.py
+    export PY_VERSION="$(ls /opt/gvm/gvmpy/lib/)"
+    sed -ie 's/DEFAULT_READ_TIMEOUT = 60/DEFAULT_READ_TIMEOUT = 600/' /opt/gvm/gvmpy/lib/$PY_VERSION/site-packages/gvm/connections.py
+    sed -ie 's/DEFAULT_TIMEOUT = 60/DEFAULT_TIMEOUT = 600/' /opt/gvm/gvmpy/lib/$PY_VERSION/site-packages/gvm/connections.py
     echo -e "\e[1;32m - install_gvm_tools() finished\e[0m";
     /usr/bin/logger 'install_gvm_tools finished' -t 'gce-23.1.0';
 }
