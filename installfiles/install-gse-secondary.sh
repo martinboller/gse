@@ -374,7 +374,7 @@ create_scan_user() {
     cat << __EOF__ > /etc/sudoers.d/greenbone
 greenbone     ALL=(ALL) NOPASSWD: ALL
 __EOF__
-    export greenbone_secret="$(< /dev/urandom tr -dc A-Za-z0-9_#!=?@$+ | head -c 20)";
+    export greenbone_secret="$(< /dev/urandom tr -dc A-Za-z0-9 | head -c 20)";
     echo -e "\e[1;36m...creating user greenbone for temporary usage\e[0m";
     /usr/sbin/useradd --create-home -c "greenbone secondary user" --shell /bin/bash greenbone > /dev/null 2>&1
     echo -e "$greenbone_secret\n$greenbone_secret\n" | passwd greenbone > /dev/null 2>&1
