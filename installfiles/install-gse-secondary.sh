@@ -183,6 +183,7 @@ prepare_source() {
     echo -e "\e[1;35mopenvas-smb \t $OPENVASSMB"
     echo -e "\e[1;35mgvm-tools \t\t $GVMTOOLS"
     echo -e "\e[1;35mnotus-scanner \t $NOTUS"
+    echo -e "\e[1;35mfeed-sync \t\t $FEEDSYNC"
     echo -e "\e[1;35m------------------------------------------\e[0m";
 
     mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1
