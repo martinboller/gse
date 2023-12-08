@@ -232,10 +232,10 @@ prepare_source() {
     /usr/bin/logger 'prepare_source' -t 'gce-23.1.0';
     echo -e "\e[1;32mprepare_source()\e[0m";
     echo -e "\e[1;32mPreparing GSE Source files\e[0m";
-    echo -e "\e[1;36m...Installing the folowing versions, as specified in the env file\e[0m";
-    echo -e "\e[1;36m...Certificate Organization: $GVM_CERTIFICATE_ORG $\e[0m";
+    echo -e "\e[1;36m...Installing as specified in the env file\e[0m";
+    echo -e "\e[1;36m...Certificate Organization: $GVM_CERTIFICATE_ORG\e[0m";
     echo -e "\e[1;32mInstalling the following GCE versions\e[0m";
-    echo -e "\e[1;35m------------------------------------------"
+    echo -e "\e[1;35m----------------------------------"
     echo -e "\e[1;35mgvmlibs \t\t\t $GVMLIBS"
     echo -e "\e[1;35mospd-openvas \t\t $OSPDOPENVAS"
     echo -e "\e[1;35mopenvas-scanner \t\t $OPENVAS"
@@ -248,7 +248,7 @@ prepare_source() {
     echo -e "\e[1;35mpostgre gvm (pg-gvm) \t $POSTGREGVM"
     echo -e "\e[1;35mnotus-scanner \t\t $NOTUS"
     echo -e "\e[1;35mfeed-sync \t\t $FEEDSYNC"
-    echo -e "\e[1;35m------------------------------------------\e[0m";
+    echo -e "\e[1;35m----------------------------------\e[0m";
     echo -e "\e[1;36m...preparing directories\e[0m";
     mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
