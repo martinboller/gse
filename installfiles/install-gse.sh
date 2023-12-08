@@ -12,9 +12,9 @@
 
 install_prerequisites() {
     /usr/bin/logger 'install_prerequisites' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_prerequisites()\e[0m";
+    echo -e "\e[1;32minstall_prerequisites()\e[0m";
     echo -e "\e[1;32m--------------------------------------------\e[0m";
-    echo -e "\e[1;36m ... installing prerequisite packages\e[0m";
+    echo -e "\e[1;36m...installing prerequisite packages\e[0m";
     export DEBIAN_FRONTEND=noninteractive;
     # OS Version
     # freedesktop.org and systemd
@@ -25,23 +25,23 @@ install_prerequisites() {
     DISTRIBUTION=$VERSION_CODENAME
     /usr/bin/logger "Operating System $OS Version $VER Codename $CODENAME" -t 'gce-23.1.0';
     export DISTRIBUTION="$(lsb_release -s -c)"
-    echo -e "\e[1;36m ... Operating System $OS Version $VER Codename $CODENAME\e[0m";
+    echo -e "\e[1;36m...Operating System $OS Version $VER Codename $CODENAME\e[0m";
     # Install prerequisites
     # Some APT gymnastics to ensure it is all cleaned up
     apt-get -qq update > /dev/null 2>&1;
     apt-get -qq -y install --fix-broken > /dev/null 2>&1;
     apt-get -qq -y install --fix-missing > /dev/null 2>&1;
     # Install some basic tools on a Debian net install
-    echo -e "\e[1;36m ... install tools not available if installed from Debian net-install\e[0m";
+    echo -e "\e[1;36m...install tools not available if installed from Debian net-install\e[0m";
     /usr/bin/logger '..install some basic tools not available if installed from Debian net install' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... fix-policy for apt\e[0m";
+    echo -e "\e[1;36m...fix-policy for apt\e[0m";
     apt-get -qq -y install --fix-policy > /dev/null 2>&1;
-    echo -e "\e[1;36m ... installing required packages\e[0m";
+    echo -e "\e[1;36m...installing required packages\e[0m";
     apt-get -qq -y install adduser wget whois build-essential devscripts git unzip zip apt-transport-https ca-certificates \
         curl gnupg2 software-properties-common dnsutils dirmngr --install-recommends  > /dev/null 2>&1;
 
     # Set locale
-    echo -e "\e[1;36m ... setting locale\e[0m";
+    echo -e "\e[1;36m...setting locale\e[0m";
     locale-gen > /dev/null 2>&1;
     update-locale > /dev/null 2>&1;
     # For development (unit tests)
@@ -49,25 +49,25 @@ install_prerequisites() {
     # Install pre-requisites for 
     # libunistring is a new requirement from oct-13 updates
     /usr/bin/logger '..Tools for Development' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... installing required development tools\e[0m";
+    echo -e "\e[1;36m...installing required development tools\e[0m";
     apt-get -qq -y install openssh-client gpgsm dpkg xmlstarlet libbsd-dev libjson-glib-dev libpaho-mqtt-dev gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
         libgcrypt20-dev redis-server libunistring-dev libxml2-dev > /dev/null 2>&1;
     # Install pre-requisites for gsad
     /usr/bin/logger '..Prerequisites for Greenbone Security Assistant' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... prerequisites for Greenbone Security Assistant\e[0m";
+    echo -e "\e[1;36m...prerequisites for Greenbone Security Assistant\e[0m";
     apt-get -qq -y install libmicrohttpd-dev clang cmake > /dev/null 2>&1;
     apt-get -qq -y install python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg python3-venv python3-wheel > /dev/null 2>&1;
 
 
     # Other pre-requisites for GSE
-    echo -e "\e[1;36m ... other prerequisites for Greenbone Community Edition\e[0m";
+    echo -e "\e[1;36m...other prerequisites for Greenbone Community Edition\e[0m";
 
     if [ $VER -eq "11" ] 
         then
             /usr/bin/logger '..install_prerequisites_debian_11_bullseye' -t 'gce-23.1.0';
-            echo -e "\e[1;36m ... install_prerequisites_debian_11_bullseye\e[0m";
+            echo -e "\e[1;36m...install_prerequisites_debian_11_bullseye\e[0m";
             # Prepare package sources for NODEJS 18.x or newer (now running with 20.x)
-            echo -e "\e[1;36m ... Installing node 20\e[0m";
+            echo -e "\e[1;36m...Installing node 20\e[0m";
             curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$NODE_KEYRING"  > /dev/null 2>&1
             gpg --no-default-keyring --keyring "$NODE_KEYRING" --list-keys > /dev/null 2>&1
             echo "deb [signed-by=$NODE_KEYRING] https://deb.nodesource.com/$NODE_VERSION $DISTRIBUTION main" | sudo tee /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
@@ -79,20 +79,20 @@ install_prerequisites() {
             # Removed doxygen for now
             # Other pre-requisites for GSE - Bullseye / Debian 11
             /usr/bin/logger '....Other prerequisites for Greenbone Community Edition on Debian 11' -t 'gce-23.1.0';
-            echo -e "\e[1;36m ... installing prerequisites for Greenbone Community Edition\e[0m";
+            echo -e "\e[1;36m...installing prerequisites for Greenbone Community Edition\e[0m";
             apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                     python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
-            echo -e "\e[1;36m ... installing yarn\e[0m";
+            echo -e "\e[1;36m...installing yarn\e[0m";
             npm install -g yarn --force > /dev/null 2>&1;
 
 
     elif [ $VER -eq "12" ] 
         then
             /usr/bin/logger '..install_prerequisites_debian_12_bookworm' -t 'gce-23.1.0';
-            echo -e "\e[1;36m ... install_prerequisites_debian_12_bookworm\e[0m";
+            echo -e "\e[1;36m...install_prerequisites_debian_12_bookworm\e[0m";
             # Going with default debian 12 package (node 18.x)
             # Install pre-requisites for gvmd on bookworm (debian 12)
             apt update > /dev/null 2>&1
@@ -101,50 +101,50 @@ install_prerequisites() {
             # Removed doxygen for now
             # Other pre-requisites for GSE - Bullseye / Debian 11
             /usr/bin/logger '....Other prerequisites for Greenbone Community Edition on Debian 11' -t 'gce-23.1.0';
-            echo -e "\e[1;36m ... installing prerequisites for Greenbone Community Edition\e[0m";
+            echo -e "\e[1;36m...installing prerequisites for Greenbone Community Edition\e[0m";
             apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                     python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy cmdtest npm > /dev/null 2>&1;
-            echo -e "\e[1;36m ... installing yarn\e[0m";
+            echo -e "\e[1;36m...installing yarn\e[0m";
             npm install -g yarn --force > /dev/null 2>&1;
         else
             /usr/bin/logger '..install_prerequisites_debian_Untested' -t 'gce-23.1.0';
-            echo -e "\e[1;36m ... installing prerequisites for unsupported Debian version\e[0m";
-            echo -e "\e[1;36m ... installing prerequisites for gvmd\e[0m";
+            echo -e "\e[1;36m...installing prerequisites for unsupported Debian version\e[0m";
+            echo -e "\e[1;36m...installing prerequisites for gvmd\e[0m";
             # Untested but let's try like it is buster (debian 10)
             apt-get -qq -y install mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
                 postgresql-server-dev-11 pkg-config libical-dev xsltproc doxygen > /dev/null 2>&1;
             
             # Other pre-requisites for GSE - Buster / Debian 10
-            echo -e "\e[1;36m ... installing prerequisites for Greenbone Community Edition\e[0m";
+            echo -e "\e[1;36m...installing prerequisites for Greenbone Community Edition\e[0m";
             /usr/bin/logger '....Other prerequisites for Greenbone Community Edition on unknown OS' -t 'gce-23.1.0';
             apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                 python3-defusedxml python3-pip python3-psutil virtualenv python-impacket python-scapy > /dev/null 2>&1;
-            echo -e "\e[1;36m ... installing yarn\e[0m";
+            echo -e "\e[1;36m...installing yarn\e[0m";
             npm install -g yarn --force > /dev/null 2>&1;
         fi
 
     # Required for PDF report generation
     /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... installing texlive required for PDF report generation\e[0m";
-    echo -e "\e[1;36m ... please be patient, this could take quite a while depending on your system\e[0m";
+    echo -e "\e[1;36m...installing texlive required for PDF report generation\e[0m";
+    echo -e "\e[1;36m...please be patient, this could take quite a while depending on your system\e[0m";
  
     # Speed up installation without texlive (but then PDF reports wont work)
     apt-get -qq -y install texlive-full texlive-fonts-recommended > /dev/null 2>&1;
    
     # Install other preferences and clean up APT
     /usr/bin/logger '....Install some preferences on Debian and clean up apt' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... installing some preferences on Debian\e[0m";
+    echo -e "\e[1;36m...installing some preferences on Debian\e[0m";
     apt-get -qq -y install bash-completion > /dev/null 2>&1;
     # Install SUDO
     apt-get -qq -y install sudo > /dev/null 2>&1;
     # A little apt 
-    echo -e "\e[1;36m ... cleaning up apt\e[0m";
+    echo -e "\e[1;36m...cleaning up apt\e[0m";
     apt-get -qq -y install --fix-missing > /dev/null 2>&1;
     apt-get -qq update > /dev/null 2>&1;
     apt-get -qq -y full-upgrade > /dev/null 2>&1;
@@ -152,41 +152,41 @@ install_prerequisites() {
     apt-get -qq -y autoclean > /dev/null 2>&1;
     apt-get -qq -y clean > /dev/null 2>&1;
     # Python pip packages
-    echo -e "\e[1;36m ... installing python and python-pip\e[0m";
+    echo -e "\e[1;36m...installing python and python-pip\e[0m";
     apt-get -qq -y install python3-pip > /dev/null 2>&1;
     python3 -m pip install --upgrade pip > /dev/null 2>&1
     # Prepare directories for scan feed data
-    echo -e "\e[1;36m ... preparing directories for scan feed data\e[0m";
+    echo -e "\e[1;36m...preparing directories for scan feed data\e[0m";
     mkdir -p /var/lib/gvm/private/CA > /dev/null 2>&1;
     mkdir -p /var/lib/gvm/CA > /dev/null 2>&1;
     mkdir -p /var/lib/openvas/plugins > /dev/null 2>&1;
     # logging
-    echo -e "\e[1;36m ... preparing directories for logs\e[0m";
+    echo -e "\e[1;36m...preparing directories for logs\e[0m";
     mkdir -p /var/log/gvm/ > /dev/null 2>&1;
     chown -R gvm:gvm /var/log/gvm/ > /dev/null 2>&1;
     timedatectl set-timezone UTC  > /dev/null 2>&1;
-    echo -e "\e[1;32m - install_prerequisites() finished\e[0m";
+    echo -e "\e[1;32minstall_prerequisites() finished\e[0m";
     /usr/bin/logger 'install_prerequisites finished' -t 'gce-23.1.0';
 }
 
 clean_env() {
-     /usr/bin/logger 'clean_env()' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - clean_env()\e[0m";
+    /usr/bin/logger 'clean_env()' -t 'gce-23.1.0';
+    echo -e "\e[1;32mclean_env()\e[0m";
     ## Deleting file with variables environment variables from env
     rm $ENV_DIR/env > /dev/null 2>&1;
     /usr/bin/logger 'clean_env() finished' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - clean_env() finished\e[0m";
+    echo -e "\e[1;32mclean_env() finished\e[0m";
 }
 
 prepare_nix() {
     /usr/bin/logger 'prepare_nix()' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - prepare_nix()\e[0m";
+    echo -e "\e[1;32mprepare_nix()\e[0m";
     echo -e "\e[1;32mCreating Users, configuring sudoers, and setting locale\e[0m";
     # set desired locale
-    echo -e "\e[1;36m ... configuring locale\e[0m";
+    echo -e "\e[1;36m...configuring locale\e[0m";
     localectl set-locale en_US.UTF-8 > /dev/null 2>&1;
     # Create gvm user
-    echo -e "\e[1;36m ... creating Greenbone Vulnerability Manager linux user gvm\e[0m";
+    echo -e "\e[1;36m...creating Greenbone Vulnerability Manager linux user gvm\e[0m";
     /usr/sbin/useradd --system --create-home --home-dir /opt/gvm/ -c "gvm User" --groups sudo --shell /bin/bash gvm > /dev/null 2>&1;
     mkdir /opt/gvm > /dev/null 2>&1;
     chown gvm:gvm /opt/gvm;
@@ -198,14 +198,14 @@ PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/gvmpy/bin
 export LIBXML_MAX_NODESET_LENGTH=40000000
 __EOF__
 
-    echo -e "\e[1;36m ... configuring ld for greenbone libraries\e[0m";
+    echo -e "\e[1;36m...configuring ld for greenbone libraries\e[0m";
     cat << __EOF__ > /etc/ld.so.conf.d/greenbone.conf;
 # Greenbone libraries
 /opt/gvm/lib
 /opt/gvm/include
 __EOF__
 
-    echo -e "\e[1;36m ... creating sudoers.d/greenbone file\e[0m";
+    echo -e "\e[1;36m...creating sudoers.d/greenbone file\e[0m";
 # sudoers.d to run openvas as root
     cat << __EOF__ > /etc/sudoers.d/greenbone
 gvm     ALL = NOPASSWD: /opt/gvm/sbin/openvas
@@ -213,7 +213,7 @@ gvm     ALL = NOPASSWD: /opt/gvm/sbin/openvas
 Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/gvm/sbin"
 __EOF__
     # It appears that GVMD sometimes delete /run/gvmd so added a subfolder (/gse) to prevent this
-    echo -e "\e[1;36m ... configuring tmpfiles.d for greenbone run files\e[0m";
+    echo -e "\e[1;36m...configuring tmpfiles.d for greenbone run files\e[0m";
     cat << __EOF__ > /etc/tmpfiles.d/greenbone.conf
 d /run/gsad 1775 gvm gvm
 d /run/gvmd 1775 gvm gvm
@@ -222,19 +222,19 @@ d /run/ospd 1775 gvm gvm
 d /run/ospd/gse 1775 root root
 __EOF__
     # start systemd-tmpfiles to create directories as specificed in tmpfiles.d/greenbone.conf
-    echo -e "\e[1;36m ... starting systemd-tmpfiles to create directories\e[0m";
+    echo -e "\e[1;36m...starting systemd-tmpfiles to create directories\e[0m";
     systemd-tmpfiles --create > /dev/null 2>&1;
-    echo -e "\e[1;32m - prepare_nix() finished\e[0m";
+    echo -e "\e[1;32mprepare_nix() finished\e[0m";
     /usr/bin/logger 'prepare_nix() finished' -t 'gce-23.1.0';
 }
 
 prepare_source() {    
     /usr/bin/logger 'prepare_source' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - prepare_source()\e[0m";
+    echo -e "\e[1;32mprepare_source()\e[0m";
     echo -e "\e[1;32mPreparing GSE Source files\e[0m";
-    echo -e "\e[1;36m ... Installing the folowing versions, as specified in the env file\e[0m";
-    echo -e "\e[1;36m ... Certificate Organization: $GVM_CERTIFICATE_ORG $\e[0m";
-    echo -e "\e[1;36m ... preparing directories\e[0m";
+    echo -e "\e[1;36m...Installing the folowing versions, as specified in the env file\e[0m";
+    echo -e "\e[1;36m...Certificate Organization: $GVM_CERTIFICATE_ORG $\e[0m";
+    echo -e "\e[1;36m...preparing directories\e[0m";
     echo -e "\e[1;32mInstalling the following GCE versions\e[0m";
     echo -e "\e[1;35m------------------------------------------"
     echo -e "gvmlibs \t\t\t $GVMLIBS"
@@ -256,7 +256,7 @@ prepare_source() {
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     #Get all packages (the python elements can be installed w/o, but downloaded and used for install anyway)
     /usr/bin/logger '..gvm libraries' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... downloading released packages for Greenbone Community Edition\e[0m";
+    echo -e "\e[1;36m...downloading released packages for Greenbone Community Edition\e[0m";
     /usr/bin/logger '..gvm-libs' -t 'gce-23.1.0';
     wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v$GVMLIBS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..ospd-openvas' -t 'gce-23.1.0';
@@ -284,14 +284,14 @@ prepare_source() {
     wget -O greenbone-feed-sync.tar.gz https://github.com/greenbone/greenbone-feed-sync/archive/refs/tags/v$FEEDSYNC.tar.gz > /dev/null 2>&1;
 
     # open and extract the tarballs
-    echo -e "\e[1;36m ... open and extract tarballs\e[0m";
+    echo -e "\e[1;36m...open and extract tarballs\e[0m";
     /usr/bin/logger '..open and extract the tarballs' -t 'gce-23.1.0';
     find *.gz | xargs -n1 tar zxvfp > /dev/null 2>&1;
     sync;
 
     # Naming of directories w/o version
     /usr/bin/logger '..rename directories' -t 'gce-23.1.0';    
-    echo -e "\e[1;36m ... renaming package directories\e[0m";
+    echo -e "\e[1;36m...renaming package directories\e[0m";
     mv /opt/gvm/src/greenbone/gvm-libs-$GVMLIBS /opt/gvm/src/greenbone/gvm-libs > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/ospd-openvas-$OSPDOPENVAS /opt/gvm/src/greenbone/ospd-openvas > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/openvas-scanner-$OPENVAS /opt/gvm/src/greenbone/openvas > /dev/null 2>&1;
@@ -305,117 +305,117 @@ prepare_source() {
     mv /opt/gvm/src/greenbone/notus-scanner-$NOTUS /opt/gvm/src/greenbone/notus > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/greenbone-feed-sync-$FEEDSYNC /opt/gvm/src/greenbone/greenbone-feed-sync > /dev/null 2>&1;
     sync;
-    echo -e "\e[1;36m ... configuring permissions\e[0m";
+    echo -e "\e[1;36m...configuring permissions\e[0m";
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
-    echo -e "\e[1;32m - prepare_source() finished\e[0m";
+    echo -e "\e[1;32mprepare_source() finished\e[0m";
     /usr/bin/logger 'prepare_source finished' -t 'gce-23.1.0';
 }
 
 install_libxml2() {
     /usr/bin/logger 'install_libxml2' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_libxml2()\e[0m";
+    echo -e "\e[1;32minstall_libxml2()\e[0m";
     cd /opt/gvm/src;
     /usr/bin/logger '..git clone libxml2' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... git clone libxml2()\e[0m";
+    echo -e "\e[1;36m...git clone libxml2()\e[0m";
     git clone https://gitlab.gnome.org/GNOME/libxml2
     cd libxml2;
     /usr/bin/logger '..autogen libxml2' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... autogen libxml2()\e[0m";
+    echo -e "\e[1;36m...autogen libxml2()\e[0m";
     ./autogen.sh
     /usr/bin/logger '..make libxml2' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... make libxml2()\e[0m";
+    echo -e "\e[1;36m...make libxml2()\e[0m";
     make;
     /usr/bin/logger '..make install libxml2' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... make install libxml2()\e[0m";
+    echo -e "\e[1;36m...make install libxml2()\e[0m";
     make install;
     /usr/bin/logger '..ldconfig libxml2' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... ldconfig libxml2()\e[0m";
+    echo -e "\e[1;36m...ldconfig libxml2()\e[0m";
     ldconfig;
 }
 
 install_poetry() {
     /usr/bin/logger 'install_poetry' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_poetry()\e[0m";
+    echo -e "\e[1;32minstall_poetry()\e[0m";
     export POETRY_HOME=/usr/poetry;
     # https://python-poetry.org/docs/
     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 - > /dev/null 2>&1;
-    echo -e "\e[1;32m - install_poetry() finished\e[0m";
+    echo -e "\e[1;32minstall_poetry() finished\e[0m";
     /usr/bin/logger 'install_poetry finished' -t 'gce-23.1.0';
 }
 
 install_pggvm() {
     /usr/bin/logger 'install_pggvm' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_pggvm()\e[0m";
+    echo -e "\e[1;32minstall_pggvm()\e[0m";
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd pg-gvm/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
-    echo -e "\e[1;36m ... cmake pg-gvm PostgreSQL server extension\e[0m";
+    echo -e "\e[1;36m...cmake pg-gvm PostgreSQL server extension\e[0m";
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1
     /usr/bin/logger '..make pg-gvm PostgreSQL server extension' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... make pg-gvm PostgreSQL server extension\e[0m";
+    echo -e "\e[1;36m...make pg-gvm PostgreSQL server extension\e[0m";
     make > /dev/null 2>&1;
     #/usr/bin/logger '..make pg-gvm libraries Documentation' -t 'gce-23.1.0';
     #make doc-full;
     /usr/bin/logger '..make install pg-gvm PostgreSQL server extension' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... make install pg-gvm PostgreSQL server extension\e[0m";
+    echo -e "\e[1;36m...make install pg-gvm PostgreSQL server extension\e[0m";
     make install > /dev/null 2>&1;
     sync;
-    echo -e "\e[1;32m - install_pggvm() finished\e[0m";
+    echo -e "\e[1;32minstall_pggvm() finished\e[0m";
     /usr/bin/logger 'install_pggvm finished' -t 'gce-23.1.0';
 }
 
 install_notus() {
     /usr/bin/logger 'install_notus' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_notus()\e[0m";
+    echo -e "\e[1;32minstall_notus()\e[0m";
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd notus/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1
-    echo -e "\e[1;36m ... Install notus scanner Python pip module (notus-scanner) \e[0m";
+    echo -e "\e[1;36m...Install notus scanner Python pip module (notus-scanner) \e[0m";
     # From Python PyPi
     #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner' > /dev/null 2>&1; 
     # From downloaded source
     su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1; 
     sync;
-    echo -e "\e[1;32m - install_notus() finished\e[0m";
+    echo -e "\e[1;32minstall_notus() finished\e[0m";
     /usr/bin/logger 'install_notus finished' -t 'gce-23.1.0';
 }
 
 install_gvm_libs() {
     /usr/bin/logger 'install_gvmlibs' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_gvmlibs()\e[0m";
+    echo -e "\e[1;32minstall_gvmlibs()\e[0m";
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd gvm-libs/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
-    echo -e "\e[1;36m ... cmake Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
+    echo -e "\e[1;36m...cmake Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1
     /usr/bin/logger '..make Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... make Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
+    echo -e "\e[1;36m...make Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
     make > /dev/null 2>&1;
     #/usr/bin/logger '..make gvm libraries Documentation' -t 'gce-23.1.0';
     #make doc-full;
     /usr/bin/logger '..make install Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... make install gvm libraries\e[0m";
+    echo -e "\e[1;36m...make install gvm libraries\e[0m";
     make install > /dev/null 2>&1;
     sync;
-    echo -e "\e[1;36m ... load Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
+    echo -e "\e[1;36m...load Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
     ldconfig > /dev/null 2>&1;
-    echo -e "\e[1;32m - install_gvmlibs() finished\e[0m";
+    echo -e "\e[1;32minstall_gvmlibs() finished\e[0m";
     /usr/bin/logger 'install_gvmlibs finished' -t 'gce-23.1.0';
 }
 
 install_python_gvm() {
     /usr/bin/logger 'install_python_gvm' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_python_gvm()\e[0m";
+    echo -e "\e[1;32minstall_python_gvm()\e[0m";
     # Installing from repo
-    echo -e "\e[1;36m ... installing python-gvm\e[0m";
+    echo -e "\e[1;36m...installing python-gvm\e[0m";
     #su gvm -c 'source ~/gvmpy/bin/activate; /usr/bin/python3 -m pip install python-gvm';
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd python-gvm/ > /dev/null 2>&1;
     su gvm -c 'source ~/gvmpy/bin/activate; /usr/bin/python3 -m pip install .' > /dev/null 2>&1;
     #/usr/poetry/bin/poetry install;
-    echo -e "\e[1;32m - install_python_gvm() finished\e[0m";
+    echo -e "\e[1;32minstall_python_gvm() finished\e[0m";
     /usr/bin/logger 'install_python_gvm finished' -t 'gce-23.1.0';
 }
 
@@ -429,97 +429,97 @@ install_python_ical() {
 
 install_openvas_smb() {
     /usr/bin/logger 'install_openvas_smb' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_openvas_smb()\e[0m";
+    echo -e "\e[1;32minstall_openvas_smb()\e[0m";
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     #config and build openvas-smb
     cd openvas-smb > /dev/null 2>&1;
-    echo -e "\e[1;36m ... cmake OpenVAS SMB\e[0m";
+    echo -e "\e[1;36m...cmake OpenVAS SMB\e[0m";
     /usr/bin/logger '..cmake OpenVAS SMB' -t 'gce-23.1.0';
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
     /usr/bin/logger '..make OpenVAS SMB' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... make OpenVAS SMB\e[0m";
+    echo -e "\e[1;36m...make OpenVAS SMB\e[0m";
     make > /dev/null 2>&1;                
     /usr/bin/logger '..make Openvas SMB Documentation' -t 'gce-23.1.0';
     #make doc-full;
     /usr/bin/logger '..make install OpenVAS SMB' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... make install OpenVAS SMB\e[0m";
+    echo -e "\e[1;36m...make install OpenVAS SMB\e[0m";
     make install > /dev/null 2>&1;
     sync;
-    echo -e "\e[1;36m ... load libraries for OpenVAS SMB\e[0m";
+    echo -e "\e[1;36m...load libraries for OpenVAS SMB\e[0m";
     ldconfig > /dev/null 2>&1;
-    echo -e "\e[1;32m - install_openvas_smb() finished\e[0m";
+    echo -e "\e[1;32minstall_openvas_smb() finished\e[0m";
     /usr/bin/logger 'install_openvas_smb finished' -t 'gce-23.1.0';
 }
 
 install_ospd_openvas() {
     /usr/bin/logger 'install_ospd_openvas' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_ospd_openvas()\e[0m";
+    echo -e "\e[1;32minstall_ospd_openvas()\e[0m";
     # Install from repo
     #su gvm -c 'source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas';
     # install from downloaded source
-    echo -e "\e[1;36m ... installing ospd-openvas\e[0m";
+    echo -e "\e[1;36m...installing ospd-openvas\e[0m";
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     cd ospd-openvas > /dev/null 2>&1;
     su gvm -c 'source ~/gvmpy/bin/activate;python3 -m pip install .' > /dev/null 2>&1;
     sync
     # For use when testing (just comment uncomment poetry install in "main" and here)
     #/usr/poetry/bin/poetry install;
-    echo -e "\e[1;32m - install_ospd_openvas() finished\e[0m";
+    echo -e "\e[1;32minstall_ospd_openvas() finished\e[0m";
     /usr/bin/logger 'install_ospd_openvas finished' -t 'gce-23.1.0';
 }
 
 install_openvas() {
     /usr/bin/logger 'install_openvas' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_openvas()\e[0m";
+    echo -e "\e[1;32minstall_openvas()\e[0m";
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # Configure and build scanner
     cd openvas > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     /usr/bin/logger '..cmake OpenVAS Scanner' -t 'gce-23.1.0';
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
-    echo -e "\e[1;36m ... cmake OpenVAS Scanner\e[0m";
+    echo -e "\e[1;36m...cmake OpenVAS Scanner\e[0m";
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
     /usr/bin/logger '..make OpenVAS Scanner' -t 'gce-23.1.0';
     #/usr/bin/logger '..make Openvas Scanner Documentation' -t 'gce-23.1.0';
     #make doc-full;
-    echo -e "\e[1;36m ... make OpenVAS Scanner\e[0m";
+    echo -e "\e[1;36m...make OpenVAS Scanner\e[0m";
     # make it
     make > /dev/null 2>&1;
     # build more developer-oriented documentation
     #make doc-full > /dev/null 2>&1; 
     /usr/bin/logger '..make install OpenVAS Scanner' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... make install openvas scanner\e[0m";
+    echo -e "\e[1;36m...make install openvas scanner\e[0m";
     make install > /dev/null 2>&1;
     /usr/bin/logger '..Rebuild make cache, OpenVAS Scanner' -t 'gce-23.1.0';
     make rebuild_cache > /dev/null 2>&1;
     sync;
-    echo -e "\e[1;36m ... load libraries for OpenVAS Scanner\e[0m";
+    echo -e "\e[1;36m...load libraries for OpenVAS Scanner\e[0m";
     ldconfig > /dev/null 2>&1;
-    echo -e "\e[1;32m - install_openvas() finished\e[0m";
+    echo -e "\e[1;32minstall_openvas() finished\e[0m";
     /usr/bin/logger 'install_openvas finished' -t 'gce-23.1.0';
 }
 
 install_gvm() {
     /usr/bin/logger 'install_gvm' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_gvm()\e[0m";
+    echo -e "\e[1;32minstall_gvm()\e[0m";
     cd /opt/gvm/src/greenbone;
     # Build Manager
     cd gvmd/ > /dev/null 2>&1;
     /usr/bin/logger '..cmake GVM Daemon' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... cmake Greenbone Vulnerability Manager (GVM)\e[0m";
+    echo -e "\e[1;36m...cmake Greenbone Vulnerability Manager (GVM)\e[0m";
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
     /usr/bin/logger '..make GVM Daemon' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... make Greenbone Vulnerability Manager (GVM)\e[0m";
+    echo -e "\e[1;36m...make Greenbone Vulnerability Manager (GVM)\e[0m";
     make > /dev/null 2>&1;
     #/usr/bin/logger '..make documentation for GVM Daemon' -t 'gce-23.1.0';
     #make doc-full;
     /usr/bin/logger '..make install GVM Daemon' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... make install Greenbone Vulnerability Manager (GVM)\e[0m";
+    echo -e "\e[1;36m...make install Greenbone Vulnerability Manager (GVM)\e[0m";
     make install > /dev/null 2>&1;
     sync;
-    echo -e "\e[1;32m - install_gvm() finished\e[0m";
+    echo -e "\e[1;32minstall_gvm() finished\e[0m";
     /usr/bin/logger 'install_gvm finished' -t 'gce-23.1.0';
 }
 
@@ -534,103 +534,103 @@ install_nmap() {
 
 install_greenbone_feed_sync() {
     /usr/bin/logger 'install_greenbone_feed_sync()' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_greenbone_feed_sync() \e[0m";
+    echo -e "\e[1;32minstall_greenbone_feed_sync() \e[0m";
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # install from source
-    echo -e "\e[1;36m ... installing greenbone-feed-sync\e[0m";
+    echo -e "\e[1;36m...installing greenbone-feed-sync\e[0m";
     cd greenbone-feed-sync > /dev/null 2>&1;
     su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
 #    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install greenbone-feed-sync' > /dev/null 2>&1;
     /usr/bin/logger 'install_greenbone_feed_sync() finished' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_greenbone_feed_sync() finished\e[0m";
+    echo -e "\e[1;32minstall_greenbone_feed_sync() finished\e[0m";
 }
 
 prestage_scan_data() {
     /usr/bin/logger 'prestage_scan_data' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - prestage_scan_data() \e[0m";
+    echo -e "\e[1;32mprestage_scan_data() \e[0m";
     # copy scan data to prestage ~1.5 Gib required otherwise
     # change this to copy from cloned repo
     cd /root/ > /dev/null 2>&1;
     /usr/bin/logger '..opening and extracting TAR Ball' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... opening and extracting TAR ball with prestaged feed data\e[0m";
+    echo -e "\e[1;36m...opening and extracting TAR ball with prestaged feed data\e[0m";
     tar -xzf scandata.tar.gz > /dev/null 2>&1; 
     /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... copying feed data to correct locations\e[0m";
+    echo -e "\e[1;36m...copying feed data to correct locations\e[0m";
     /usr/bin/rsync -aAXv /root/GVM/openvas/ /var/lib/openvas/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/openvas/* /var/lib/openvas/ > /dev/null 2>&1;
     /usr/bin/rsync -aAXv /root/GVM/gvm/ /var/lib/gvm/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/gvm/* /var/lib/gvm/ > /dev/null 2>&1;
     /usr/bin/rsync -aAXv /root/GVM/notus/ /var/lib/notus/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/notus/* /var/lib/notus/ > /dev/null 2>&1;
-    echo -e "\e[1;36m ... Cleaning Up\e[0m";
+    echo -e "\e[1;36m...Cleaning Up\e[0m";
     rm -rf /root/GVM;
-    echo -e "\e[1;32m - prestage_scan_data() finished\e[0m";
+    echo -e "\e[1;32mprestage_scan_data() finished\e[0m";
     /usr/bin/logger 'prestage_scan_data finished' -t 'gce-23.1.0';
 }
 
 update_feed_data() {
     /usr/bin/logger 'update_feed_data' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - update_feed_data() \e[0m";
+    echo -e "\e[1;32mupdate_feed_data() \e[0m";
     ## This relies on the configure_greenbone_updates script
-    echo -e "\e[1;36m ... updating feed data\e[0m";
-    echo -e "\e[1;36m ... please be patient. This could take a while\e[0m";
+    echo -e "\e[1;36m...updating feed data\e[0m";
+    echo -e "\e[1;36m...please be patient. This could take a while\e[0m";
     /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --compression-level 6 > /dev/null 2>&1;
-    echo -e "\e[1;32m - update_feed_data() finished\e[0m";
+    echo -e "\e[1;32mupdate_feed_data() finished\e[0m";
     /usr/bin/logger 'update_feed_data finished' -t 'gce-23.1.0';
 }
 
 install_gsad() {
     /usr/bin/logger 'install_gsad' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_gsad() \e[0m";
+    echo -e "\e[1;32minstall_gsad() \e[0m";
     ## Install GSA Daemon
     cd /opt/gvm/src/greenbone > /dev/null 2>&1
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     # GSAD Install
     cd gsad/ > /dev/null 2>&1;
     /usr/bin/logger '..cmake GSA Daemon' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... cmake Greenbone Security Assistant Daemon (GSAD)\e[0m";
+    echo -e "\e[1;36m...cmake Greenbone Security Assistant Daemon (GSAD)\e[0m";
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
     /usr/bin/logger '..make GSA Daemon' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... make Greenbone Security Assistant Daemon (GSAD)\e[0m";
+    echo -e "\e[1;36m...make Greenbone Security Assistant Daemon (GSAD)\e[0m";
     make > /dev/null 2>&1; # build the libraries
     #/usr/bin/logger '..make documentation for GSA Daemon' -t 'gce-23.1.0';
     #make doc-full;       # build more developer-oriented documentation
     /usr/bin/logger '..make install GSA Daemon' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... make install Greenbone Security Assistant Daemon (GSAD)\e[0m";
+    echo -e "\e[1;36m...make install Greenbone Security Assistant Daemon (GSAD)\e[0m";
     make install > /dev/null 2>&1;        # install the build
     sync;
-    echo -e "\e[1;32m - install_gsad() finished\e[0m";
+    echo -e "\e[1;32minstall_gsad() finished\e[0m";
     /usr/bin/logger 'install_gsad finished' -t 'gce-23.1.0';
 }
 
 install_gsa_web() {
     /usr/bin/logger 'install_gsa_web()' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_gsa_web() \e[0m";
+    echo -e "\e[1;32minstall_gsa_web() \e[0m";
     ## Install GSA
     cd /opt/gvm/src/greenbone > /dev/null 2>&1
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     # GSA prerequisites
     /usr/bin/logger '..installing Yarn' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... installing yarn\e[0m";
+    echo -e "\e[1;36m...installing yarn\e[0m";
     apt-get -qq -y install yarnpkg > /dev/null 2>&1;
     # GSA Install
     cd gsa/ > /dev/null 2>&1;
     /usr/bin/logger '..Build GSA Web Server' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... Build Web Server GSA\e[0m";
+    echo -e "\e[1;36m...Build Web Server GSA\e[0m";
     yarn > /dev/null 2>&1;
     yarn build > /dev/null 2>&1;
     sync > /dev/null 2>&1;
-    echo -e "\e[1;36m ... create web directory and copy web build there\e[0m";
+    echo -e "\e[1;36m...create web directory and copy web build there\e[0m";
     mkdir -p /opt/gvm/share/gvm/gsad/web/ > /dev/null 2>&1
     cp -r build/* /opt/gvm/share/gvm/gsad/web/ > /dev/null 2>&1
-    echo -e "\e[1;32m - install_gsa_web() finished\e[0m";
+    echo -e "\e[1;32minstall_gsa_web() finished\e[0m";
     /usr/bin/logger 'install_gsa_web() finished' -t 'gce-23.1.0';
 }
 
 browserlist_update(){
     /usr/bin/logger 'browserlist_update()' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - browserlist_updat() \e[0m";
+    echo -e "\e[1;32mbrowserlist_updat() \e[0m";
     cat << __EOF__ > /etc/cron.weekly/browserlistupdate
 #!/bin/bash
 npx browserslist@latest --update-db
@@ -639,18 +639,18 @@ exit 0
 __EOF__
     sync;
     chmod 744 /etc/cron.weekly/browserlistupdate > /dev/null 2>&1;
-    echo -e "\e[1;32m - browserlist_update() finished\e[0m";
+    echo -e "\e[1;32mbrowserlist_update() finished\e[0m";
     /usr/bin/logger 'browserlist_update() finished' -t 'gce-23.1.0';
 }
 
 install_gvm_tools() {
     /usr/bin/logger 'install_gvm_tools' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_gvm_tools() \e[0m";
+    echo -e "\e[1;32minstall_gvm_tools() \e[0m";
     cd /opt/gvm/src/greenbone > /dev/null 2>&1
     # Install gvm-tools
     cd gvm-tools/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
-    echo -e "\e[1;36m ... installing GVM-tools\e[0m";
+    echo -e "\e[1;36m...installing GVM-tools\e[0m";
     # From Python PyPi Repo
     #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install gvm-tools';
     # From downloaded sources
@@ -661,44 +661,44 @@ install_gvm_tools() {
     export PY_VERSION="$(ls /opt/gvm/gvmpy/lib/)"
     sed -ie 's/DEFAULT_READ_TIMEOUT = 60/DEFAULT_READ_TIMEOUT = 600/' /opt/gvm/gvmpy/lib/$PY_VERSION/site-packages/gvm/connections.py
     sed -ie 's/DEFAULT_TIMEOUT = 60/DEFAULT_TIMEOUT = 600/' /opt/gvm/gvmpy/lib/$PY_VERSION/site-packages/gvm/connections.py
-    echo -e "\e[1;32m - install_gvm_tools() finished\e[0m";
+    echo -e "\e[1;32minstall_gvm_tools() finished\e[0m";
     /usr/bin/logger 'install_gvm_tools finished' -t 'gce-23.1.0';
 }
 
 install_impacket() {
     /usr/bin/logger 'install_impacket' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_impacket() \e[0m";
+    echo -e "\e[1;32minstall_impacket() \e[0m";
     # Install impacket
     su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install impacket' > /dev/null 2>&1;
-    echo -e "\e[1;32m - install_impacket() finished\e[0m";
+    echo -e "\e[1;32minstall_impacket() finished\e[0m";
     /usr/bin/logger 'install_impacket finished' -t 'gce-23.1.0';
 }
 
 prepare_gvmpy() {
     /usr/bin/logger 'prepare_gvmpy' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - prepare_gvmpy() \e[0m";
+    echo -e "\e[1;32mprepare_gvmpy() \e[0m";
     su gvm -c 'cd ~; python3 -m pip install --upgrade pip; python3 -m pip install --user virtualenv; python3 -m venv gvmpy' > /dev/null 2>&1;
     /usr/bin/logger 'prepare_gvmpy finished' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - prepare_gvmpy() finished\e[0m";
+    echo -e "\e[1;32mprepare_gvmpy() finished\e[0m";
 }
 
 prepare_postgresql() {
     /usr/bin/logger 'prepare_postgresql' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - prepare_postgresql() \e[0m";
+    echo -e "\e[1;32mprepare_postgresql() \e[0m";
     systemctl start postgresql.service;
-    echo -e "\e[1;36m ... create postgres user gvm";
+    echo -e "\e[1;36m...create postgres user gvm";
     su postgres -c 'createuser -DRS gvm;'
-    echo -e "\e[1;36m ... create postgres user root";
+    echo -e "\e[1;36m...create postgres user root";
     su postgres -c 'createuser -DRS root;'
-    echo -e "\e[1;36m ... create database";
+    echo -e "\e[1;36m...create database";
     su postgres -c 'createdb -O gvm gvmd;'
     # Setup permissions.
-    echo -e "\e[1;36m ... setting postgres permissions";
+    echo -e "\e[1;36m...setting postgres permissions";
     su postgres -c "psql gvmd -c 'create role dba with superuser noinherit;'"
     su postgres -c "psql gvmd -c 'grant dba to gvm;'"
     su postgres -c "psql gvmd -c 'grant dba to root;'"
     #   Create DB extensions (also necessary when the database got dropped).
-    echo -e "\e[1;36m ... create postgres extensions";
+    echo -e "\e[1;36m...create postgres extensions";
     su postgres -c 'psql gvmd -c "create extension \"uuid-ossp\";"'
     su postgres -c 'psql gvmd -c "create extension \"pgcrypto\";"'
     su postgres -c 'psql gvmd -c "create extension \"pg-gvm\";"'
@@ -708,17 +708,17 @@ prepare_postgresql() {
 jit = off    
 __EOF__
 
-    echo -e "\e[1;32m - prepare_postgresql() finished\e[0m";
+    echo -e "\e[1;32mprepare_postgresql() finished\e[0m";
     /usr/bin/logger 'prepare_postgresql finished' -t 'gce-23.1.0';
 }
 
 configure_openvas() {
     /usr/bin/logger 'configure_openvas' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - configure_openvas() \e[0m";
+    echo -e "\e[1;32mconfigure_openvas() \e[0m";
     mkdir /var/lib/notus/;
     chown -R gvm:gvm /var/lib/notus/;
     # Create openvas.conf file
-    echo -e "\e[1;36m ... create OpenVAS configuration file\e[0m";
+    echo -e "\e[1;36m...create OpenVAS configuration file\e[0m";
     mkdir -p /etc/openvas/;
     cat << __EOF__ > /etc/openvas/openvas.conf
 cgi_path = /cgi-bin:/scripts
@@ -754,7 +754,7 @@ non_simult_ports = 139, 445, 3389, Services/irc
 __EOF__
 
     # Create NOTUS Scanner service
-    echo -e "\e[1;36m ... creating NOTUS scanner service\e[0m";
+    echo -e "\e[1;36m...creating NOTUS scanner service\e[0m";
     cat << __EOF__ > /lib/systemd/system/notus-scanner.service
 [Unit]
 Description=Notus Scanner
@@ -781,7 +781,7 @@ __EOF__
     echo "mqtt_server_uri = localhost:1883" | sudo tee -a /etc/openvas/openvas.conf 
 
     # Create OSPD-OPENVAS service
-    echo -e "\e[1;36m ... creating ospd-openvas service\e[0m";
+    echo -e "\e[1;36m...creating ospd-openvas service\e[0m";
     cat << __EOF__ > /lib/systemd/system/ospd-openvas.service
 [Unit]
 Description=OSPD OpenVAS
@@ -806,7 +806,7 @@ __EOF__
 
     ## Configure ospd
     # Directory for ospd-openvas configuration file
-    echo -e "\e[1;36m ... create ospd-openvas configuration file\e[0m";
+    echo -e "\e[1;36m...create ospd-openvas configuration file\e[0m";
     mkdir -p /etc/ospd > /dev/null 2>&1;
     cat << __EOF__ > /etc/ospd/ospd-openvas.conf
 [OSPD - openvas]
@@ -828,17 +828,17 @@ min_free_mem_scan_queue = 1500
 max_queued_scans = 0
 __EOF__
     sync;
-    echo -e "\e[1;32m - configure_openvas() finished\e[0m";
+    echo -e "\e[1;32mconfigure_openvas() finished\e[0m";
     /usr/bin/logger 'configure_openvas finished' -t 'gce-23.1.0';
 }
 
 configure_gvm() {
     /usr/bin/logger 'configure_gvm' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - configure_gvm() \e[0m";
+    echo -e "\e[1;32mconfigure_gvm() \e[0m";
     # Create certificates
-    echo -e "\e[1;36m ... create certificates\e[0m";
+    echo -e "\e[1;36m...create certificates\e[0m";
     /opt/gvm/bin/gvm-manage-certs -a > /dev/null 2>&1;
-    echo -e "\e[1;36m ... create GVM service\e[0m";
+    echo -e "\e[1;36m...create GVM service\e[0m";
     cat << __EOF__ > /lib/systemd/system/gvmd.service
 [Unit]
 Description=Greenbone Vulnerability Manager daemon (gvmd)
@@ -866,7 +866,7 @@ WantedBy=multi-user.target
 Alias=greenbone-vulnerability-manager.service
 __EOF__
 
-    echo -e "\e[1;36m ... create GVM config-file\e[0m";
+    echo -e "\e[1;36m...create GVM config-file\e[0m";
     cat << __EOF__ > /etc/gvm/gvmd.conf
 --unix-socket=/run/gvmd/gvmd.sock 
 --feed-lock-path=/run/gvmd/feed-update.lock 
@@ -875,15 +875,15 @@ __EOF__
 --osp-vt-update=/run/ospd/ospd-openvas.sock
 __EOF__
     sync;
-    echo -e "\e[1;32m - configure_gvm() finished\e[0m";
+    echo -e "\e[1;32mconfigure_gvm() finished\e[0m";
     /usr/bin/logger 'configure_gvm() finished' -t 'gce-23.1.0';
 }
 
 configure_gsa() {
     /usr/bin/logger 'configure_gsa' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - configure_gsa() \e[0m";
+    echo -e "\e[1;32mconfigure_gsa() \e[0m";
     # Configure GSA daemon
-    echo -e "\e[1;36m ... create GSAD service\e[0m";
+    echo -e "\e[1;36m...create GSAD service\e[0m";
     cat << __EOF__ > /lib/systemd/system/gsad.service
 [Unit]
 Description=Greenbone Security Assistant daemon (gsad)
@@ -923,12 +923,12 @@ __EOF__
     sync;
     touch /var/log/gvm/gsad.log > /dev/null 2>&1;
     chown -R gvm:gvm /var/log/gvm/ > /dev/null 2>&1;
-    echo -e "\e[1;32m - configure_gsa() finished\e[0m";
+    echo -e "\e[1;32mconfigure_gsa() finished\e[0m";
     /usr/bin/logger 'configure_gsa finished' -t 'gce-23.1.0';
 }
 
 create_wrapper() {
-    echo -e "\e[1;32m - create_wrapper()\e[0m";
+    echo -e "\e[1;32mcreate_wrapper()\e[0m";
     /usr/bin/logger 'create_wrapper' -t 'gce-23.1.0';
     cat << __EOF__ > /usr/bin/wrapper
 #!/usr/bin/env python3
@@ -972,15 +972,15 @@ if __name__ == "__main__":
 __EOF__
     sync;
     chmod 755 /usr/bin/wrapper > /dev/null 2>&1;
-    echo -e "\e[1;32m - create_wrapper() finished\e[0m";
+    echo -e "\e[1;32mcreate_wrapper() finished\e[0m";
     /usr/bin/logger 'create_wrapper finished' -t 'gce-23.1.0';
 }
 
 configure_feed_owner() {
     /usr/bin/logger 'configure_feed_owner' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - configure_feed_owner() \e[0m";
+    echo -e "\e[1;32mconfigure_feed_owner() \e[0m";
     echo "User admin for GVM $HOSTNAME " >> /var/lib/gvm/adminuser;
-    echo -e "\e[1;36m ... configuring feed owner\e[0m";
+    echo -e "\e[1;36m...configuring feed owner\e[0m";
     if systemctl is-active --quiet gvmd.service;
     then
         su gvm -c '/opt/gvm/sbin/gvmd --create-user=admin' >> /var/lib/gvm/adminuser;
@@ -993,16 +993,16 @@ configure_feed_owner() {
         echo "User admin for GVM $HOSTNAME could NOT be created - FAIL!" >> /var/lib/gvm/adminuser;
         /usr/bin/logger 'configure_feed_owner User creation FAILED!' -t 'gce-23.1.0';
     fi
-    echo -e "\e[1;32m - configure_feed_owner() finished\e[0m";
+    echo -e "\e[1;32mconfigure_feed_owner() finished\e[0m";
     /usr/bin/logger 'configure_feed_owner finished' -t 'gce-23.1.0';
 }
 
 configure_greenbone_updates() {
     /usr/bin/logger 'configure_greenbone_updates' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - configure_greenbone_updates() \e[0m";
+    echo -e "\e[1;32mconfigure_greenbone_updates() \e[0m";
     # Configure daily GVM updates timer and service using the new grenbone-update-sync python code
     # Timer
-    echo -e "\e[1;36m ... create gse-update timer\e[0m";
+    echo -e "\e[1;36m...create gse-update timer\e[0m";
     cat << __EOF__ > /lib/systemd/system/gse-update.timer
 [Unit]
 Description=Daily job to update nvt feed
@@ -1021,7 +1021,7 @@ WantedBy=multi-user.target
 __EOF__
 
     ## Create gse-update.service
-    echo -e "\e[1;36m ... create gse-update service\e[0m";
+    echo -e "\e[1;36m...create gse-update service\e[0m";
     cat << __EOF__ > /lib/systemd/system/gse-update.service
 [Unit]
 Description=gse updater
@@ -1036,46 +1036,46 @@ TimeoutSec=900
 WantedBy=multi-user.target
 __EOF__
     sync;
-    echo -e "\e[1;32m - configure_greenbone_updates() finished\e[0m";
+    echo -e "\e[1;32mconfigure_greenbone_updates() finished\e[0m";
     /usr/bin/logger 'configure_greenbone_updates finished' -t 'gce-23.1.0';
 }   
 
 start_services() {
     /usr/bin/logger 'start_services' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - start_services()\e[0m";
+    echo -e "\e[1;32mstart_services()\e[0m";
     # Load new/changed systemd-unitfiles
-    echo -e "\e[1;36m ... reload new and changed systemd unit files\e[0m";
+    echo -e "\e[1;36m...reload new and changed systemd unit files\e[0m";
     systemctl daemon-reload > /dev/null 2>&1;
     # Restart Redis with new config
-    echo -e "\e[1;36m ... restarting redis service\e[0m";
+    echo -e "\e[1;36m...restarting redis service\e[0m";
     systemctl restart redis > /dev/null 2>&1;
     # Enable GSE units
-    echo -e "\e[1;36m ... enabling notus-scanner service\e[0m";
+    echo -e "\e[1;36m...enabling notus-scanner service\e[0m";
     systemctl enable notus-scanner.service > /dev/null 2>&1;
-    echo -e "\e[1;36m ... enabling ospd-openvas service\e[0m";
+    echo -e "\e[1;36m...enabling ospd-openvas service\e[0m";
     systemctl enable ospd-openvas.service > /dev/null 2>&1;
-    echo -e "\e[1;36m ... enabling gvmd service\e[0m";
+    echo -e "\e[1;36m...enabling gvmd service\e[0m";
     systemctl enable gvmd.service > /dev/null 2>&1;
-    echo -e "\e[1;36m ... enabling gsad service\e[0m";
+    echo -e "\e[1;36m...enabling gsad service\e[0m";
     systemctl enable gsad.service > /dev/null 2>&1;
     # Start GSE units
-    echo -e "\e[1;36m ... restarting ospd-openvas service\e[0m";
+    echo -e "\e[1;36m...restarting ospd-openvas service\e[0m";
     systemctl restart ospd-openvas > /dev/null 2>&1;
-    echo -e "\e[1;36m ... restarting notus-scanner service\e[0m";
+    echo -e "\e[1;36m...restarting notus-scanner service\e[0m";
     systemctl restart notus-scanner.service > /dev/null 2>&1;
-    echo -e "\e[1;36m ... restarting gvmd service\e[0m";
+    echo -e "\e[1;36m...restarting gvmd service\e[0m";
     systemctl restart gvmd.service > /dev/null 2>&1;
-    echo -e "\e[1;36m ... restarting gsad service\e[0m";
+    echo -e "\e[1;36m...restarting gsad service\e[0m";
     systemctl restart gsad.service > /dev/null 2>&1;
     # Enable gse-update timer and service
-    echo -e "\e[1;36m ... enabling gse-update timer and service\e[0m";
+    echo -e "\e[1;36m...enabling gse-update timer and service\e[0m";
     systemctl enable gse-update.timer > /dev/null 2>&1;
     systemctl enable gse-update.service > /dev/null 2>&1;
     # restart NGINX
-    echo -e "\e[1;36m ... restarting nginx service\e[0m";
+    echo -e "\e[1;36m...restarting nginx service\e[0m";
     systemctl restart nginx.service > /dev/null 2>&1;
     # Will start after next reboot - may disturb the initial update
-    echo -e "\e[1;36m ... starting gse-update timer\e[0m";
+    echo -e "\e[1;36m...starting gse-update timer\e[0m";
     systemctl start gse-update.timer > /dev/null 2>&1;
     # Check status of critical services
     # gvmd.service
@@ -1125,22 +1125,22 @@ start_services() {
         echo -e "\e[1;31mgse-update.timer FAILED! Updates will not be automated\e[0m";
         /usr/bin/logger 'gse-update.timer FAILED! Updates will not be automated' -t 'gce-23.1.0';
     fi
-    echo -e "\e[1;32m - start_services() finished\e[0m";
+    echo -e "\e[1;32mstart_services() finished\e[0m";
     /usr/bin/logger 'start_services finished' -t 'gce-23.1.0';
 }
 
 configure_redis() {
     /usr/bin/logger 'configure_redis' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - configure_redis()\e[0m";
-    echo -e "\e[1;36m ... creating tmpfiles.d configuration for redis\e[0m";
+    echo -e "\e[1;32mconfigure_redis()\e[0m";
+    echo -e "\e[1;36m...creating tmpfiles.d configuration for redis\e[0m";
     cat << __EOF__ > /etc/tmpfiles.d/redis.conf
 d /run/redis 0755 redis redis
 __EOF__
     # start systemd-tmpfiles to create directories
-    echo -e "\e[1;36m ... starting systemd-tmpfiles to create directories\e[0m";
+    echo -e "\e[1;36m...starting systemd-tmpfiles to create directories\e[0m";
     systemd-tmpfiles --create > /dev/null 2>&1;
     usermod -aG redis gvm;
-    echo -e "\e[1;36m ... creating redis configuration for Greenbone Community Edition\e[0m";
+    echo -e "\e[1;36m...creating redis configuration for Greenbone Community Edition\e[0m";
     cat << __EOF__  > /etc/redis/redis.conf
 daemonize yes
 pidfile /run/redis/redis-server.pid
@@ -1190,7 +1190,7 @@ hz 10
 aof-rewrite-incremental-fsync yes
 __EOF__
     # Redis requirements - overcommit memory and TCP backlog setting > 511
-    echo -e "\e[1;36m ... configuring sysctl for Greenbone Community Edition, Redis\e[0m";
+    echo -e "\e[1;36m...configuring sysctl for Greenbone Community Edition, Redis\e[0m";
     sysctl -w vm.overcommit_memory=1 > /dev/null 2>&1;
     sysctl -w net.core.somaxconn=2048 > /dev/null 2>&1;
     echo "vm.overcommit_memory=1" >> /etc/sysctl.d/60-gse-redis.conf;
@@ -1201,15 +1201,15 @@ __EOF__
 # Turns off Transparent Huge Page functionality as required by redis
 GRUB_CMDLINE_LINUX_DEFAULT="$GRUB_CMDLINE_LINUX_DEFAULT transparent_hugepage=never"
 __EOF__
-    echo -e "\e[1;36m ... updating grub\e[0m";
+    echo -e "\e[1;36m...updating grub\e[0m";
     update-grub > /dev/null 2>&1;
     sync;
-    echo -e "\e[1;32m - configure_redis() finished\e[0m";
+    echo -e "\e[1;32mconfigure_redis() finished\e[0m";
     /usr/bin/logger 'configure_redis finished' -t 'gce-23.1.0';
 }
 
 prepare_db_maintenance() {
-    echo -e "\e[1;32m - prepare_db_maintenance()\e[0m";
+    echo -e "\e[1;32mprepare_db_maintenance()\e[0m";
     /usr/bin/logger 'prepare_db_maintenance()' -t 'gce-23.1.0';
     ## Weekly maintenance
     cat << __EOF__ > /etc/cron.weekly/gvmd-maintenance
@@ -1228,18 +1228,18 @@ __EOF__
     chmod 755 /etc/cron.weekly/gvmd-maintenance
     chmod 755 /etc/cron.daily/gvmd-maintenance
     sync;
-    echo -e "\e[1;32m - prepare_db_maintenance() finished\e[0m";
+    echo -e "\e[1;32mprepare_db_maintenance() finished\e[0m";
     /usr/bin/logger 'prepare_db_maintenance() finished' -t 'gce-23.1.0';
 }
 
 prepare_gpg() {
     /usr/bin/logger 'prepare_gpg' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - prepare_gpg()\e[0m";
-    echo -e "\e[1;36m ... Downloading and importing Greenbone Community Signing Key (PGP)\e[0m";
+    echo -e "\e[1;32mprepare_gpg()\e[0m";
+    echo -e "\e[1;36m...Downloading and importing Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Downloading and importing Greenbone Community Signing Key (PGP)' -t 'gce-23.1.0';
     curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
     gpg --import /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
-    echo -e "\e[1;36m ... Fully trust Greenbone Community Signing Key (PGP)\e[0m";
+    echo -e "\e[1;36m...Fully trust Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Fully trust Greenbone Community Signing Key (PGP)' -t 'gce-23.1.0';
     echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" | tee -a /tmp/ownertrust.txt > /dev/null 2>&1;
     mkdir -p $GNUPGHOME > /dev/null 2>&1;
@@ -1250,12 +1250,12 @@ prepare_gpg() {
     sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
     gpg --import-ownertrust < /tmp/ownertrust.txt > /dev/null 2>&1;
     /usr/bin/logger 'prepare_gpg finished' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - prepare_gpg() finished\e[0m";
+    echo -e "\e[1;32mprepare_gpg() finished\e[0m";
 }
 
 configure_feed_validation() {
     /usr/bin/logger 'configure_feed_validation()' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - configure_feed_validation()\e[0m";
+    echo -e "\e[1;32mconfigure_feed_validation()\e[0m";
     mkdir -p $GNUPGHOME
     gpg --import /tmp/GBCommunitySigningKey.asc
     gpg --import-ownertrust < /tmp/ownertrust.txt
@@ -1263,14 +1263,14 @@ configure_feed_validation() {
     sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
     sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME
     /usr/bin/logger 'configure_feed_validation() finished' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - configure_feed_validation() finished\e[0m";
+    echo -e "\e[1;32mconfigure_feed_validation() finished\e[0m";
 }
 
 configure_permissions() {
     /usr/bin/logger 'configure_permissions' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - configure_permissions()\e[0m";
+    echo -e "\e[1;32mconfigure_permissions()\e[0m";
     /usr/bin/logger '..Setting correct ownership of files for user gvm' -t 'gce-23.1.0';
-    echo -e "\e[1;36m ... configuring permissions for Greenbone Community Edition\e[0m";
+    echo -e "\e[1;36m...configuring permissions for Greenbone Community Edition\e[0m";
     # Once more to ensure that GVM owns all files in /opt/gvm
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
     # GSE log files
@@ -1291,81 +1291,81 @@ configure_permissions() {
     chmod -R g+srw /var/log/gvm
     # NOTUS Feed
     chown -R gvm:gvm /var/lib/notus > /dev/null 2>&1;
-    echo -e "\e[1;32m - configure_permissions() finished\e[0m";
+    echo -e "\e[1;32mconfigure_permissions() finished\e[0m";
     /usr/bin/logger 'configure_permissions finished' -t 'gce-23.1.0';
 }
 
 get_scanner_status() {
     /usr/bin/logger 'get_scanner_status()' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - get_scanner_status()\e[0m";
+    echo -e "\e[1;32mget_scanner_status()\e[0m";
     # Check status of Default scanners (Openvas and CVE).
     # These always have the well-known UUIDs used below. Additional scanners will have a random UUID
     # If returning "Failed to verify scanner" most likely GVMD cannot communicate with ospd-openvas.sock
     echo -e
     echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
-    echo -e "\e[1;36m ... Checking default scanner connectivity.......";
+    echo -e "\e[1;36m...Checking default scanner connectivity.......";
     echo -e "\e[1;33m ... Local $(su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73')\e[0m";
     echo -e "\e[1;33m ... Local $(su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner 6acd0832-df90-11e4-b9d5-28d24461215b')\e[0m";
     echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
     # Write status to syslog too
     /usr/bin/logger ''Default OpenVAS $(su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73")'' -t 'gce-23.1.0';    
     /usr/bin/logger ''Default CVE $(su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner 6acd0832-df90-11e4-b9d5-28d24461215b")'' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - get_scanner_status() finished\e[0m";
+    echo -e "\e[1;32mget_scanner_status() finished\e[0m";
 }
 
 create_gvm_python_script() {
     /usr/bin/logger 'create_gvm_python_script' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - create_gvm_python_script()\e[0m";
-    echo -e "\e[1;36m ... copying scripts and xml files\e[0m";
+    echo -e "\e[1;32mcreate_gvm_python_script()\e[0m";
+    echo -e "\e[1;36m...copying scripts and xml files\e[0m";
     git clone https://github.com/martinboller/greenbone-gmp-scripts.git /opt/gvm/scripts/ > /dev/null 2>&1;
     cp -r /root/XML-Files/ /opt/gvm/scripts/  > /dev/null 2>&1;
     sync;
-    echo -e "\e[1;36m ... cleaning home dir for root\e[0m";
+    echo -e "\e[1;36m...cleaning home dir for root\e[0m";
     rm -rf /root/XML-Files/ > /dev/null 2>&1;
     rm -rf /root/gvm-cli-scripts/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/scripts/ > /dev/null 2>&1;
     chmod 755 /opt/gvm/scripts/*.py;
     sync;
-    echo -e "\e[1;32m - create_gvm_python_script() finished\e[0m";
+    echo -e "\e[1;32mcreate_gvm_python_script() finished\e[0m";
     /usr/bin/logger 'create_gvm_python_script finished' -t 'gce-23.1.0';
 }
 
 configure_cmake() {
     /usr/bin/logger 'configure_cmake' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - configure_cmake()\e[0m";
+    echo -e "\e[1;32mconfigure_cmake()\e[0m";
     # Temporary workaround until CMAKE recognizes Postgresql 13
-    echo -e "\e[1;36m ... configuring cmake ro recognize Postgresql v13\e[0m";
+    echo -e "\e[1;36m...configuring cmake ro recognize Postgresql v13\e[0m";
     sed -ie '1 s/^/set(PostgreSQL_ADDITIONAL_VERSIONS "13")\n/' /usr/share/cmake-3.18/Modules/FindPostgreSQL.cmake > /dev/null 2>&1
     # Temporary workaround until CMAKE recognizes Postgresql 13
-    echo -e "\e[1;32m - configure_cmake() finished\e[0m";
+    echo -e "\e[1;32mconfigure_cmake() finished\e[0m";
    /usr/bin/logger 'configure_cmake finished' -t 'gce-23.1.0';
 }
 
 update_openvas_feed () {
     /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gse';
-    echo -e "\e[1;32m - update_openvas_feed()\e[0m";
-    echo -e "\e[1;36m ... updating NVT information\e[0m";
+    echo -e "\e[1;32mupdate_openvas_feed()\e[0m";
+    echo -e "\e[1;36m...updating NVT information\e[0m";
     su gvm -c '/opt/gvm/sbin/openvas --update-vt-info' > /dev/null 2>&1;
-    echo -e "\e[1;32m - update_openvas_feed() finished\e[0m";
+    echo -e "\e[1;32mupdate_openvas_feed() finished\e[0m";
     /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gse';
 }
 
 install_nginx() {
     /usr/bin/logger 'install_nginx()' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_nginx()\e[0m";
-    echo -e "\e[1;36m ... installing nginx and apache2 utils\e[0m";
+    echo -e "\e[1;32minstall_nginx()\e[0m";
+    echo -e "\e[1;36m...installing nginx and apache2 utils\e[0m";
     apt-get -qq -y install nginx apache2-utils > /dev/null 2>&1;
-    echo -e "\e[1;32m - install_nginx() finished\e[0m";
+    echo -e "\e[1;32minstall_nginx() finished\e[0m";
     /usr/bin/logger 'install_nginx() finished' -t 'gce-23.1.0';
 }
 
 configure_nginx() {
     /usr/bin/logger 'configure_nginx()' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - configure_nginx()\e[0m";
-    echo -e "\e[1;36m ... configuring diffie hellman parameters file\e[0m";
+    echo -e "\e[1;32mconfigure_nginx()\e[0m";
+    echo -e "\e[1;36m...configuring diffie hellman parameters file\e[0m";
     openssl dhparam -out /etc/nginx/dhparam.pem 2048 > /dev/null 2>&1
     # TLS
-    echo -e "\e[1;36m ... configuring site\e[0m";
+    echo -e "\e[1;36m...configuring site\e[0m";
     cat << __EOF__ > /etc/nginx/sites-available/default;
 #########################################
 # reverse proxy configuration for GSE   #
@@ -1413,17 +1413,17 @@ server {
     }
   }
 __EOF__
-    echo -e "\e[1;32m - configure_nginx() finished\e[0m";
+    echo -e "\e[1;32mconfigure_nginx() finished\e[0m";
     /usr/bin/logger 'configure_nginx() finished' -t 'gce-23.1.0';
 }
 
 nginx_certificates() {
     ## Use this if you want to create a request to send to corporate PKI for the web interface, also change the NGINX config to use that
     /usr/bin/logger 'nginx_certificates()' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - nginx_certificates()\e[0m";
+    echo -e "\e[1;32mnginx_certificates()\e[0m";
     ## NGINX stuff
     ## Required information for NGINX certificates
-    echo -e "\e[1;36m ... creating cert configuration file\e[0m";
+    echo -e "\e[1;36m...creating cert configuration file\e[0m";
     mkdir -p /etc/nginx/certs/ > /dev/null 2>&1;
     cat << __EOF__ > ./openssl.cnf
 ## Request for $FQDN
@@ -1447,14 +1447,14 @@ subjectAltName = $ALTNAMES
 __EOF__
     sync;
     # generate Certificate Signing Request to send to corp PKI
-    echo -e "\e[1;36m ... generate CSR\e[0m";
+    echo -e "\e[1;36m...generate CSR\e[0m";
     openssl req -new -config openssl.cnf -keyout /etc/nginx/certs/$HOSTNAME.key -out /etc/nginx/certs/$HOSTNAME.csr > /dev/null 2>&1
     # generate self-signed certificate (remove when CSR can be sent to Corp PKI)
-    echo -e "\e[1;36m ... generate self-signed certificate\e[0m";
+    echo -e "\e[1;36m...generate self-signed certificate\e[0m";
     openssl x509 -in /etc/nginx/certs/$HOSTNAME.csr -out /etc/nginx/certs/$HOSTNAME.crt -req -signkey /etc/nginx/certs/$HOSTNAME.key -days 365 > /dev/null 2>&1
     chmod 600 /etc/nginx/certs/$HOSTNAME.key
     /usr/bin/logger 'nginx_certificates() finished' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - nginx_certificates() finished\e[0m";
+    echo -e "\e[1;32mnginx_certificates() finished\e[0m";
 }
 
 install_openvas_from_github() {
@@ -1467,20 +1467,20 @@ install_openvas_from_github() {
 install_exim() {
     ## Installs Exim4 to allow for sending GCE alerts over e-mail
     /usr/bin/logger 'install_exim()' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_exim()\e[0m";
+    echo -e "\e[1;32minstall_exim()\e[0m";
     # remove postfix if installed
     apt-get -qq -y update > /dev/null 2>&1;
     apt-get -qq -y purge postfix* > /dev/null 2>&1;
     apt-get -qq -y update > /dev/null 2>&1;
     apt-get -qq -y install exim4 > /dev/null 2>&1;
     /usr/bin/logger 'install_exim() finished' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - install_exim() finished\e[0m";    
+    echo -e "\e[1;32minstall_exim() finished\e[0m";    
 }
 
 configure_exim() {
     ## Configures Exim4 from the env variables specified
     /usr/bin/logger 'configure_exim()' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - configure_exim()\e[0m";
+    echo -e "\e[1;32mconfigure_exim()\e[0m";
     echo -e "\e[32mconfigure_exim()\e[0m";
     echo -e "\e[36m-Configure exim4.conf.conf\e[0m";
     cat << __EOF__  > /etc/exim4/update-exim4.conf.conf
@@ -1517,23 +1517,23 @@ __EOF__
     # Time to reconfigure exim4
     dpkg-reconfigure -fnoninteractive exim4-config > /dev/null 2>&1;
     /usr/bin/logger 'configure_exim() finished' -t 'gce-23.1.0';
-    echo -e "\e[1;32m - configure_exim() finished\e[0m";    
+    echo -e "\e[1;32mconfigure_exim() finished\e[0m";    
 }
 
 toggle_vagrant_nic() {
     /usr/bin/logger 'toggle_vagrant_nic()' -t 'gce-23.1.0';
     echo -e "\e[1;32mtoggle_vagrant_nic()\e[0m";
-    echo -e "\e[1;32m - check if started by Vagrant\e[0m";
+    echo -e "\e[1;32mcheck if started by Vagrant\e[0m";
 
     if test -f "/etc/VAGRANT_ENV"; then
         /usr/bin/logger 'ifdown eth0' -t 'gce-23.1.0';
-        echo -e "\e[1;32m - Started by Vagrant ifdown eth0\e[0m";
+        echo -e "\e[1;32mStarted by Vagrant ifdown eth0\e[0m";
         ifdown eth0 > /dev/null 2>&1;
         /usr/bin/logger 'ifup eth0' -t 'gce-23.1.0';
-        echo -e "\e[1;32m - Started by Vagrant, ifup eth0\e[0m";
+        echo -e "\e[1;32mStarted by Vagrant, ifup eth0\e[0m";
         ifup eth0 > /dev/null 2>&1;
     else
-        echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
+        echo -e "\e[1;32mNot running Vagrant, nothing to do\e[0m";
     fi
     
     echo -e "\e[1;32mtoggle_vagrant_nic() finished\e[0m";
@@ -1543,11 +1543,11 @@ toggle_vagrant_nic() {
 remove_vagrant_nic() {
     /usr/bin/logger 'remove_vagrant_nic()' -t 'gce-23.1.0';
     echo -e "\e[1;32mremove_vagrant_nic()\e[0m";
-    echo -e "\e[1;32m - check if started by Vagrant\e[0m";
+    echo -e "\e[1;32mcheck if started by Vagrant\e[0m";
 
     if test -f "/etc/VAGRANT_ENV"; then
         /usr/bin/logger 'Remove Vagrant eth0' -t 'gce-23.1.0';
-        echo -e "\e[1;32m - Started by Vagrant remove Vagrant NIC\e[0m";
+        echo -e "\e[1;32mStarted by Vagrant remove Vagrant NIC\e[0m";
         cat << __EOF__ > /etc/network/interfaces;
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
@@ -1564,7 +1564,7 @@ __EOF__
     ifdown eth1 > /dev/null 2>&1; ifup eth1 > /dev/null 2>&1;
     
     else
-        echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
+        echo -e "\e[1;32mNot running Vagrant, nothing to do\e[0m";
     fi
     /usr/bin/logger 'remove_vagrant_nic() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mremove_vagrant_nic() finished\e[0m";
@@ -1575,10 +1575,10 @@ __EOF__
 ##################################################################################################################
 
 main() {
-    echo -e "\e[1;32m - Primary Server Install main()\e[0m";
+    echo -e "\e[1;32mPrimary Server Install main()\e[0m";
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------\e[0m"
-    echo -e "\e[1;36m ... Starting installation of primary Greenbone Community Edition Server 22.4.0\e[0m"
-    echo -e "\e[1;36m ... $HOSTNAME will also be the Certificate Authority for itself and all secondaries\e[0m"
+    echo -e "\e[1;36m...Starting installation of primary Greenbone Community Edition Server 22.4.0\e[0m"
+    echo -e "\e[1;36m...$HOSTNAME will also be the Certificate Authority for itself and all secondaries\e[0m"
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------\e[0m"
     # Shared variables
     export SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
@@ -1587,17 +1587,17 @@ main() {
     echo -e "\e[1;32mcheck if started by Vagrant\e[0m";
     if test -f "/etc/VAGRANT_ENV"; then
         /usr/bin/logger 'Use env file in HOME' -t 'gce-23.1.0';
-        echo -e "\e[1;32m - Use env file in home\e[0m";
+        echo -e "\e[1;32mUse env file in home\e[0m";
         export ENV_DIR=$HOME;
     else
         /usr/bin/logger 'Use env file SCRIPT_DIR' -t 'gce-23.1.0';
-        echo -e "\e[1;32m - Use env file in SCRIPT_DIR\e[0m";
+        echo -e "\e[1;32mUse env file in SCRIPT_DIR\e[0m";
         export ENV_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
     fi
 
     # Configure environment from env file
     set -a; source $ENV_DIR/env;
-    echo -e "\e[1;36m ... env file version $ENV_VERSION used\e[0m"
+    echo -e "\e[1;36m...env file version $ENV_VERSION used\e[0m"
    
     # Vagrant acts up at times with eth0, so check if running Vagrant and toggle it down/up
     toggle_vagrant_nic;
@@ -1681,7 +1681,7 @@ main() {
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gce-23.1.0';
     echo -e;
     echo -e "\e[1;32mInstallation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot\e[0m";
-    echo -e "\e[1;32m - Primary Server Install main() finished\e[0m";
+    echo -e "\e[1;32mPrimary Server Install main() finished\e[0m";
     sync; sleep 30; systemctl reboot;
 }
 
