@@ -4,24 +4,8 @@
 #                                                                           #
 # Author:       Martin Boller                                               #
 #                                                                           #
-# Email:        martin                                                      #
-# Last Update:  2023-05-02                                                  #
-# Version:      2.70                                                        #
-#                                                                           #
-# Changes:      Initial Version (1.00)                                      #
-#               2021-05-07 Update to 21.4.0 (1.50)                          #
-#               2021-09-13 Updated to run on Debian 10 and 11               #
-#               2021-10-23 Latest GSE release                               #
-#               2021-10-25 Correct ospd-openvas.sock path                   #
-#               2021-12-17 Create secondary cert w hostname not wildcard    #
-#               2022-01-08 Improved console output during install (2.10)    #
-#               2023-05-02 Latest versions and greenbone-feed-sync          #
-#                                                                           #
-# Info:         https://sadsloth.net/post/install-gvm-20_08-src-on-debian/  #
-#                                                                           #
-#                                                                           #
 # Instruction:  Run this script as root on a fully updated                  #
-#               Debian 10 (Buster) or Debian 11 (Bullseye)                  #
+#               Debian 11 (Bullseye) or Debian 12 (Bookworm)                #
 #                                                                           #
 #############################################################################
 
@@ -180,7 +164,7 @@ install_prerequisites() {
     echo -e "\e[1;36m ... preparing directories for logs\e[0m";
     mkdir -p /var/log/gvm/ > /dev/null 2>&1;
     chown -R gvm:gvm /var/log/gvm/ > /dev/null 2>&1;
-    timedatectl set-timezone UTC;
+    timedatectl set-timezone UTC  > /dev/null 2>&1;
     echo -e "\e[1;32m - install_prerequisites() finished\e[0m";
     /usr/bin/logger 'install_prerequisites finished' -t 'gce-23.1.0';
 }
@@ -248,22 +232,23 @@ prepare_source() {
     /usr/bin/logger 'prepare_source' -t 'gce-23.1.0';
     echo -e "\e[1;32m - prepare_source()\e[0m";
     echo -e "\e[1;32mPreparing GSE Source files\e[0m";
-    echo -e "\e[1;36m ... Versions from env file\e[0m";
+    echo -e "\e[1;36m ... Installing the folowing versions, as specified in the env file\e[0m";
     echo -e "\e[1;36m ... Certificate Organization: $GVM_CERTIFICATE_ORG $\e[0m";
     echo -e "\e[1;36m ... preparing directories\e[0m";
-    echo -e "\e[1;36m ... Installation Versions";
-    echo " .... gvmlibs: $GVMLIBS"
-    echo " .... ospd-openvas: $OSPDOPENVAS"
-    echo " .... openvas-scanner: $OPENVAS"
-    echo " .... gvm daemon: $GVMD"
-    echo " .... GSA Daemon: $GSAD"
-    echo " .... GSA Web: $GSA"
-    echo " .... openvas-smb: $OPENVASSMB"
-    echo " .... python-gvm: $PGVM"
-    echo " .... gvm-tools: $GVMTOOLS"
-    echo " .... postgre gvm (pg-gvm): $POSTGREGVM"
-    echo " .... notus-scanner: $NOTUS"
-    echo -e "\e[0m";
+    echo -e "\e[1;32mInstalling the following GCE versions\e[0m";
+    echo -e "\e[1;35m------------------------------------------"
+    echo -e "gvmlibs \t\t $GVMLIBS"
+    echo -e "ospd-openvas \t\t $OSPDOPENVAS"
+    echo -e "openvas-scanner \t $OPENVAS"
+    echo -e "gvm daemon \t\t $GVMD"
+    echo -e "GSA Daemon \t\t $GSAD"
+    echo -e "GSA Web \t\t $GSA"
+    echo -e "openvas-smb \t\t $OPENVASSMB"
+    echo -e "python-gvm \t\t $PGVM"
+    echo -e "gvm-tools \t\t $GVMTOOLS"
+    echo -e "postgre gvm (pg-gvm) \t $POSTGREGVM"
+    echo -e "notus-scanner \t\t $NOTUS"
+    echo -e "------------------------------------------\e[0m";
 
     mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
@@ -564,11 +549,11 @@ prestage_scan_data() {
     tar -xzf scandata.tar.gz > /dev/null 2>&1; 
     /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... copying feed data to correct locations\e[0m";
-    /usr/bin/rsync -aAXv /root/GVM/openvas/ /var/lib/openvas/
+    /usr/bin/rsync -aAXv /root/GVM/openvas/ /var/lib/openvas/ 
     #/bin/cp -r /root/GVM/openvas/* /var/lib/openvas/ > /dev/null 2>&1;
-    /usr/bin/rsync -aAXv /root/GVM/gvm/ /var/lib/gvm/ 
+    /usr/bin/rsync -aAXv /root/GVM/gvm/ /var/lib/gvm/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/gvm/* /var/lib/gvm/ > /dev/null 2>&1;
-    /usr/bin/rsync -aAXv /root/GVM/notus/ /var/lib/notus/
+    /usr/bin/rsync -aAXv /root/GVM/notus/ /var/lib/notus/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/notus/* /var/lib/notus/ > /dev/null 2>&1;
     echo -e "\e[1;36m ... Cleaning Up\e[0m";
     rm -rf /root/GVM;
@@ -1555,7 +1540,7 @@ remove_vagrant_nic() {
     if test -f "/etc/VAGRANT_ENV"; then
         /usr/bin/logger 'Remove Vagrant eth0' -t 'gce-23.1.0';
         echo -e "\e[1;32m - Started by Vagrant remove Vagrant NIC\e[0m";
-            cat << __EOF__ > /etc/network/interfaces;
+        cat << __EOF__ > /etc/network/interfaces;
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
 
@@ -1568,8 +1553,8 @@ pre-up sleep 2
 auto eth1
 iface eth1 inet dhcp
 __EOF__
-        ifdown eth1; ifup eth1;
-
+    ifdown eth1 > /dev/null 2>&1; ifup eth1 > /dev/null 2>&1;
+    
     else
         echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
     fi
@@ -1604,7 +1589,8 @@ main() {
 
     # Configure environment from env file
     set -a; source $ENV_DIR/env;
-
+    echo -e "\e[1;36m ... env file version $ENV_VERSION used\e[0m"
+   
     # Vagrant acts up at times with eth0, so check if running Vagrant and toggle it down/up
     toggle_vagrant_nic;
 

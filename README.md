@@ -13,7 +13,7 @@ Installation will be located in
   - Least access.
   - Prepared for adding secondaries.
 
-<b>Note:</b> The primary server also serves as the Certificate Authority for itself and all secondaries.
+<b>Note:</b> The primary server also serves as the Certificate Authority for itself and all secondaries. But you can create a Certificate SIgning Request and send that to your corporate PKI.
 
 During installation a GVM user called *'admin'* is created. The generated password for user admin is
 stored in the file */var/lib/gvm/adminuser*. It is recommended that this password is changed and/or
@@ -22,6 +22,8 @@ the file deleted. Do NOT delete the user admin unless you also change the feedow
 To create a secondary see instructions later - but running the script _add-secondary-2-primary.sh_ does the work required on the primary as well as on the secondary, hence this is the preferred method<sup>1</sup>.
 
 <sup>1</sup> You can install the complete installation on a secondary, that is include GSAD etc, but there's no good reason to. The secondary with ospd-openvas and openvas only is a small efficient thing with a smaller attack surface.
+
+Note: Due to the ugly hack made removing the Vagrant NIC uses (it gave me a lot of issues) use vboxmanage to control the VM afterwards, example: *vboxmanage startvm manticore --type=headless*
 
 **Note 2023-11-04**: Used to be able to run the secondaries on 1 GB RAM and 1 shared CPU, but now need 2-4G B RAM and (preferably) 2 CPU's or better.
 
@@ -39,7 +41,8 @@ python-gvm | https://github.com/greenbone/python-gvm/ | 23.11.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 23.11.0
 pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.1
 notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.2
-Node.js | https://deb.nodesource.com/ | 20.x
+Node.js for Debian 11 | https://deb.nodesource.com/ | 20.x
+Node.js for Debian 12 | Debian Repo | 18.x
 
 ----
 
@@ -51,9 +54,9 @@ Node.js | https://deb.nodesource.com/ | 20.x
 
 1. Modify env file to match your environment (only really needed if you need to send mail), however you may want to personalize it.
 
-2. To install a primary, run: *apt update ; apt -y full-upgrade ; apt -y install git; git clone https://github.com/martinboller/gse.git; cd gse/installfiles/; chmod 755 \*.sh; install-gse.sh*
+2. To install a primary, run: *export DEBIAN_FRONTEND=noninteractive; apt update ; apt -y full-upgrade ; apt -y install git; git clone https://github.com/martinboller/gse.git; cd gse/installfiles/; chmod 755 \*.sh; ./install-gse.sh*
 
-3. Install secondaries by running: *apt update ; apt -y full-upgrade ; apt -y install git; git clone https://github.com/martinboller/gse.git; cd gse/installfiles/; chmod 755 \*.sh; install-gse-secondary.sh*¹ - When the secondary is finished installing the script returns the hostname and password needed to connect the secondary to the primary, however if you cleared the screen or forgot it, it can be found in /var/lib/gvm/greenboneuser on the secondary scanner in question.
+3. Install secondaries by running: *export DEBIAN_FRONTEND=noninteractive; apt update ; apt -y full-upgrade ; apt -y install git; git clone https://github.com/martinboller/gse.git; cd gse/installfiles/; chmod 755 \*.sh; ./install-gse-secondary.sh*¹ - When the secondary is finished installing the script returns the hostname and password needed to connect the secondary to the primary, however if you cleared the screen or forgot it, it can be found in /var/lib/gvm/greenboneuser on the secondary scanner in question.
 
 4. To connect the secondaries to the primary, on the primary, run: ./add-secondary-to-primary.sh and enter the hostname or ip and password for the secondary. 
 

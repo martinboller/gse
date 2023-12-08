@@ -4,27 +4,10 @@
 #                                                                           #
 # Author:       Martin Boller                                               #
 #                                                                           #
-# Email:        martin                                                      #
-# Last Update:  2023-05-02                                                  #
-# Version:      2.70                                                        #
-#                                                                           #
-# Changes:      Initial Version (1.00)                                      #
-#               2021-05-07 Update to 21.4.0 (1.50)                          #
-#               2021-09-13 Updated to run on Debian 10 and 11               #
-#               2021-10-23 Latest GSE release                               #
-#               2021-10-25 Correct ospd-openvas.sock                        #
-#               2021-12-17 Create secondary cert w hostname not *           #
-#               2022-01-08 Improved console output during install (2.10)    #
-#               2023-05-02 Latest versions and greenbone-feed-sync          #
-#                                                                           #
-# Info:         https://sadsloth.net/post/install-gvm-20_08-src-on-debian/  #
-#                                                                           #
-#                                                                           #
 # Instruction:  Run this script as root on a fully updated                  #
-#               Debian 10 (Buster) or Debian 11 (Bullseye)                  #
+#               Debian 11 (Bullseye) or Debian 12 (Bookworm)                #
 #                                                                           #
 #############################################################################
-
 
 install_prerequisites() {
     /usr/bin/logger 'install_prerequisites' -t 'gce-23.1.0';
@@ -192,19 +175,15 @@ prepare_source() {
     echo -e "\e[1;32m - prepare_source()\e[0m";
     echo -e "\e[1;32mPreparing GSE Source files\e[0m";
     echo -e "\e[1;36m ... preparing directories\e[0m";
-    echo -e "\e[1;36m ... Installation Versions";
-    echo " .... gvmlibs: $GVMLIBS"
-    echo " .... ospd-openvas: $OSPDOPENVAS"
-    echo " .... openvas-scanner: $OPENVAS"
-    echo " .... gvm daemon: $GVMD"
-    echo " .... GSA Daemon: $GSAD"
-    echo " .... GSA Web: $GSA"
-    echo " .... openvas-smb: $OPENVASSMB"
-    echo " .... python-gvm: $PGVM"  
-    echo " .... gvm-tools: $GVMTOOLS"
-    echo " .... postgre gvm (pg-gvm): $POSTGREGVM"
-    echo " .... notus-scanner: $NOTUS"
-    echo -e "\e[0m";
+    echo -e "\e[1;32mInstalling the following GCE versions\e[0m";
+    echo -e "\e[1;35m------------------------------------------"
+    echo -e "ospd-openvas \t\t $OSPDOPENVAS"
+    echo -e "openvas-scanner \t $OPENVAS"
+    echo -e "openvas-smb \t\t $OPENVASSMB"
+    echo -e "python-gvm \t\t $PGVM"
+    echo -e "gvm-tools \t\t $GVMTOOLS"
+    echo -e "notus-scanner \t\t $NOTUS"
+    echo -e "------------------------------------------\e[0m";
 
     mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
@@ -266,20 +245,20 @@ install_libxml2() {
     cd /opt/gvm/src;
     /usr/bin/logger '..git clone libxml2' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... git clone libxml2()\e[0m";
-    git clone https://gitlab.gnome.org/GNOME/libxml2
+    git clone https://gitlab.gnome.org/GNOME/libxml2 > /dev/null 2>&1;
     cd libxml2;
     /usr/bin/logger '..autogen libxml2' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... autogen libxml2()\e[0m";
-    ./autogen.sh
+    ./autogen.sh > /dev/null 2>&1;
     /usr/bin/logger '..make libxml2' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... make libxml2()\e[0m";
-    make;
+    make > /dev/null 2>&1;
     /usr/bin/logger '..make install libxml2' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... make install libxml2()\e[0m";
-    make install;
+    make install > /dev/null 2>&1;
     /usr/bin/logger '..ldconfig libxml2' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... ldconfig libxml2()\e[0m";
-    ldconfig;
+    ldconfig > /dev/null 2>&1;
 }
 
 install_gvm_libs() {
@@ -436,10 +415,8 @@ prestage_scan_data() {
     tar -xzf scandata.tar.gz > /dev/null 2>&1; 
     /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gce-23.1.0';
     echo -e "\e[1;36m ... copying feed data to correct locations\e[0m";
-    /usr/bin/rsync -aAXv /root/GVM/openvas/plugins/ /var/lib/openvas/plugins/
-    #/bin/cp -r /root/GVM/openvas/plugins/* /var/lib/openvas/plugins/ > /dev/null 2>&1;
-    /usr/bin/rsync -aAXv /root/GVM/notus/ /var/lib/notus/
-    #/bin/cp -r /root/GVM/notus/* /var/lib/notus/ > /dev/null 2>&1;
+    /usr/bin/rsync -aAXv /root/GVM/openvas/plugins/ /var/lib/openvas/plugins/ > /dev/null 2>&1;
+    /usr/bin/rsync -aAXv /root/GVM/notus/ /var/lib/notus/ > /dev/null 2>&1;
     echo -e "\e[1;36m ... setting permissions\e[0m";
     echo -e "\e[1;32m - prestage_scan_data() finished\e[0m";
     /usr/bin/logger 'prestage_scan_data finished' -t 'gce-23.1.0';
@@ -498,18 +475,18 @@ prepare_gpg() {
     echo -e "\e[1;32m - prepare_gpg()\e[0m";
     echo -e "\e[1;36m ... Downloading and importing Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Downloading and importing Greenbone Community Signing Key (PGP)' -t 'gce-23.1.0';
-    curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc;
-    gpg --import /tmp/GBCommunitySigningKey.asc;
+    curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
+    gpg -q --import /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
     echo -e "\e[1;36m ... Fully trust Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Fully trust Greenbone Community Signing Key (PGP)' -t 'gce-23.1.0';
-    echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt;
-    mkdir -p $GNUPGHOME;
-    gpg --import /tmp/GBCommunitySigningKey.asc;
-    gpg --import-ownertrust < /tmp/ownertrust.txt;
-    sudo mkdir -p $OPENVAS_GNUPG_HOME;
-    sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/;
-    sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME;
-    gpg --import-ownertrust < /tmp/ownertrust.txt;
+    echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt > /dev/null 2>&1;
+    mkdir -p $GNUPGHOME > /dev/null 2>&1;
+    gpg -q --import /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
+    gpg -q --import-ownertrust < /tmp/ownertrust.txt > /dev/null 2>&1;
+    sudo mkdir -p $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
+    sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/ > /dev/null 2>&1;
+    sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
+    gpg -q --import-ownertrust < /tmp/ownertrust.txt > /dev/null 2>&1;
     /usr/bin/logger 'prepare_gpg finished' -t 'gce-23.1.0';
     echo -e "\e[1;32m - prepare_gpg() finished\e[0m";
 }
@@ -882,10 +859,10 @@ toggle_vagrant_nic() {
     if test -f "/etc/VAGRANT_ENV"; then
         /usr/bin/logger 'ifdown eth0' -t 'gce-23.1.0';
         echo -e "\e[1;32m - ifdown eth0\e[0m";
-        ifdown eth0;
+        ifdown eth0 > /dev/null 2>&1;
         /usr/bin/logger 'ifup eth0' -t 'gce-23.1.0';
         echo -e "\e[1;32m - ifup eth0\e[0m";
-        ifup eth0;
+        ifup eth0 > /dev/null 2>&1;
     else
         echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
     fi
@@ -915,6 +892,8 @@ pre-up sleep 2
 auto eth1
 iface eth1 inet dhcp
 __EOF__
+    ifdown eth1 > /dev/null 2>&1; ifup eth1 > /dev/null 2>&1;
+
     else
         echo -e "\e[1;32m - Not running Vagrant, nothing to do\e[0m";
     fi
@@ -949,6 +928,7 @@ main() {
 
     # Configure environment from env file
     set -a; source $ENV_DIR/env;
+    echo -e "\e[1;36m ... env file version $ENV_VERSION used\e[0m"
 
     # Vagrant acts up at times with eth0, so check if running Vagrant and toggle it down/up
     toggle_vagrant_nic;
