@@ -234,23 +234,22 @@ prepare_source() {
     echo -e "\e[1;32mPreparing GSE Source files\e[0m";
     echo -e "\e[1;36m...Installing the folowing versions, as specified in the env file\e[0m";
     echo -e "\e[1;36m...Certificate Organization: $GVM_CERTIFICATE_ORG $\e[0m";
-    echo -e "\e[1;36m...preparing directories\e[0m";
     echo -e "\e[1;32mInstalling the following GCE versions\e[0m";
     echo -e "\e[1;35m------------------------------------------"
-    echo -e "gvmlibs \t\t\t $GVMLIBS"
-    echo -e "ospd-openvas \t\t $OSPDOPENVAS"
-    echo -e "openvas-scanner \t\t $OPENVAS"
-    echo -e "gvm daemon \t\t $GVMD"
-    echo -e "GSA Daemon \t\t $GSAD"
-    echo -e "GSA Web \t\t\t $GSA"
-    echo -e "openvas-smb \t\t $OPENVASSMB"
-    echo -e "python-gvm \t\t $PGVM"
-    echo -e "gvm-tools \t\t $GVMTOOLS"
-    echo -e "postgre gvm (pg-gvm) \t $POSTGREGVM"
-    echo -e "notus-scanner \t\t $NOTUS"
-    echo -e "feed-sync \t\t $FEEDSYNC"
-    echo -e "------------------------------------------\e[0m";
-
+    echo -e "\e[1;35mgvmlibs \t\t\t $GVMLIBS"
+    echo -e "\e[1;35mospd-openvas \t\t $OSPDOPENVAS"
+    echo -e "\e[1;35mopenvas-scanner \t\t $OPENVAS"
+    echo -e "\e[1;35mgvm daemon \t\t $GVMD"
+    echo -e "\e[1;35mGSA Daemon \t\t $GSAD"
+    echo -e "\e[1;35mGSA Web \t\t\t $GSA"
+    echo -e "\e[1;35mopenvas-smb \t\t $OPENVASSMB"
+    echo -e "\e[1;35mpython-gvm \t\t $PGVM"
+    echo -e "\e[1;35mgvm-tools \t\t $GVMTOOLS"
+    echo -e "\e[1;35mpostgre gvm (pg-gvm) \t $POSTGREGVM"
+    echo -e "\e[1;35mnotus-scanner \t\t $NOTUS"
+    echo -e "\e[1;35mfeed-sync \t\t $FEEDSYNC"
+    echo -e "\e[1;35m------------------------------------------\e[0m";
+    echo -e "\e[1;36m...preparing directories\e[0m";
     mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;

@@ -177,13 +177,13 @@ prepare_source() {
     echo -e "\e[1;36m...preparing directories\e[0m";
     echo -e "\e[1;32mInstalling the following GCE versions\e[0m";
     echo -e "\e[1;35m------------------------------------------"
-    echo -e "gvmlibs \t\t $GVMLIBS"
-    echo -e "ospd-openvas \t $OSPDOPENVAS"
-    echo -e "openvas-scanner \t $OPENVAS"
-    echo -e "openvas-smb \t $OPENVASSMB"
-    echo -e "gvm-tools \t\t $GVMTOOLS"
-    echo -e "notus-scanner \t $NOTUS"
-    echo -e "------------------------------------------\e[0m";
+    echo -e "\e[1;35mgvmlibs \t\t $GVMLIBS"
+    echo -e "\e[1;35mospd-openvas \t $OSPDOPENVAS"
+    echo -e "\e[1;35mopenvas-scanner \t $OPENVAS"
+    echo -e "\e[1;35mopenvas-smb \t $OPENVASSMB"
+    echo -e "\e[1;35mgvm-tools \t\t $GVMTOOLS"
+    echo -e "\e[1;35mnotus-scanner \t $NOTUS"
+    echo -e "\e[1;35m------------------------------------------\e[0m";
 
     mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
