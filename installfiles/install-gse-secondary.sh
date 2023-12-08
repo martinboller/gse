@@ -918,7 +918,7 @@ main() {
     echo -e "\e[1;32mSecondary Server Install main()\e[0m";
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------\e[0m"
     echo -e "\e[1;36m...Starting installation of secondary Greenbone Community Edition Server version 23.1.0\e[0m"
-    echo -e "\e[1;36m...$HOSTNAME will run ospd-openvas and openvas-scanner only, managed from a primary\e[0m"
+    echo -e "\e[1;36m...$HOSTNAME will run ospd-openvas, openvas-scanner, and notus-scanners only, managed from a primary\e[0m"
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------\e[0m"
     # Shared variables
     export SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"

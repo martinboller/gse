@@ -557,7 +557,7 @@ prestage_scan_data() {
     echo -e "\e[1;36m...copying feed data to correct locations\e[0m";
     /usr/bin/rsync -aAXv /root/GVM/openvas/ /var/lib/openvas/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/openvas/* /var/lib/openvas/ > /dev/null 2>&1;
-    /usr/bin/rsync -aAXv /root/GVM/gvm/ /var/lib/gvm/ > /dev/null 2>&1;
+    /usr/bin/rsync -aAXv /root/GVM/gvm/scap-data /var/lib/gvm/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/gvm/* /var/lib/gvm/ > /dev/null 2>&1;
     /usr/bin/rsync -aAXv /root/GVM/notus/ /var/lib/notus/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/notus/* /var/lib/notus/ > /dev/null 2>&1;
