@@ -424,8 +424,9 @@ prestage_scan_data() {
     tar -xzf scandata.tar.gz > /dev/null 2>&1; 
     /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gce-23.1.0';
     echo -e "\e[1;36m...copying feed data to correct locations\e[0m";
-    /usr/bin/rsync -aAXv /root/GVM/openvas/plugins/ /var/lib/openvas/plugins/ > /dev/null 2>&1;
-    /usr/bin/rsync -aAXv /root/GVM/notus/ /var/lib/notus/ > /dev/null 2>&1;
+    /usr/bin/rsync -aAXv /root/tmp/GVM/openvas/plugins/ /var/lib/openvas/plugins/ > /dev/null 2>&1;
+    /usr/bin/rsync -aAXv /root/tmp/GVM/notus/ /var/lib/notus/ > /dev/null 2>&1;
+    rm -rf /root/tmp/ > /dev/null 2>&1;
     echo -e "\e[1;36m...setting permissions\e[0m";
     echo -e "\e[1;32mprestage_scan_data() finished\e[0m";
     /usr/bin/logger 'prestage_scan_data finished' -t 'gce-23.1.0';
