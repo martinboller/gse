@@ -848,6 +848,7 @@ update_openvas_feed () {
     /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gce-23.1.0';
     echo -e "\e[1;32mupdate_openvas_feed()\e[0m";
     echo -e "\e[1;36m...updating NVT information on $HOSTNAME\e[0m";
+    # Clean up redis, then update all VT information > /dev/null 2>&1;
     su gvm -c '/opt/gvm/sbin/openvas --update-vt-info' > /dev/null 2>&1;
     echo -e "\e[1;32mupdate_openvas_feed() finished\e[0m";
     /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gce-23.1.0';
