@@ -1,6 +1,7 @@
 # Change variables to accomodate your requirements and the latest released versions of Greenbone Community Edition
 # Environment file version
 ENV_VERSION='2023-12-08T12:52:001+01:00'
+TEXLIVE_INSTALL="Yes"
 
 # Greenbone Community Edition versions to install
 GVMLIBS='22.7.3'

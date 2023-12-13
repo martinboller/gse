@@ -135,7 +135,11 @@ install_prerequisites() {
     echo -e "\e[1;36m...please be patient, this could take quite a while depending on your system\e[0m";
  
     # Speed up installation without texlive (but then PDF reports wont work)
-    apt-get -qq -y install texlive-full texlive-fonts-recommended > /dev/null 2>&1;
+    if [ "$INSTALL_TEXLIVE" == "Yes" ]; then
+         apt-get -qq -y install texlive-full texlive-fonts-recommended > /dev/null 2>&1;
+    else
+        echo -e "\e[1;32mNot installing texlive, you won't be able to create PDF-reports\e[0m";
+    fi
    
     # Install other preferences and clean up APT
     /usr/bin/logger '....Install some preferences on Debian and clean up apt' -t 'gce-23.1.0';
