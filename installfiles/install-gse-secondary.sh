@@ -201,7 +201,7 @@ prepare_source() {
     /usr/bin/logger '..gsa daemon (gsad)' -t 'gce-23.1.0';
     wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v$OPENVASSMB.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..python-gvm' -t 'gce-23.1.0';
-    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v$PGVM.tar.gz > /dev/null 2>&1;
+    wget -O python-gvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v$PYTHONGVM.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gvm-tools' -t 'gce-23.1.0';
     wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v$GVMTOOLS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..notus-scanner' -t 'gce-23.1.0';
@@ -222,7 +222,7 @@ prepare_source() {
     mv /opt/gvm/src/greenbone/ospd-openvas-$OSPDOPENVAS /opt/gvm/src/greenbone/ospd-openvas > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/openvas-scanner-$OPENVAS /opt/gvm/src/greenbone/openvas > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/openvas-smb-$OPENVASSMB /opt/gvm/src/greenbone/openvas-smb > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/python-gvm-$PGVM /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/python-gvm-$PYTHONGVM /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gvm-tools-$GVMTOOLS /opt/gvm/src/greenbone/gvm-tools > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/notus-scanner-$NOTUS /opt/gvm/src/greenbone/notus > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/greenbone-feed-sync-$FEEDSYNC /opt/gvm/src/greenbone/greenbone-feed-sync > /dev/null 2>&1;

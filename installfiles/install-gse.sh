@@ -243,7 +243,7 @@ prepare_source() {
     echo -e "\e[1;35mGSA Daemon \t\t $GSAD"
     echo -e "\e[1;35mGSA Web \t\t\t $GSA"
     echo -e "\e[1;35mopenvas-smb \t\t $OPENVASSMB"
-    echo -e "\e[1;35mpython-gvm \t\t $PGVM"
+    echo -e "\e[1;35mpython-gvm \t\t $PYTHONGVM"
     echo -e "\e[1;35mgvm-tools \t\t $GVMTOOLS"
     echo -e "\e[1;35mpostgre gvm (pg-gvm) \t $POSTGREGVM"
     echo -e "\e[1;35mnotus-scanner \t\t $NOTUS"
@@ -272,7 +272,7 @@ prepare_source() {
     /usr/bin/logger '..openvas-smb' -t 'gce-23.1.0';
     wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v$OPENVASSMB.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..python-gvm' -t 'gce-23.1.0';
-    wget -O pythongvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v$PGVM.tar.gz > /dev/null 2>&1;
+    wget -O pythongvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v$PYTHONGVM.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gvm-tools' -t 'gce-23.1.0';
     wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v$GVMTOOLS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..pg-gvm' -t 'gce-23.1.0';
@@ -298,7 +298,7 @@ prepare_source() {
     mv /opt/gvm/src/greenbone/gsa-$GSA /opt/gvm/src/greenbone/gsa > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gsad-$GSAD /opt/gvm/src/greenbone/gsad > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/openvas-smb-$OPENVASSMB /opt/gvm/src/greenbone/openvas-smb > /dev/null 2>&1;
-    mv /opt/gvm/src/greenbone/python-gvm-$PGVM /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/python-gvm-$PYTHONGVM /opt/gvm/src/greenbone/python-gvm > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/gvm-tools-$GVMTOOLS /opt/gvm/src/greenbone/gvm-tools > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/pg-gvm-$POSTGREGVM /opt/gvm/src/greenbone/pg-gvm > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/notus-scanner-$NOTUS /opt/gvm/src/greenbone/notus > /dev/null 2>&1;

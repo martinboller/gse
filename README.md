@@ -37,7 +37,7 @@ GVM Daemon | https://github.com/greenbone/gvmd/ | 23.1.0
 GSA Daemon | https://github.com/greenbone/gsad/ | 22.8.0
 GSA | https://github.com/greenbone/gsa/ | 22.9.1
 openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.6
-python-gvm | https://github.com/greenbone/python-gvm/ | 23.11.0
+python-gvm | https://github.com/greenbone/python-gvm/ | 23.12.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 23.11.0
 pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.1
 notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.2
