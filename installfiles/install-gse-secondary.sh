@@ -91,6 +91,9 @@ install_prerequisites() {
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                 python3-defusedxml python3-pip python3-psutil virtualenv python-impacket python-scapy > /dev/null 2>&1;
         fi
+    
+    /usr/bin/logger '..install prerequisites finished' -t 'gce-23.1.0';
+    echo -e "\e[1;36m...install prerequisites finished\e[0m";
 
     # Install other preferences and cleanup APT
     echo -e "\e[1;36m...installing preferred tools and clean up apt\e[0m";
@@ -424,8 +427,8 @@ prestage_scan_data() {
     tar -xzf scandata.tar.gz > /dev/null 2>&1; 
     /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gce-23.1.0';
     echo -e "\e[1;36m...copying feed data to correct locations\e[0m";
-    /usr/bin/rsync -aAXv /root/tmp/GVM/openvas/plugins/ /var/lib/openvas/plugins/ > /dev/null 2>&1;
-    /usr/bin/rsync -aAXv /root/tmp/GVM/notus/ /var/lib/notus/ > /dev/null 2>&1;
+    /usr/bin/rsync -aAXv /root/GVM/openvas/plugins/ /var/lib/openvas/plugins/ > /dev/null 2>&1;
+    /usr/bin/rsync -aAXv /root/GVM/notus/ /var/lib/notus/ > /dev/null 2>&1;
     rm -rf /root/tmp/ > /dev/null 2>&1;
     echo -e "\e[1;36m...setting permissions\e[0m";
     echo -e "\e[1;32mprestage_scan_data() finished\e[0m";
@@ -486,17 +489,17 @@ prepare_gpg() {
     echo -e "\e[1;36m...Downloading and importing Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Downloading and importing Greenbone Community Signing Key (PGP)' -t 'gce-23.1.0';
     curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
-    gpg -q --import /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
     echo -e "\e[1;36m...Fully trust Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Fully trust Greenbone Community Signing Key (PGP)' -t 'gce-23.1.0';
-    echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt > /dev/null 2>&1;
+    echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt;
+    sync; sleep 1;
     mkdir -p $GNUPGHOME > /dev/null 2>&1;
-    gpg -q --import /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
-    gpg -q --import-ownertrust < /tmp/ownertrust.txt > /dev/null 2>&1;
+    gpg -q --import /tmp/GBCommunitySigningKey.asc;
+    gpg -q --import-ownertrust < /tmp/ownertrust.txt;
     sudo mkdir -p $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
-    sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/ > /dev/null 2>&1;
+    sudo cp -r $GNUPGHOME/* $OPENVAS_GNUPG_HOME/ > /dev/null 2>&1;
     sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
-    gpg -q --import-ownertrust < /tmp/ownertrust.txt > /dev/null 2>&1;
+    gpg -q --import-ownertrust < /tmp/ownertrust.txt;
     /usr/bin/logger 'prepare_gpg finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mprepare_gpg() finished\e[0m";
 }

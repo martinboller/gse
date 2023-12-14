@@ -68,7 +68,7 @@ install_prerequisites() {
             echo -e "\e[1;36m...install_prerequisites_debian_11_bullseye\e[0m";
             # Prepare package sources for NODEJS 18.x or newer (now running with 20.x)
             echo -e "\e[1;36m...Installing node 20\e[0m";
-            curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$NODE_KEYRING"  > /dev/null 2>&1
+            curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$NODE_KEYRING" > /dev/null 2>&1
             gpg --no-default-keyring --keyring "$NODE_KEYRING" --list-keys > /dev/null 2>&1
             echo "deb [signed-by=$NODE_KEYRING] https://deb.nodesource.com/$NODE_VERSION $DISTRIBUTION main" | sudo tee /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
             echo "deb-src [signed-by=$NODE_KEYRING] https://deb.nodesource.com/$NODE_VERSION $DISTRIBUTION main" | sudo tee -a /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
@@ -91,8 +91,8 @@ install_prerequisites() {
 
     elif [ $VER -eq "12" ] 
         then
-            /usr/bin/logger '..install_prerequisites_debian_12_bookworm' -t 'gce-23.1.0';
-            echo -e "\e[1;36m...install_prerequisites_debian_12_bookworm\e[0m";
+            /usr/bin/logger '..install prerequisites Debian 12 Bookworm' -t 'gce-23.1.0';
+            echo -e "\e[1;36m...install prerequisites Debian 12 Bookworm\e[0m";
             # Going with default debian 12 package (node 18.x)
             # Install pre-requisites for gvmd on bookworm (debian 12)
             apt update > /dev/null 2>&1
@@ -128,7 +128,10 @@ install_prerequisites() {
             echo -e "\e[1;36m...installing yarn\e[0m";
             npm install -g yarn --force > /dev/null 2>&1;
         fi
-
+    
+    /usr/bin/logger '..install prerequisites finished' -t 'gce-23.1.0';
+    echo -e "\e[1;36m...install prerequisites finished\e[0m";
+     
     # Required for PDF report generation
     /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gce-23.1.0';
     echo -e "\e[1;36m...installing texlive required for PDF report generation\e[0m";
@@ -559,11 +562,11 @@ prestage_scan_data() {
     tar -xzf scandata.tar.gz > /dev/null 2>&1; 
     /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gce-23.1.0';
     echo -e "\e[1;36m...copying feed data to correct locations\e[0m";
-    /usr/bin/rsync -aAXv /root/tmp/GVM/openvas/ /var/lib/openvas/ > /dev/null 2>&1;
+    /usr/bin/rsync -aAXv /root/GVM/openvas/ /var/lib/openvas/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/openvas/* /var/lib/openvas/ > /dev/null 2>&1;
-    /usr/bin/rsync -aAXv /root/tmp/GVM/gvm/scap-data /var/lib/gvm/ > /dev/null 2>&1;
+    /usr/bin/rsync -aAXv /root/GVM/gvm/scap-data /var/lib/gvm/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/gvm/* /var/lib/gvm/ > /dev/null 2>&1;
-    /usr/bin/rsync -aAXv /root/tmp/GVM/notus/ /var/lib/notus/ > /dev/null 2>&1;
+    /usr/bin/rsync -aAXv /root/GVM/notus/ /var/lib/notus/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/notus/* /var/lib/notus/ > /dev/null 2>&1;
     echo -e "\e[1;36m...Cleaning Up\e[0m";
     rm -rf /root/tmp/;
@@ -1241,17 +1244,17 @@ prepare_gpg() {
     echo -e "\e[1;36m...Downloading and importing Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Downloading and importing Greenbone Community Signing Key (PGP)' -t 'gce-23.1.0';
     curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
-    gpg --import /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
     echo -e "\e[1;36m...Fully trust Greenbone Community Signing Key (PGP)\e[0m";
     /usr/bin/logger '..Fully trust Greenbone Community Signing Key (PGP)' -t 'gce-23.1.0';
-    echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" | tee -a /tmp/ownertrust.txt > /dev/null 2>&1;
+    echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt;
+    sync; sleep 1;
     mkdir -p $GNUPGHOME > /dev/null 2>&1;
-    gpg --import /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
-    gpg --import-ownertrust < /tmp/ownertrust.txt > /dev/null 2>&1;
+    gpg -q --import /tmp/GBCommunitySigningKey.asc;
+    gpg -q --import-ownertrust < /tmp/ownertrust.txt;
     sudo mkdir -p $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
-    sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/ > /dev/null 2>&1;
+    sudo cp -r $GNUPGHOME/* $OPENVAS_GNUPG_HOME/ > /dev/null 2>&1;
     sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
-    gpg --import-ownertrust < /tmp/ownertrust.txt > /dev/null 2>&1;
+    gpg -q --import-ownertrust < /tmp/ownertrust.txt;
     /usr/bin/logger 'prepare_gpg finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mprepare_gpg() finished\e[0m";
 }
