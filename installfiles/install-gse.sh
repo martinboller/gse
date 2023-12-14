@@ -138,7 +138,7 @@ install_prerequisites() {
     echo -e "\e[1;36m...please be patient, this could take quite a while depending on your system\e[0m";
  
     # Speed up installation without texlive (but then PDF reports wont work)
-    if [ "$INSTALL_TEXLIVE" == "Yes" ]; then
+    if [ "$TEXLIVE_INSTALL" == "Yes" ]; then
          apt-get -qq -y install texlive-full texlive-fonts-recommended > /dev/null 2>&1;
     else
         echo -e "\e[1;32mNot installing texlive, you won't be able to create PDF-reports\e[0m";
@@ -1340,7 +1340,7 @@ configure_cmake() {
     /usr/bin/logger 'configure_cmake' -t 'gce-23.1.0';
     echo -e "\e[1;32mconfigure_cmake()\e[0m";
     # Temporary workaround until CMAKE recognizes Postgresql 13
-    echo -e "\e[1;36m...configuring cmake ro recognize Postgresql v13\e[0m";
+    echo -e "\e[1;36m...configuring cmake to recognize Postgresql v13\e[0m";
     sed -ie '1 s/^/set(PostgreSQL_ADDITIONAL_VERSIONS "13")\n/' /usr/share/cmake-3.18/Modules/FindPostgreSQL.cmake > /dev/null 2>&1
     # Temporary workaround until CMAKE recognizes Postgresql 13
     echo -e "\e[1;32mconfigure_cmake() finished\e[0m";
@@ -1621,7 +1621,7 @@ main() {
     #nginx_certificates;
     prepare_nix;
     prepare_source;
-    configure_cmake;
+    # configure_cmake;
     # For latest builds use prepare_source_latest instead of prepare_source
     # It is likely to break, so only use if you're feeling really lucky.
     #prepare_source_latest;
