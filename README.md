@@ -39,7 +39,7 @@ GSA | https://github.com/greenbone/gsa/ | 22.9.1
 openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.6
 python-gvm | https://github.com/greenbone/python-gvm/ | 23.12.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 23.11.0
-pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.1
+pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.3
 notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.2
 greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 23.10.0 
 Node.js for Debian 11 | https://deb.nodesource.com/ | 20.x
