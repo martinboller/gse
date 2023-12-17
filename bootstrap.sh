@@ -69,6 +69,7 @@ gse_bootstrap_prerequisites() {
   # copy relevant scripts
   echo -e "\e[36m ... copying instalation scripts\e[0m";
   /bin/cp -r /tmp/installfiles/* /root/ > /dev/null 2>&1;
+  /bin/cp -r /tmp/installfiles/.env /root/.env > /dev/null 2>&1;
   chmod 744 /root/*.sh > /dev/null 2>&1;
   /usr/bin/logger 'gse_bootstrap_prerequisites() finished' -t 'gce';
 }

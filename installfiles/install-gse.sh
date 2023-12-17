@@ -179,7 +179,7 @@ clean_env() {
     /usr/bin/logger 'clean_env()' -t 'gce-23.1.0';
     echo -e "\e[1;32mclean_env()\e[0m";
     ## Deleting file with variables environment variables from env
-    rm $ENV_DIR/env > /dev/null 2>&1;
+    rm $ENV_DIR/.env > /dev/null 2>&1;
     /usr/bin/logger 'clean_env() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mclean_env() finished\e[0m";
 }
@@ -1593,18 +1593,18 @@ main() {
     /usr/bin/logger 'Vagrant Environment Check for file' -t 'gce-23.1.0';
     echo -e "\e[1;32mcheck if started by Vagrant\e[0m";
     if test -f "/etc/VAGRANT_ENV"; then
-        /usr/bin/logger 'Use env file in HOME' -t 'gce-23.1.0';
-        echo -e "\e[1;32mUse env file in home\e[0m";
+        /usr/bin/logger 'Use .env file in HOME' -t 'gce-23.1.0';
+        echo -e "\e[1;32mUse .env file in home\e[0m";
         export ENV_DIR=$HOME;
     else
-        /usr/bin/logger 'Use env file SCRIPT_DIR' -t 'gce-23.1.0';
-        echo -e "\e[1;32mUse env file in SCRIPT_DIR\e[0m";
+        /usr/bin/logger 'Use .env file SCRIPT_DIR' -t 'gce-23.1.0';
+        echo -e "\e[1;32mUse .env file in SCRIPT_DIR\e[0m";
         export ENV_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
     fi
 
-    # Configure environment from env file
-    set -a; source $ENV_DIR/env;
-    echo -e "\e[1;36m...env file version $ENV_VERSION used\e[0m"
+    # Configure environment from .env file
+    set -a; source $ENV_DIR/.env;
+    echo -e "\e[1;36m....env file version $ENV_VERSION used\e[0m"
    
     # Vagrant acts up at times with eth0, so check if running Vagrant and toggle it down/up
     toggle_vagrant_nic;

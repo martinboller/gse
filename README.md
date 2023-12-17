@@ -53,7 +53,7 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ### Install on Debian 11 or 12 directly (not needed of using Vagrant)
 
-1. Modify env file to match your environment (only really needed if you need to send mail), however you may want to personalize it.
+1. Modify the .env file to match your environment (only really needed if you need to send mail), however you may want to personalize it.
 
 2. To install a primary, run: *export DEBIAN_FRONTEND=noninteractive; apt update ; apt -y full-upgrade ; apt -y install git; git clone https://github.com/martinboller/gse.git; cd gse/installfiles/; chmod 755 \*.sh; ./install-gse.sh*
 
@@ -69,11 +69,11 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ## Latest changes
 
-### 2023-12-01 - Tested on Debian 12 Bookworm + Environment variables from separate file (env)
+### 2023-12-01 - Tested on Debian 12 Bookworm + Environment variables from separate file (.env)
  - Debian 12 Bookworm will be the preferred baseline OS from now on (2023-12-01).
  - libcgreen1 for unit testing not available in package repo for Debian 12, but "only" used for unit testing so not installing.
- - env file contain all variables that should be set - most of them can be left as default, however if you want to use mail, configure that section according to your requirements.
- - EXIM4 mailserver installed and configured with values from env file allowing Alerts to send mails. Don't forget to configure correctly for your mailserver
+ - .env file contain all variables that should be set - most of them can be left as default, however if you want to use mail, configure that section according to your requirements.
+ - EXIM4 mailserver installed and configured with values from .env file allowing Alerts to send mails. Don't forget to configure correctly for your mailserver
 
 ### 2023-11-30 - OpenVAS-Scanner updated
  - OpenVAS 22.7.9
