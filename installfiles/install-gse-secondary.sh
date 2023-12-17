@@ -128,7 +128,7 @@ clean_env() {
     /usr/bin/logger 'clean_env()' -t 'gce-23.1.0';
     echo -e "\e[1;32mclean_env()\e[0m";
     ## Deleting file with variables environment variables from env
-    rm $ENV_DIR/env;
+    rm $ENV_DIR/.env;
     /usr/bin/logger 'clean_env() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mclean_env() finished\e[0m";
 }
