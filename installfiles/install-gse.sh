@@ -1691,8 +1691,9 @@ main() {
     echo -e "\e[1;32mPrimary Server Install main() finished\e[0m";
     echo -e;
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
-    echo -e "\e[1;36m  Initial credential for this Greenbone Community Edition server \e[1;33m$HOSTNAME is";
+    echo -e "\e[1;36mInitial credential for this Greenbone Community Edition server \e[1;33m$HOSTNAME is";
     cat /var/lib/gvm/adminuser;
+    echo -e "\e[1;32mPlease change the initial password, but do NOT delete user admin, as it is also the feed-user\e[0m"; 
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
     echo -e;
     sync; sleep 30; systemctl reboot;
