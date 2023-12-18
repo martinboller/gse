@@ -1007,7 +1007,7 @@ main() {
     echo -e "\e[1;36m  You will need hostname: \e[1;33m$HOSTNAME\e[0m and password: \e[1;33m$greenbone_secret\e[0m";
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
     echo -e;
-    /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of Openvas feed data into Redis, then reboot' -t 'gce-23.1.0';
+    /usr/bin/logger 'Installation complete - will reboot in 30 seconds' -t 'gce-23.1.0';
     echo -e "\e[1;32mSecondary Server Install main() finished\e[0m";
     sync; sleep 30; systemctl reboot;
 }
