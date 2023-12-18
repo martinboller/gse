@@ -915,6 +915,25 @@ __EOF__
     echo -e "\e[1;32mremove_vagrant_nic() finished\e[0m";
 }
 
+remove_vagrant_user() {
+    /usr/bin/logger 'remove_vagrant_user()' -t 'gce-23.1.0';
+    echo -e "\e[1;32mremove_vagrant_user()\e[0m";
+    echo -e "\e[1;32mcheck if started by Vagrant\e[0m";
+
+    if test -f "/etc/VAGRANT_ENV"; then
+        echo -e "\e[1;32m...locking vagrant users password\e[0m";
+        passwd --lock vagrant > /dev/null 2>&1;
+        echo -e "\e[1;32m...deleting vagrant user\e[0m";
+        userdel vagrant > /dev/null 2>&1;
+        echo -e "\e[1;32m...deleting /etc/VAGRANT_ENV file\e[0m";
+        rm /etc/VAGRANT_ENV > /dev/null 2>&1;
+    else
+        echo -e "\e[1;32mNot running Vagrant, nothing to do\e[0m";
+    fi
+    /usr/bin/logger 'remove_vagrant_user() finished' -t 'gce-23.1.0';
+    echo -e "\e[1;32mremove_vagrant_user() finished\e[0m";
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -981,6 +1000,7 @@ main() {
     create_scan_user;
     clean_env;
     remove_vagrant_nic;
+    remove_vagrant_user;
     echo -e;
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
     echo -e "\e[1;36m  Run add-secondary-2-primary on the primary server to configure this secondary\e[0m";

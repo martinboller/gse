@@ -43,35 +43,35 @@ configure_timezone() {
   /usr/bin/logger 'configure_timezone() finished' -t 'gce';
 }
 
-gse_bootstrap_prerequisites() {
-  /usr/bin/logger 'gse_bootstrap_prerequisites()' -t 'gce';
-  echo -e "\e[32m - gse_bootstrap_prerequisites()\e[0m";
+gce_bootstrap_prerequisites() {
+  /usr/bin/logger 'gce_bootstrap_prerequisites()' -t 'gce';
+  echo -e "\e[32m - gce_bootstrap_prerequisites()\e[0m";
   # Install prerequisites and useful tools
   export DEBIAN_FRONTEND=noninteractive;
   #sed -ie s/http/https/ /etc/apt/sources.list;
-  apt-get update;
+  apt-get -qq update > /dev/null 2>&1;
   # Removing some of the cruft installed by default in the Vagrant images
   echo -e "\e[36m ... removing unneeded packages\e[0m";
   apt-get -qq -y purge postfix* memcached > /dev/null 2>&1
   sync > /dev/null 2>&1;
   echo -e "\e[36m ... cleaning up apt\e[0m";
-  apt-get -qq -y install --fix-policy > /dev/null 2>&1;
+  #apt-get -qq -y install --fix-policy > /dev/null 2>&1;
   apt-get -qq update > /dev/null 2>&1;
   apt-get -qq -y full-upgrade > /dev/null 2>&1
   apt-get -qq -y --purge autoremove > /dev/null 2>&1
   apt-get -qq autoclean > /dev/null 2>&1
   sync > /dev/null 2>&1
-#  apt-get -y --fix-broken install;
-#  apt-get -y --fix-missing install;
+#  apt-get -y --fix-broken install > /dev/null 2>&1;
+#  apt-get -y --fix-missing install > /dev/null 2>&1;
   /usr/bin/logger 'install_updates()' -t 'gce';
   echo -e "\e[36m ... removing nameserver from interfaces file\e[0m";
   sed -i '/dns-nameserver/d' /etc/network/interfaces > /dev/null 2>&1;
   # copy relevant scripts
-  echo -e "\e[36m ... copying instalation scripts\e[0m";
+  echo -e "\e[36m ... copying installation scripts\e[0m";
   /bin/cp -r /tmp/installfiles/* /root/ > /dev/null 2>&1;
   /bin/cp -r /tmp/installfiles/.env /root/.env > /dev/null 2>&1;
-  chmod 744 /root/*.sh > /dev/null 2>&1;
-  /usr/bin/logger 'gse_bootstrap_prerequisites() finished' -t 'gce';
+  chmod 755 /root/*.sh > /dev/null 2>&1;
+  /usr/bin/logger 'gce_bootstrap_prerequisites() finished' -t 'gce';
 }
 
 install_public_ssh_keys() {
@@ -110,7 +110,7 @@ main() {
     configure_vagrant;
     install_public_ssh_keys;
     #configure_timezone;
-    gse_bootstrap_prerequisites;
+    gce_bootstrap_prerequisites;
     #configure_locale;
     # NAT Network adapter weirdness, so give it a kick.
     #ifdown eth0 > /dev/null 2>&1; ifup eth0 > /dev/null 2>&1;

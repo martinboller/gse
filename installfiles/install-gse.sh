@@ -1577,6 +1577,25 @@ __EOF__
     echo -e "\e[1;32mremove_vagrant_nic() finished\e[0m";
 }
 
+remove_vagrant_user() {
+    /usr/bin/logger 'remove_vagrant_user()' -t 'gce-23.1.0';
+    echo -e "\e[1;32mremove_vagrant_user()\e[0m";
+    echo -e "\e[1;32mcheck if started by Vagrant\e[0m";
+
+    if test -f "/etc/VAGRANT_ENV"; then
+        echo -e "\e[1;32m...locking vagrant users password\e[0m";
+        passwd --lock vagrant > /dev/null 2>&1;
+        echo -e "\e[1;32m...deleting vagrant user\e[0m";
+        userdel vagrant > /dev/null 2>&1;
+        echo -e "\e[1;32m...deleting /etc/VAGRANT_ENV file\e[0m";
+        rm /etc/VAGRANT_ENV > /dev/null 2>&1;
+    else
+        echo -e "\e[1;32mNot running Vagrant, nothing to do\e[0m";
+    fi
+    /usr/bin/logger 'remove_vagrant_user() finished' -t 'gce-23.1.0';
+    echo -e "\e[1;32mremove_vagrant_user() finished\e[0m";
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -1685,13 +1704,14 @@ main() {
     get_scanner_status;
     clean_env;
     remove_vagrant_nic;
+    remove_vagrant_user;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gce-23.1.0';
     echo -e;
     echo -e "\e[1;32mInstallation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot\e[0m";
     echo -e "\e[1;32mPrimary Server Install main() finished\e[0m";
     echo -e;
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
-    echo -e "\e[1;36mInitial credential for this Greenbone Community Edition server \e[1;33m$HOSTNAME is";
+    echo -e "\e[1;36mInitial credential for this Greenbone Community Edition server:";
     cat /var/lib/gvm/adminuser;
     echo -e "\e[1;32mPlease change the initial password, but do NOT delete user admin, as it is also the feed-user\e[0m"; 
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
