@@ -45,7 +45,7 @@ install_prerequisites() {
     locale-gen > /dev/null 2>&1;
     update-locale > /dev/null 2>&1;
     # For development (unit tests)
-    #apt-get -qq -y install libcgreen1;
+    #apt-get -qq -y install libcgreen1 > /dev/null 2>&1;
     # Install pre-requisites for 
     # libunistring is a new requirement from oct-13 updates
     /usr/bin/logger '..Tools for Development' -t 'gce-23.1.0';
@@ -68,11 +68,11 @@ install_prerequisites() {
             echo -e "\e[1;36m...install_prerequisites_debian_11_bullseye\e[0m";
             # Prepare package sources for NODEJS 18.x or newer (now running with 20.x)
             echo -e "\e[1;36m...Installing node 20\e[0m";
-            curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$NODE_KEYRING" > /dev/null 2>&1
-            gpg --no-default-keyring --keyring "$NODE_KEYRING" --list-keys > /dev/null 2>&1
-            echo "deb [signed-by=$NODE_KEYRING] https://deb.nodesource.com/$NODE_VERSION $DISTRIBUTION main" | sudo tee /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
-            echo "deb-src [signed-by=$NODE_KEYRING] https://deb.nodesource.com/$NODE_VERSION $DISTRIBUTION main" | sudo tee -a /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1
-            apt update > /dev/null 2>&1
+            curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$NODE_KEYRING" > /dev/null 2>&1;
+            gpg --no-default-keyring --keyring "$NODE_KEYRING" --list-keys > /dev/null 2>&1;
+            echo "deb [signed-by=$NODE_KEYRING] https://deb.nodesource.com/$NODE_VERSION $DISTRIBUTION main" | sudo tee /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1;
+            echo "deb-src [signed-by=$NODE_KEYRING] https://deb.nodesource.com/$NODE_VERSION $DISTRIBUTION main" | sudo tee -a /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1;
+            apt update > /dev/null 2>&1;
             # Install pre-requisites for gvmd on bullseye (debian 11)
             apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
                 postgresql-server-dev-13 pkg-config libical-dev xsltproc > /dev/null 2>&1;        
@@ -95,7 +95,7 @@ install_prerequisites() {
             echo -e "\e[1;36m...install prerequisites Debian 12 Bookworm\e[0m";
             # Going with default debian 12 package (node 18.x)
             # Install pre-requisites for gvmd on bookworm (debian 12)
-            apt update > /dev/null 2>&1
+            apt update > /dev/null 2>&1;
             apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
                 postgresql-server-dev-15 pkg-config libical-dev xsltproc > /dev/null 2>&1;        
             # Removed doxygen for now
@@ -160,7 +160,7 @@ install_prerequisites() {
     # Python pip packages
     echo -e "\e[1;36m...installing python and python-pip\e[0m";
     apt-get -qq -y install python3-pip > /dev/null 2>&1;
-    python3 -m pip install --upgrade pip > /dev/null 2>&1
+    python3 -m pip install --upgrade pip > /dev/null 2>&1;
     # Prepare directories for scan feed data
     echo -e "\e[1;36m...preparing directories for scan feed data\e[0m";
     mkdir -p /var/lib/gvm/private/CA > /dev/null 2>&1;
@@ -256,7 +256,7 @@ prepare_source() {
     echo -e "\e[1;35mfeed-sync \t\t $FEEDSYNC"
     echo -e "\e[1;35m----------------------------------\e[0m";
     echo -e "\e[1;36m...preparing directories\e[0m";
-    mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1
+    mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     #Get all packages (the python elements can be installed w/o, but downloaded and used for install anyway)
@@ -269,7 +269,7 @@ prepare_source() {
     /usr/bin/logger '..openvas-scanner' -t 'gce-23.1.0';
     wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v$OPENVAS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..gvm daemon' -t 'gce-23.1.0';
-    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v$GVMD.tar.gz> /dev/null 2>&1;
+    wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v$GVMD.tar.gz > /dev/null 2>&1;
     # Note: gvmd 22.5.2 and 22.5.3 spawns a huge number of instances and exhaust system resources 
     /usr/bin/logger '..gsa daemon (gsad)' -t 'gce-23.1.0';
     wget -O gsad.tar.gz https://github.com/greenbone/gsad/archive/refs/tags/v$GSAD.tar.gz > /dev/null 2>&1;
@@ -356,7 +356,7 @@ install_pggvm() {
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     echo -e "\e[1;36m...cmake pg-gvm PostgreSQL server extension\e[0m";
-    cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1
+    cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
     /usr/bin/logger '..make pg-gvm PostgreSQL server extension' -t 'gce-23.1.0';
     echo -e "\e[1;36m...make pg-gvm PostgreSQL server extension\e[0m";
     make > /dev/null 2>&1;
@@ -375,7 +375,7 @@ install_notus() {
     echo -e "\e[1;32minstall_notus()\e[0m";
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd notus/ > /dev/null 2>&1;
-    chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1
+    chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
     echo -e "\e[1;36m...Install notus scanner Python pip module (notus-scanner) \e[0m";
     # From Python PyPi
     #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner' > /dev/null 2>&1; 
@@ -391,10 +391,10 @@ install_gvm_libs() {
     echo -e "\e[1;32minstall_gvmlibs()\e[0m";
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd gvm-libs/ > /dev/null 2>&1;
-    chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1
+    chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     echo -e "\e[1;36m...cmake Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
-    cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1
+    cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
     /usr/bin/logger '..make Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
     echo -e "\e[1;36m...make Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
     make > /dev/null 2>&1;
@@ -588,7 +588,7 @@ install_gsad() {
     /usr/bin/logger 'install_gsad' -t 'gce-23.1.0';
     echo -e "\e[1;32minstall_gsad() \e[0m";
     ## Install GSA Daemon
-    cd /opt/gvm/src/greenbone > /dev/null 2>&1
+    cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     # GSAD Install
     cd gsad/ > /dev/null 2>&1;
@@ -613,7 +613,7 @@ install_gsa_web() {
     /usr/bin/logger 'install_gsa_web()' -t 'gce-23.1.0';
     echo -e "\e[1;32minstall_gsa_web() \e[0m";
     ## Install GSA
-    cd /opt/gvm/src/greenbone > /dev/null 2>&1
+    cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     # GSA prerequisites
     /usr/bin/logger '..installing Yarn' -t 'gce-23.1.0';
@@ -627,8 +627,8 @@ install_gsa_web() {
     yarn build > /dev/null 2>&1;
     sync > /dev/null 2>&1;
     echo -e "\e[1;36m...create web directory and copy web build there\e[0m";
-    mkdir -p /opt/gvm/share/gvm/gsad/web/ > /dev/null 2>&1
-    cp -r build/* /opt/gvm/share/gvm/gsad/web/ > /dev/null 2>&1
+    mkdir -p /opt/gvm/share/gvm/gsad/web/ > /dev/null 2>&1;
+    cp -r build/* /opt/gvm/share/gvm/gsad/web/ > /dev/null 2>&1;
     echo -e "\e[1;32minstall_gsa_web() finished\e[0m";
     /usr/bin/logger 'install_gsa_web() finished' -t 'gce-23.1.0';
 }
@@ -651,7 +651,7 @@ __EOF__
 install_gvm_tools() {
     /usr/bin/logger 'install_gvm_tools' -t 'gce-23.1.0';
     echo -e "\e[1;32minstall_gvm_tools() \e[0m";
-    cd /opt/gvm/src/greenbone > /dev/null 2>&1
+    cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # Install gvm-tools
     cd gvm-tools/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
@@ -1340,7 +1340,7 @@ configure_cmake() {
     echo -e "\e[1;32mconfigure_cmake()\e[0m";
     # Temporary workaround until CMAKE recognizes Postgresql 13
     echo -e "\e[1;36m...configuring cmake to recognize Postgresql v13\e[0m";
-    sed -ie '1 s/^/set(PostgreSQL_ADDITIONAL_VERSIONS "13")\n/' /usr/share/cmake-3.18/Modules/FindPostgreSQL.cmake > /dev/null 2>&1
+    sed -ie '1 s/^/set(PostgreSQL_ADDITIONAL_VERSIONS "13")\n/' /usr/share/cmake-3.18/Modules/FindPostgreSQL.cmake > /dev/null 2>&1;
     # Temporary workaround until CMAKE recognizes Postgresql 13
     echo -e "\e[1;32mconfigure_cmake() finished\e[0m";
    /usr/bin/logger 'configure_cmake finished' -t 'gce-23.1.0';
@@ -1370,7 +1370,7 @@ configure_nginx() {
     /usr/bin/logger 'configure_nginx()' -t 'gce-23.1.0';
     echo -e "\e[1;32mconfigure_nginx()\e[0m";
     echo -e "\e[1;36m...configuring diffie hellman parameters file\e[0m";
-    openssl dhparam -out /etc/nginx/dhparam.pem 2048 > /dev/null 2>&1
+    openssl dhparam -out /etc/nginx/dhparam.pem 2048 > /dev/null 2>&1;
     # TLS
     echo -e "\e[1;36m...configuring site\e[0m";
     cat << __EOF__ > /etc/nginx/sites-available/default;
@@ -1455,10 +1455,10 @@ __EOF__
     sync;
     # generate Certificate Signing Request to send to corp PKI
     echo -e "\e[1;36m...generate CSR\e[0m";
-    openssl req -new -config openssl.cnf -keyout /etc/nginx/certs/$HOSTNAME.key -out /etc/nginx/certs/$HOSTNAME.csr > /dev/null 2>&1
+    openssl req -new -config openssl.cnf -keyout /etc/nginx/certs/$HOSTNAME.key -out /etc/nginx/certs/$HOSTNAME.csr > /dev/null 2>&1;
     # generate self-signed certificate (remove when CSR can be sent to Corp PKI)
     echo -e "\e[1;36m...generate self-signed certificate\e[0m";
-    openssl x509 -in /etc/nginx/certs/$HOSTNAME.csr -out /etc/nginx/certs/$HOSTNAME.crt -req -signkey /etc/nginx/certs/$HOSTNAME.key -days 365 > /dev/null 2>&1
+    openssl x509 -in /etc/nginx/certs/$HOSTNAME.csr -out /etc/nginx/certs/$HOSTNAME.crt -req -signkey /etc/nginx/certs/$HOSTNAME.key -days 365 > /dev/null 2>&1;
     chmod 600 /etc/nginx/certs/$HOSTNAME.key
     /usr/bin/logger 'nginx_certificates() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mnginx_certificates() finished\e[0m";
@@ -1586,7 +1586,7 @@ remove_vagrant_user() {
         echo -e "\e[1;32m...locking vagrant users password\e[0m";
         passwd --lock vagrant > /dev/null 2>&1;
         echo -e "\e[1;32m...deleting vagrant user\e[0m";
-        userdel vagrant > /dev/null 2>&1;
+        userdel vagrant;
         echo -e "\e[1;32m...deleting /etc/VAGRANT_ENV file\e[0m";
         rm /etc/VAGRANT_ENV > /dev/null 2>&1;
     else

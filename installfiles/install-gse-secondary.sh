@@ -28,14 +28,14 @@ install_prerequisites() {
     # Install some basic tools on a Debian net install
     /usr/bin/logger '..Install some basic tools missing if installed from Debian net-install' -t 'gce-23.1.0';
     echo -e "\e[1;36m...install tools missing if installed from Debian net-install\e[0m";
-    apt-get -qq -y install --fix-policy;
+    apt-get -qq -y install --fix-policy > /dev/null 2>&1;
     apt-get -qq -y install adduser wget whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 \
         software-properties-common dnsutils dirmngr --install-recommends  > /dev/null 2>&1;
     # Set locale
     locale-gen > /dev/null 2>&1;
     update-locale > /dev/null 2>&1;
     # For development
-    #apt-get -qq -y install libcgreen1;
+    #apt-get -qq -y install libcgreen1 > /dev/null 2>&1;
     # Install pre-requisites for openvas
     /usr/bin/logger '..Tools for Development' -t 'gce-23.1.0';
     echo -e "\e[1;36m...installing required development tools\e[0m";
@@ -75,7 +75,7 @@ install_prerequisites() {
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-                python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1        
+                python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;       
         else
             /usr/bin/logger "Operating System $OS Version $VER" -t 'gce-23.1.0';
             # Untested but let's try like it is buster (debian 10)
@@ -189,7 +189,7 @@ prepare_source() {
     echo -e "\e[1;35mfeed-sync \t\t $FEEDSYNC"
     echo -e "\e[1;35m----------------------------------\e[0m";
 
-    mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1
+    mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     #Get all packages (the python elements can be installed w/o, but downloaded and used for install anyway)
@@ -276,7 +276,7 @@ install_gvm_libs() {
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     echo -e "\e[1;36m...cmake Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
-    cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1
+    cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
     /usr/bin/logger '..make Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
     echo -e "\e[1;36m...make Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
     make > /dev/null 2>&1;
@@ -379,8 +379,8 @@ greenbone     ALL=(ALL) NOPASSWD: ALL
 __EOF__
     export greenbone_secret="$(< /dev/urandom tr -dc A-Za-z0-9 | head -c 20)";
     echo -e "\e[1;36m...creating user greenbone for temporary usage\e[0m";
-    /usr/sbin/useradd --create-home -c "greenbone secondary user" --shell /bin/bash greenbone > /dev/null 2>&1
-    echo -e "$greenbone_secret\n$greenbone_secret\n" | passwd greenbone > /dev/null 2>&1
+    /usr/sbin/useradd --create-home -c "greenbone secondary user" --shell /bin/bash greenbone > /dev/null 2>&1;
+    echo -e "$greenbone_secret\n$greenbone_secret\n" | passwd greenbone > /dev/null 2>&1;
     echo "User Greenbone for secondary $HOSTNAME created with password: $greenbone_secret" >> /var/lib/gvm/greenboneuser;
     /usr/bin/logger 'create_scan_user() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mcreate_scan_user() finished\e[0m";
@@ -449,7 +449,7 @@ update_feed_data() {
 install_gvm_tools() {
     /usr/bin/logger 'install_gvm_tools' -t 'gce-23.1.0';
     echo -e "\e[1;32minstall_gvm_tools() \e[0m";
- #   cd /opt/gvm/src/greenbone > /dev/null 2>&1
+ #   cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # Install gvm-tools
  #   cd gvm-tools/ > /dev/null 2>&1;
  #   chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
@@ -475,7 +475,7 @@ install_notus() {
     mkdir -p /var/lib/notus/products;
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd notus/ > /dev/null 2>&1;
-    chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1
+    chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
     echo -e "\e[1;36m...Install notus scanner Python pip module (notus-scanner) \e[0m";
     su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner' > /dev/null 2>&1; 
     sync;
@@ -924,7 +924,7 @@ remove_vagrant_user() {
         echo -e "\e[1;32m...locking vagrant users password\e[0m";
         passwd --lock vagrant > /dev/null 2>&1;
         echo -e "\e[1;32m...deleting vagrant user\e[0m";
-        userdel vagrant > /dev/null 2>&1;
+        userdel vagrant;
         echo -e "\e[1;32m...deleting /etc/VAGRANT_ENV file\e[0m";
         rm /etc/VAGRANT_ENV > /dev/null 2>&1;
     else
