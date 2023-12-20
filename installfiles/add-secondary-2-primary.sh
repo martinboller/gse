@@ -63,8 +63,9 @@ add_secondary() {
     echo -e "\e[1;36m ... copying install script and key material to $SECHOST\e[0m";
     sshpass -p $SECPASSWORD scp -o "StrictHostKeyChecking no" /root/secondary-certs.sh greenbone@$SECHOST: > /dev/null 2>&1
     sshpass -p $SECPASSWORD scp -o "StrictHostKeyChecking no" /var/lib/gvm/secondaries/$SECHOST/*.pem greenbone@$SECHOST: > /dev/null 2>&1
+    sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" "chmod 755 greenbone@$SECHOST:$GREENBONEUSER/*.sh" > /dev/null 2>&1
     echo -e "\e[1;36m ... executing script on $SECHOST\e[0m";
-    sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" greenbone@$SECHOST "sudo /root/secondary-certs.sh"
+    sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" greenbone@$SECHOST "sudo -u gvm -i $HOME/secondary-certs.sh"
     echo -e "\e[1;32m - add_secondary() finished\e[0m";
     /usr/bin/logger 'add_secondary() finished' -t 'gce-23.1'
 }
@@ -85,35 +86,27 @@ show_scanner_status() {
 
 main() {
     echo -e "\e[1;32m - add secondary main()\e[0m";
-    # Shared variables
+    # Server name of secondary and password variables
     read -p "Enter hostname of Secondary Server: " SECHOST;
     read -p "Enter password for user greenbone on $SECHOST (/var/lib/gvm/greenboneuser): " SECPASSWORD;    
-    # Remote Port on secondary
-    export REMOTEPORT=9390
-    # Certificate options
-    #
-    # Lifetime in days
-    export GVM_CERTIFICATE_LIFETIME=3650
-    # Country
-    export GVM_CERTIFICATE_COUNTRY="DE"
-    # Locality
-    export GVM_CERTIFICATE_LOCALITY="Germany"
-    # Organization
-    export GVM_CERTIFICATE_ORG="Greenbone Scanner"
-    # (Organization unit)
-    export GVM_CERTIFICATE_ORG_UNIT="Certificate Authority for Vulnerability Management"
-    # State
-    export GVM_CA_CERTIFICATE_STATE="Bavaria"
-    # Security Parameters
-    GVM_CERTIFICATE_SECPARAM="high"
-    GVM_CERTIFICATE_SIGNALG="SHA512"
-    # Hostname
-    export GVM_CERTIFICATE_HOSTNAME=$HOSTNAME  
-    # CA Certificate Lifetime
-    export GVM_CA_CERTIFICATE_LIFETIME=3652
-    # Key & cert material locations
-    export GVM_KEY_LOCATION="/var/lib/gvm/private/CA"
-    export GVM_CERT_LOCATION="/var/lib/gvm/CA"
+    # Shared variables
+    export SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+    # Check if started by Vagrant
+    /usr/bin/logger 'Vagrant Environment Check for file' -t 'gce-23.1.0';
+    echo -e "\e[1;32mcheck if started by Vagrant\e[0m";
+    if test -f "/etc/VAGRANT_ENV"; then
+        /usr/bin/logger 'Use .env file in HOME' -t 'gce-23.1.0';
+        echo -e "\e[1;32mUse .env file in home\e[0m";
+        export ENV_DIR=$HOME;
+    else
+        /usr/bin/logger 'Use .env file SCRIPT_DIR' -t 'gce-23.1.0';
+        echo -e "\e[1;32mUse .env file in SCRIPT_DIR\e[0m";
+        export ENV_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+    fi
+
+    # Configure environment from .env file
+    set -a; source $ENV_DIR/.env;
+    echo -e "\e[1;36m....env file version $ENV_VERSION used\e[0m"
 
     # Shared components
     echo -e;

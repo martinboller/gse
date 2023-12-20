@@ -1702,7 +1702,7 @@ main() {
     start_services;
     configure_feed_owner;
     get_scanner_status;
-    clean_env;
+    #clean_env;
     remove_vagrant_nic;
     remove_vagrant_user;
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gce-23.1.0';

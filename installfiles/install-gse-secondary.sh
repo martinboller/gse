@@ -128,7 +128,7 @@ clean_env() {
     /usr/bin/logger 'clean_env()' -t 'gce-23.1.0';
     echo -e "\e[1;32mclean_env()\e[0m";
     ## Deleting file with variables environment variables from env
-    rm $ENV_DIR/.env;
+    mv $ENV_DIR/.env /home/$GREENBONEUSER/;
     /usr/bin/logger 'clean_env() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mclean_env() finished\e[0m";
 }
@@ -379,8 +379,8 @@ greenbone     ALL=(ALL) NOPASSWD: ALL
 __EOF__
     export greenbone_secret="$(< /dev/urandom tr -dc A-Za-z0-9 | head -c 20)";
     echo -e "\e[1;36m...creating user greenbone for temporary usage\e[0m";
-    /usr/sbin/useradd --create-home -c "greenbone secondary user" --shell /bin/bash greenbone > /dev/null 2>&1;
-    echo -e "$greenbone_secret\n$greenbone_secret\n" | passwd greenbone > /dev/null 2>&1;
+    /usr/sbin/useradd --create-home -c "greenbone secondary user" --shell /bin/bash $GREENBONEUSER > /dev/null 2>&1;
+    echo -e "$greenbone_secret\n$greenbone_secret\n" | passwd $GREENBONEUSER > /dev/null 2>&1;
     echo "User Greenbone for secondary $HOSTNAME created with password: $greenbone_secret" >> /var/lib/gvm/greenboneuser;
     /usr/bin/logger 'create_scan_user() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mcreate_scan_user() finished\e[0m";
@@ -998,7 +998,7 @@ main() {
     update_openvas_feed;
     start_services;
     create_scan_user;
-    clean_env;
+    #clean_env;
     remove_vagrant_nic;
     remove_vagrant_user;
     echo -e;

@@ -69,6 +69,8 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ## Latest changes
 
+### 2023-12-01 - secondary_certs.sh now takes cert location from commandline
+
 ### 2023-12-01 - Tested on Debian 12 Bookworm + Environment variables from separate file (.env)
  - Debian 12 Bookworm will be the preferred baseline OS from now on (2023-12-01).
  - libcgreen1 for unit testing not available in package repo for Debian 12, but "only" used for unit testing so not installing.
