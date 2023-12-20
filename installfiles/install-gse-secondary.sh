@@ -100,7 +100,7 @@ install_prerequisites() {
     /usr/bin/logger '....Install preferences on Debian' -t 'gce-23.1.0';
     apt-get -qq -y install bash-completion > /dev/null 2>&1;
     # Install SUDO
-    apt-get -qq -y install sudo;
+    apt-get -qq -y install sudo > /dev/null 2>&1;
     # A little apt cleanup
     apt-get -qq update > /dev/null 2>&1;
     apt-get -qq -y full-upgrade > /dev/null 2>&1;
@@ -119,7 +119,7 @@ install_prerequisites() {
     # logging
     mkdir -p /var/log/gvm/ > /dev/null 2>&1;
     chown -R gvm:gvm /var/log/gvm/ > /dev/null 2>&1;
-    timedatectl set-timezone UTC;
+    timedatectl set-timezone UTC > /dev/null 2>&1;
     echo -e "\e[1;32minstall_prerequisites() finished\e[0m";
     /usr/bin/logger 'install_prerequisites finished' -t 'gce-23.1.0';
 }

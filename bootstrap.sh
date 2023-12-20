@@ -82,7 +82,7 @@ install_public_ssh_keys() {
   echo -e "\e[36m ... adding authorized_keys file and setting permissions\e[0m";
   mkdir /root/.ssh > /dev/null 2>&1;
   echo $myPublicSSHKey | tee -a /root/.ssh/authorized_keys > /dev/null 2>&1;
-  chmod 700 /root/.ssh> /dev/null 2>&1;
+  chmod 700 /root/.ssh > /dev/null 2>&1;
   chmod 600 /root/.ssh/authorized_keys > /dev/null 2>&1;
   echo -e "\e[32m - install_public_ssh_key() finished\e[0m";
   /usr/bin/logger 'install_public_ssh_keys() finished' -t 'gce';
@@ -92,7 +92,7 @@ configure_vagrant() {
   /usr/bin/logger 'configure_vagrant()' -t 'gce';
   echo -e "\e[32mconfigure_vagrant()\e[0m";
   echo "export VAGRANT_ENV=TRUE" > /etc/profile.d/vagrant.sh;
-  touch /etc/VAGRANT_ENV;
+  touch /etc/VAGRANT_ENV > /dev/null 2>&1;
   echo -e "\e[32mconfigure_vagrant() finished\e[0m";
   /usr/bin/logger 'configure_vagrant() finished' -t 'gce';
 }
