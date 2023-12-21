@@ -47,6 +47,7 @@ create_gsecerts() {
         echo -e "\e[1;36m ... $GVM_KEY_FILENAME, and\e[0m"
         echo -e "\e[1;36m ... $GVM_SIGNING_CA_CERT_FILENAME to secondary $SECHOST\e[0m"
         chown gvm:gvm *.pem > /dev/null 2>&1;
+        chmod 777 *.pem > /dev/null 2>&1;
     else
         /usr/bin/logger "Failed creating Certificates for secondary $SECHOST" -t 'gce-23.1';
         echo -e "Failed: \e[1;31m ... $GVM_CERT_FILENAME not found, certificates not created for $SECHOST\e[0m"
@@ -65,7 +66,7 @@ add_secondary() {
     sshpass -p $SECPASSWORD scp -o "StrictHostKeyChecking no" /var/lib/gvm/secondaries/$SECHOST/*.pem greenbone@$SECHOST: > /dev/null 2>&1
     sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" "chmod 755 greenbone@$SECHOST:$GREENBONEUSER/*.sh" > /dev/null 2>&1
     echo -e "\e[1;36m ... executing script on $SECHOST\e[0m";
-    sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" greenbone@$SECHOST "sudo -u gvm -i $HOME/secondary-certs.sh"
+    sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" greenbone@$SECHOST "sudo -u gvm -i /home/$GREENBONEUSER/secondary-certs.sh"
     echo -e "\e[1;32m - add_secondary() finished\e[0m";
     /usr/bin/logger 'add_secondary() finished' -t 'gce-23.1'
 }

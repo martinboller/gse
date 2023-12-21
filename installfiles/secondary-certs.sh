@@ -25,9 +25,12 @@ install_certs() {
         echo -e "\e[1;36m ... certificates for secondary $HOSTNAME found, copying to correct locations\e[0m";
         cp $CERT_LOCATION/secondary-cert.pem /var/lib/gvm/CA/ > /dev/null 2>&1;
         cp $CERT_LOCATION/cacert.pem /var/lib/gvm/CA/ > /dev/null 2>&1;
-        cp $CERT_LOCATION/secondary-key.pem /var/lib/gvm/private/CA/ > /dev/null 2>&1;
+        cp $CERT_LOCATION/secondary-key.pem /var/lib/gvm/private/CA/;
         chown -R gvm:gvm /var/lib/gvm/ > /dev/null 2>&1;
         sync;
+        # Remove certificate files and .env
+        rm $CERT_LOCATION/*.pem > /dev/null 2>&1;
+        rm $CERT_LOCATION/.env > /dev/null 2>&1;
         /usr/bin/logger 'Certificates for secondary installed' -t 'gce-23.1';
     else
         /usr/bin/logger "Certificates for secondary not found, have you copied secondary-cert.pem, secondary-key.pem, and cacert.pem? to $CERT_LOCATION?" -t 'gce-23.1';
@@ -43,6 +46,7 @@ start_services() {
     # Load new/changed systemd-unitfiles
     systemctl daemon-reload > /dev/null 2>&1;
     systemctl restart ospd-openvas > /dev/null 2>&1;
+    sleep 10;
     echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
     echo -e "\e[1;36m ... Checking core daemons for GSE Secondary......\e[0m";
     if systemctl is-active --quiet ospd-openvas.service;
@@ -97,7 +101,7 @@ main() {
         echo -e "\e[1;31mTrying with /home/greenbone/ but if that fails, specify the location\e[0m"
         echo -e
         echo -e "\e[1;32mExample: ./secondary-certs.sh ./myCerts/"
-        CERT_LOCATION=$ENV_DIR;
+        CERT_LOCATION=/home/$GREENBONEUSER;
     else
 	    CERT_LOCATION=$1
     fi

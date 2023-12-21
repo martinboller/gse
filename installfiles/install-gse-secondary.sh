@@ -128,7 +128,7 @@ clean_env() {
     /usr/bin/logger 'clean_env()' -t 'gce-23.1.0';
     echo -e "\e[1;32mclean_env()\e[0m";
     ## Deleting file with variables environment variables from env
-    mv $ENV_DIR/.env /home/$GREENBONEUSER/;
+    mv $ENV_DIR/.env /home/$GREENBONEUSER/.env;
     /usr/bin/logger 'clean_env() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mclean_env() finished\e[0m";
 }
@@ -998,7 +998,7 @@ main() {
     update_openvas_feed;
     start_services;
     create_scan_user;
-    #clean_env;
+    clean_env;
     remove_vagrant_nic;
     remove_vagrant_user;
     echo -e;
