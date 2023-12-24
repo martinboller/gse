@@ -46,7 +46,7 @@ start_services() {
     # Load new/changed systemd-unitfiles
     systemctl daemon-reload > /dev/null 2>&1;
     systemctl restart ospd-openvas > /dev/null 2>&1;
-    sleep 10;
+    sleep 30;
     echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
     echo -e "\e[1;36m ... Checking core daemons for GSE Secondary......\e[0m";
     if systemctl is-active --quiet ospd-openvas.service;
@@ -96,29 +96,41 @@ main() {
     set -a; source $ENV_DIR/.env;
     echo -e "\e[1;36m....env file version $ENV_VERSION used\e[0m"
 
-    if [[ -z $1 ]]; then
+    echo $CERT_DIR;
+    if [[ -z $CERT_DIR ]]; then
         echo -e "\e[1;31mNo certificate file location supplied, use secondary-certs.sh location of certfiles\e[0m"
-        echo -e "\e[1;31mTrying with /home/greenbone/ but if that fails, specify the location\e[0m"
+        echo -e "\e[1;31mTrying with /home/$GREENBONEUSER but if that fails, specify the location\e[0m"
         echo -e
         echo -e "\e[1;32mExample: ./secondary-certs.sh ./myCerts/"
-        CERT_LOCATION=/home/$GREENBONEUSER;
+        export CERT_LOCATION="/home/$GREENBONEUSER";
     else
-	    CERT_LOCATION=$1
+        export CERT_LOCATION="$CERT_DIR";
     fi
 
     # Install certificates and start ospd-openvas
     install_certs;
-    start_services;
-    # Update redis with NVT information
-    update_openvas_redis;
-    # Disable user greenbone after first use (installing certificates)
-    echo -e "\e[1;36m ... disabling user greenbone on $HOSTNAME\e[0m";
-    echo -e "\e[1;36m ... $(passwd --lock greenbone)\e[0m"
+    
+    if test -f /var/lib/gvm/private/CA/secondary-key.pem; then
+        echo -e "\e[1;36m ... certificates for secondary $HOSTNAME found, copying to correct locations\e[0m";
+        start_services;
+        # Update redis with NVT information
+        update_openvas_redis;
+        # Disable user greenbone after first use (installing certificates)
+        echo -e "\e[1;36m ... disabling user greenbone on $HOSTNAME\e[0m";
+        echo -e "\e[1;36m ... $(sudo passwd --lock greenbone)\e[0m"
+        /usr/bin/logger 'Service ospd-openvas and notus secondary should now have started' -t 'gce-23.1';
+    else
+        /usr/bin/logger "Certificates for secondary not found, secondary not functional" -t 'gce-23.1';
+        echo -e "\e[1;31mCertificates for secondary not found, secondary not functional\e[0m";
+        exit 1;
+    fi;
     /usr/bin/logger 'Certificate installation completed, check for errors in logs' -t 'gce-23.1';
     echo -e "\e[1;36m ... certificate installation completed, check for errors in logs on $HOSTNAME\e[0m";
     echo -e "\e[1;32m - secondary certs installation main()\e[0m";
 }
 
+export CERT_DIR="$1";
 main;
 
 exit 0;
+
