@@ -81,7 +81,7 @@ show_scanner_status() {
     #check again and use exit code
     su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner $SCANNER_ID";
     if [ $? -eq 0 ]; then
-        echo -e "\e[1;32m ... Success: Secondary scanner $SECHOST UUID: @SCANNER_ID verified, user $GREENBONEUSER will be disabled on that system\e[0m"
+        echo -e "\e[1;32m ... Success: Secondary scanner $SECHOST UUID: $SCANNER_ID verified, user $GREENBONEUSER will be disabled on that system\e[0m"
         # Disable greenboneuser on secondary
         echo -e "\e[1;32mdisabling user $GREENBONEUSER on secondary $SECHOST\e[0m";
         sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" greenbone@$SECHOST "sudo passwd --lock $GREENBONEUSER"    
