@@ -78,6 +78,19 @@ show_scanner_status() {
     export SCANNER_ID=$(su gvm -c '/opt/gvm/sbin/gvmd --get-scanners' | grep $SECHOST | awk -F " " {'print $1'})
     echo -e "\e[1;33m ... Secondary Scanner ID on host $SECHOST is: $SCANNER_ID\e[0m";
     echo -e "\e[1;33m ... $SECHOST $(su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner $SCANNER_ID')\e[0m";
+    #check again and use exit code
+    su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner $SCANNER_ID";
+    if [ $? -eq 0 ]; then
+        echo -e "\e[1;32m ... Success: Secondary scanner $SECHOST UUID: @SCANNER_ID verified, user $GREENBONEUSER will be disabled on that system\e[0m"
+        # Disable greenboneuser on secondary
+        echo -e "\e[1;32mdisabling user $GREENBONEUSER on secondary $SECHOST\e[0m";
+        sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" greenbone@$SECHOST "sudo passwd --lock $GREENBONEUSER"    
+    else
+        echo -e "\e[1;31m ... Error: Secondary scanner $SECHOST UUID: $SCANNER_ID verified, please correct any errors and, \e[0m" 
+        echo -e "\e[1;31m ... try re-adding scanner $SECHOST\e[0m"
+        exit 1;
+    fi
+
     /usr/bin/logger 'show_scanner_status() finished' -t 'gce-23.1';
 }
 
@@ -115,7 +128,6 @@ main() {
     create_gsecerts;
     add_secondary;
     show_scanner_status;
-        
     echo -e;
     echo -e "\e[1;36m ... Certificates and scanner created, verify in UI or from commandline\e[0m";
     echo -e "\e[1;36m ... certificate installation completed, check for errors in logs on $SECHOST\e[0m";

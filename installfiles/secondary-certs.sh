@@ -115,9 +115,6 @@ main() {
         start_services;
         # Update redis with NVT information
         update_openvas_redis;
-        # Disable user greenbone after first use (installing certificates)
-        echo -e "\e[1;36m ... disabling user greenbone on $HOSTNAME\e[0m";
-        #echo -e "\e[1;36m ... $(sudo passwd --lock greenbone)\e[0m"
         /usr/bin/logger 'Service ospd-openvas and notus secondary should now have started' -t 'gce-23.1';
     else
         /usr/bin/logger "Certificates for secondary not found, secondary not functional" -t 'gce-23.1';
