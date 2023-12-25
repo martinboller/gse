@@ -114,7 +114,8 @@ main() {
     echo -e "\e[1;36m ... This may take a while, please wait\e[0m";    
     create_gsecerts;
     add_secondary;
-    show_scanner_status;    
+    show_scanner_status;
+        
     echo -e;
     echo -e "\e[1;36m ... Certificates and scanner created, verify in UI or from commandline\e[0m";
     echo -e "\e[1;36m ... certificate installation completed, check for errors in logs on $SECHOST\e[0m";
