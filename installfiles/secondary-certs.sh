@@ -45,7 +45,8 @@ start_services() {
     echo -e "\e[1;32m - start_services()\e[0m";
     # Load new/changed systemd-unitfiles
     systemctl daemon-reload > /dev/null 2>&1;
-    systemctl restart ospd-openvas > /dev/null 2>&1;
+    systemctl enable ospd-openvas.service > /dev/null 2>&1;
+    systemctl restart ospd-openvas.service > /dev/null 2>&1;
     sleep 30;
     echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
     echo -e "\e[1;36m ... Checking core daemons for GSE Secondary......\e[0m";
@@ -65,7 +66,7 @@ update_openvas_redis () {
     /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gce-23.1';
     echo -e "\e[1;32m - update_openvas_redis()\e[0m";
     echo -e "\e[1;36m ... updating NVT feed database (Redis) on $HOSTNAME\e[0m";
-    su gvm -c '/opt/gvm/sbin/openvas --update-vt-info' > /dev/null 2>&1;
+    su gvm -c '/opt/gvm/sbin/openvas --update-vt-info' &
     echo -e "\e[1;32m - update_openvas_redis()\e[0m";
     /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gce-23.1';
 }
