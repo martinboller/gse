@@ -1254,8 +1254,6 @@ prepare_gpg() {
     sudo cp -r $GNUPGHOME/* $OPENVAS_GNUPG_HOME/ > /dev/null 2>&1;
     sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
     gpg -q --import-ownertrust < /tmp/ownertrust.txt;
-    # change to check signatures
-    sed -ie 's/nasl_no_signature_check = yes/nasl_no_signature_check = no/' /etc/openvas/openvas.conf;
     /usr/bin/logger 'prepare_gpg finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mprepare_gpg() finished\e[0m";
 }
@@ -1269,6 +1267,8 @@ configure_feed_validation() {
     sudo mkdir -p $OPENVAS_GNUPG_HOME
     sudo cp -r /tmp/openvas-gnupg/* $OPENVAS_GNUPG_HOME/
     sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME
+    # change to check signatures
+    sed -ie 's/nasl_no_signature_check = yes/nasl_no_signature_check = no/' /etc/openvas/openvas.conf;
     /usr/bin/logger 'configure_feed_validation() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mconfigure_feed_validation() finished\e[0m";
 }
@@ -1697,6 +1697,7 @@ main() {
     # Prestage only works on the specific Vagrant lab where a scan-data tar-ball is copied to the Host. 
     # Update scan-data only from greenbone when used everywhere else.
     prestage_scan_data;
+    configure_feed_validation;
     configure_greenbone_updates;
     configure_permissions;
     update_feed_data;
