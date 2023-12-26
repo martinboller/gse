@@ -47,6 +47,7 @@ start_services() {
     systemctl daemon-reload > /dev/null 2>&1;
     systemctl enable ospd-openvas.service > /dev/null 2>&1;
     systemctl restart ospd-openvas.service > /dev/null 2>&1;
+    systemctl start ospd-openvas.service > /dev/null 2>&1;
     sleep 30;
     echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
     echo -e "\e[1;36m ... Checking core daemons for GSE Secondary......\e[0m";
@@ -60,15 +61,6 @@ start_services() {
     fi
     echo -e "\e[1;32m - start_services() finished\e[0m";
     /usr/bin/logger 'start_services finished' -t 'gce-23.1';
-}
-
-update_openvas_redis () {
-    /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gce-23.1';
-    echo -e "\e[1;32m - update_openvas_redis()\e[0m";
-    echo -e "\e[1;36m ... updating NVT feed database (Redis) on $HOSTNAME\e[0m";
-    su gvm -c '/opt/gvm/sbin/openvas --update-vt-info' &
-    echo -e "\e[1;32m - update_openvas_redis()\e[0m";
-    /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gce-23.1';
 }
 
 ##################################################################################################################
@@ -114,12 +106,11 @@ main() {
     if test -f /var/lib/gvm/private/CA/secondary-key.pem; then
         echo -e "\e[1;36m ... certificates for secondary $HOSTNAME found, copying to correct locations\e[0m";
         start_services;
-        # Update redis with NVT information
-        update_openvas_redis;
+        echo -e "\e[1;31m ... Service ospd-openvas and notus secondary should now have started\e[0m";    
         /usr/bin/logger 'Service ospd-openvas and notus secondary should now have started' -t 'gce-23.1';
     else
         /usr/bin/logger "Certificates for secondary not found, secondary not functional" -t 'gce-23.1';
-        echo -e "\e[1;31mCertificates for secondary not found, secondary not functional\e[0m";
+        echo -e "\e[1;31m ... Certificates for secondary not found, secondary not functional\e[0m";
         exit 1;
     fi;
     /usr/bin/logger 'Certificate installation completed, check for errors in logs' -t 'gce-23.1';
