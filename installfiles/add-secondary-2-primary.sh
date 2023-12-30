@@ -62,11 +62,11 @@ add_secondary() {
     echo -e "\e[1;36m ... creating secondary $SECHOST on primary $HOSTNAME\e[0m";
     su gvm -c "/opt/gvm/sbin/gvmd --create-scanner=\"OpenVAS $SECHOST\" --scanner-host=$SECHOST --scanner-port=$REMOTEPORT --scanner-type="OpenVas" --scanner-ca-pub=/var/lib/gvm/CA/cacert.pem --scanner-key-pub=/var/lib/gvm/secondaries/$SECHOST/secondary-cert.pem --scanner-key-priv=/var/lib/gvm/secondaries/$SECHOST/secondary-key.pem" > /dev/null 2>&1
     echo -e "\e[1;36m ... copying install script and key material to $SECHOST\e[0m";
-    sshpass -p $SECPASSWORD scp -o "StrictHostKeyChecking no" /root/secondary-certs.sh greenbone@$SECHOST: > /dev/null 2>&1
-    sshpass -p $SECPASSWORD scp -o "StrictHostKeyChecking no" /var/lib/gvm/secondaries/$SECHOST/*.pem greenbone@$SECHOST: > /dev/null 2>&1
-    sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" "chmod 755 greenbone@$SECHOST:$GREENBONEUSER/*.sh" > /dev/null 2>&1
+    sshpass -p $SECPASSWORD scp -o "StrictHostKeyChecking no" /root/secondary-certs.sh $GREENBONEUSER@$SECHOST: > /dev/null 2>&1
+    sshpass -p $SECPASSWORD scp -o "StrictHostKeyChecking no" /var/lib/gvm/secondaries/$SECHOST/*.pem $GREENBONEUSER@$SECHOST: > /dev/null 2>&1
+    sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" $GREENBONEUSER@$SECHOST "chmod 755 /home/$GREENBONEUSER/*.sh" > /dev/null 2>&1
     echo -e "\e[1;36m ... executing script on $SECHOST\e[0m";
-    sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" greenbone@$SECHOST "sudo -u gvm -i /home/$GREENBONEUSER/secondary-certs.sh"
+    sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" $GREENBONEUSER@$SECHOST "sudo -u gvm -i /home/$GREENBONEUSER/secondary-certs.sh"
     echo -e "\e[1;32m - add_secondary() finished\e[0m";
     /usr/bin/logger 'add_secondary() finished' -t 'gce-23.1'
 }
@@ -84,8 +84,8 @@ show_scanner_status() {
         echo -e "\e[1;32m ... Success: Secondary scanner $SECHOST UUID: $SCANNER_ID verified, user $GREENBONEUSER will be disabled on that system\e[0m"
         # Disable greenboneuser on secondary
         echo -e "\e[1;32mdisabling user $GREENBONEUSER on secondary $SECHOST\e[0m";
-        sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" greenbone@$SECHOST "su - gvm -c '/opt/gvm/sbin/openvas --update-vt-info'"
-        sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" greenbone@$SECHOST "sudo passwd --lock $GREENBONEUSER"
+        sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" $GREENBONEUSER@$SECHOST "su - gvm -c '/opt/gvm/sbin/openvas --update-vt-info'"
+        sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" $GREENBONEUSER@$SECHOST "sudo passwd --lock $GREENBONEUSER"
     else
         echo -e "\e[1;31m ... Error: Secondary scanner $SECHOST UUID: $SCANNER_ID verified, please correct any errors and, \e[0m" 
         echo -e "\e[1;31m ... try re-adding scanner $SECHOST\e[0m"
