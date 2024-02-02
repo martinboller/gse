@@ -34,14 +34,14 @@ gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.8.0
 ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.6.2
 openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 22.7.9
 GVM Daemon | https://github.com/greenbone/gvmd/ | 23.2.0
-GSA Daemon | https://github.com/greenbone/gsad/ | 22.9.0
+GSA Daemon | https://github.com/greenbone/gsad/ | 22.9.1
 GSA | https://github.com/greenbone/gsa/ | 23.0.0
 openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.6
 python-gvm | https://github.com/greenbone/python-gvm/ | 24.1.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 24.1.0
 pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.4
 notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.2
-greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 23.10.0 
+greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 24.1.1 
 Node.js for Debian 11 | https://deb.nodesource.com/ | 20.x
 Node.js for Debian 12 | Debian Repo | 18.x
 
