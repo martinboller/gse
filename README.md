@@ -68,6 +68,9 @@ Node.js for Debian 12 | Debian Repo | 18.x
 ----
 
 ## Latest changes
+### 2024-02-02 - January Greenbone Releases
+ - greenbone-feedsync and GSAD updated.
+
 ### 2024-01-16 - January Greenbone Releases
  - GVM-Libs, GVMD, GSAD, GSA, Python-VM, GVM-Tools, and PG-GVM updated.
 
