@@ -51,9 +51,9 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 [API Reference for Greenbone GMP 22.4](https://docs.greenbone.net/API/GMP/gmp-22.4.html)
 
-### Install on Debian 11 or 12 directly (not needed of using Vagrant)
+### Install on Debian 11 or 12 directly (not needed when using Vagrant)
 
-1. Modify the .env file to match your environment (only really needed if you need to send mail), however you may want to personalize it.
+1. Modify the .env file to match your environment (especially if you need to send mail), however you may want to personalize it.
 
 2. To install a primary, run: *export DEBIAN_FRONTEND=noninteractive; apt update ; apt -y full-upgrade ; apt -y install git; git clone https://github.com/martinboller/gse.git; cd gse/installfiles/; chmod 755 \*.sh; ./install-gse.sh*
 
