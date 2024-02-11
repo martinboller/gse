@@ -393,6 +393,7 @@ install_gvm_libs() {
     cd gvm-libs/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
+    /usr/bin/logger '..cmake Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
     echo -e "\e[1;36m...cmake Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
     /usr/bin/logger '..make Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
