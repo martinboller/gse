@@ -68,6 +68,25 @@ Node.js for Debian 12 | Debian Repo | 18.x
 ----
 
 ## Latest changes
+
+### 2024-02-11 - PAHO-MQTT 2.0.0 breaking changes
+ - Forcing installation of paho-mqtt 1.6.1 as 2.0.0 appear to break ospd-openvas and notus-scanner
+- With 2.0.0 the following breakage happen
+---
+  
+  Traceback (most recent call last):
+  File "/opt/gvm/gvmpy/lib/python3.11/site-packages/paho/mqtt/client.py", line 874, in __del__
+  self._reset_sockets()
+  File "/opt/gvm/gvmpy/lib/python3.11/site-packages/paho/mqtt/client.py", line 1133, in _reset_sockets
+  self._sock_close()
+  File "/opt/gvm/gvmpy/lib/python3.11/site-packages/paho/mqtt/client.py", line 1119, in _sock_close
+  if not self._sock:
+            ^^^^^^^^^^
+  AttributeError: 'MQTTClient' object has no attribute '_sock'
+
+---
+
+
 ### 2024-02-02 - January Greenbone Releases
  - greenbone-feedsync and GSAD updated.
 

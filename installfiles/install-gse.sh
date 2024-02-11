@@ -56,7 +56,7 @@ install_prerequisites() {
     /usr/bin/logger '..Prerequisites for Greenbone Security Assistant' -t 'gce-23.1.0';
     echo -e "\e[1;36m...prerequisites for Greenbone Security Assistant\e[0m";
     apt-get -qq -y install libmicrohttpd-dev clang cmake > /dev/null 2>&1;
-    apt-get -qq -y install python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg python3-venv python3-wheel > /dev/null 2>&1;
+    apt-get -qq -y install python3 python3-pip python3-setuptools python3-psutil python3-gnupg python3-venv python3-wheel > /dev/null 2>&1;
 
 
     # Other pre-requisites for GSE
@@ -376,6 +376,8 @@ install_notus() {
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd notus/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
+    echo -e "\e[1;36m...Install paho mqtt pypi package version 1.6.1\e[0m";
+    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install paho-mqtt==1.6.1'
     echo -e "\e[1;36m...Install notus scanner Python pip module (notus-scanner) \e[0m";
     # From Python PyPi
     #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner' > /dev/null 2>&1; 

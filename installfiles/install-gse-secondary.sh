@@ -476,6 +476,8 @@ install_notus() {
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd notus/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
+    echo -e "\e[1;36m...Install paho mqtt pypi package version 1.6.1\e[0m";
+    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install paho-mqtt==1.6.1'
     echo -e "\e[1;36m...Install notus scanner Python pip module (notus-scanner) \e[0m";
     su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner' > /dev/null 2>&1; 
     sync;
