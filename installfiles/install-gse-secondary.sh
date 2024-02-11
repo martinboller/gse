@@ -469,21 +469,25 @@ install_impacket() {
     /usr/bin/logger 'install_impacket finished' -t 'gce-23.1.0';
 }
 
+
 install_notus() {
     /usr/bin/logger 'install_notus' -t 'gce-23.1.0';
     echo -e "\e[1;32minstall_notus()\e[0m";
-    mkdir -p /var/lib/notus/products;
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd notus/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
     echo -e "\e[1;36m...Install paho mqtt pypi package version 1.6.1\e[0m";
     su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install paho-mqtt==1.6.1'
     echo -e "\e[1;36m...Install notus scanner Python pip module (notus-scanner) \e[0m";
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner' > /dev/null 2>&1; 
+    # From Python PyPi
+    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner' > /dev/null 2>&1; 
+    # From downloaded source
+    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1; 
     sync;
     echo -e "\e[1;32minstall_notus() finished\e[0m";
     /usr/bin/logger 'install_notus finished' -t 'gce-23.1.0';
 }
+
 
 prepare_gpg() {
     /usr/bin/logger 'prepare_gpg' -t 'gce-23.1.0';
