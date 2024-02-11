@@ -42,7 +42,7 @@ install_prerequisites() {
     apt-get -qq -y install openssh-client gpgsm dpkg xmlstarlet libbsd-dev libjson-glib-dev gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
         libgcrypt20-dev redis-server libunistring-dev libxml2-dev > /dev/null 2>&1;    # Install pre-requisites for gsad
     /usr/bin/logger '..Prerequisites for notus-scanner' -t 'gce-23.1.0';
-    apt-get -qq -y install libpaho-mqtt-dev python3 python3-pip python3-setuptools python3-paho-mqtt python3-psutil python3-gnupg python3-venv > /dev/null 2>&1;
+    apt-get -qq -y install libpaho-mqtt-dev python3 python3-pip python3-setuptools python3-psutil python3-gnupg python3-venv > /dev/null 2>&1;
     
     # Other pre-requisites for GSE
     if [ $VER -eq "11" ] 
