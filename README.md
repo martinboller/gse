@@ -33,7 +33,7 @@ Name | URL | Version
 gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.8.0
 ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.6.2
 openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 22.7.9
-GVM Daemon | https://github.com/greenbone/gvmd/ | 23.2.0
+GVM Daemon | https://github.com/greenbone/gvmd/ | 23.3.0
 GSA Daemon | https://github.com/greenbone/gsad/ | 22.9.1
 GSA | https://github.com/greenbone/gsa/ | 23.0.0
 openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.6
@@ -69,9 +69,12 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ## Latest changes
 
+### 2024-02-13 - Minor update GVMD
+ - GVMD version 23.3.0 (was 23.2.0)
+
 ### 2024-02-11 - PAHO-MQTT 2.0.0 breaking changes
  - Forcing installation of paho-mqtt 1.6.1 as 2.0.0 appear to break ospd-openvas and notus-scanner
-- With 2.0.0 the following breakage happen
+ - With 2.0.0 the following breakage happen
 ---
   
   Traceback (most recent call last):
