@@ -69,6 +69,10 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ## Latest changes
 
+### 2024-02-14 - Install optimizations and Maximum Rows Returned set to unlimited
+ - Installation of requirements for PDF report generation significantly faster
+ - Configured "Max Rows Per Page to unlimited (0) - Documentation states that the default value for "Max Rows Per Page" is 1000 and that 0 indicates no limit. Were starting to generate quite large configs and scans so needed that.
+
 ### 2024-02-13 - Minor update GVMD
  - GVMD version 23.3.0 (was 23.2.0)
 
