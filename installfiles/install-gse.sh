@@ -1609,7 +1609,7 @@ configure_maxrows() {
     
     # The default value for "Max Rows Per Page" is 1000. 0 indicates no limit.
     echo -e "\e[1;32m...Configuring Maximum rows returned to unlimited\e[0m";
-    su gvm -c 'gvmd --modify-setting 76374a7a-0569-11e6-b6da-28d24461215b --value 0'
+    su gvm -c '/opt/gvm/sbin/gvmd --modify-setting 76374a7a-0569-11e6-b6da-28d24461215b --value 0'
 
     /usr/bin/logger 'configure_maxrows() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mconfigure_maxrows() finished\e[0m";
