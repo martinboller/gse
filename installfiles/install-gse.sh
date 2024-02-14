@@ -138,7 +138,9 @@ install_prerequisites() {
        /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gce-23.1.0';
         echo -e "\e[1;36m...installing texlive required for PDF report generation\e[0m";
         echo -e "\e[1;36m...please be patient, this could take quite a while depending on your system\e[0m";
-        apt-get -qq -y install texlive-full texlive-fonts-recommended > /dev/null 2>&1;
+        apt-get -qq -y install texlive-latex-extra --no-install-recommends > /dev/null 2>&1;
+        apt-get -qq -y install texlive-fonts-recommended > /dev/null 2>&1;
+        #apt-get -qq -y install texlive-full texlive-fonts-recommended > /dev/null 2>&1;
     else
         echo -e "\e[1;32mNot installing texlive, you won't be able to create PDF-reports\e[0m";
     fi
