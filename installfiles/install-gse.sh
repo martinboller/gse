@@ -148,7 +148,7 @@ install_prerequisites() {
     # Install other preferences and clean up APT
     /usr/bin/logger '....Install some preferences on Debian and clean up apt' -t 'gce-23.1.0';
     echo -e "\e[1;36m...installing some preferences on Debian\e[0m";
-    apt-get -qq -y install bash-completion > /dev/null 2>&1;
+    apt-get -qq -y install bash-completion haveged > /dev/null 2>&1;
     # Install SUDO
     apt-get -qq -y install sudo > /dev/null 2>&1;
     # A little apt 
@@ -1603,6 +1603,19 @@ remove_vagrant_user() {
     echo -e "\e[1;32mremove_vagrant_user() finished\e[0m";
 }
 
+configure_maxrows() {
+    /usr/bin/logger 'configure_maxrows()' -t 'gce-23.1.0';
+    echo -e "\e[1;32mconfigure_maxrows()\e[0m";
+    
+    # The default value for "Max Rows Per Page" is 1000. 0 indicates no limit.
+    echo -e "\e[1;32m...Configuring Maximum rows returned to unlimited\e[0m";
+    gvmd --modify-setting 76374a7a-0569-11e6-b6da-28d24461215b --value 0
+
+    /usr/bin/logger 'configure_maxrows() finished' -t 'gce-23.1.0';
+    echo -e "\e[1;32mconfigure_maxrows() finished\e[0m";
+    
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -1709,6 +1722,7 @@ main() {
     update_openvas_feed;
     start_services;
     configure_feed_owner;
+    configure_maxrows;
     get_scanner_status;
     #clean_env;
     remove_vagrant_nic;
@@ -1724,7 +1738,7 @@ main() {
     echo -e "\e[1;32mPlease change the initial password, but do NOT delete user admin, as it is also the feedowner\e[0m"; 
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
     echo -e;
-    sync; sleep 30; systemctl reboot;
+    sync; sleep 5; systemctl reboot;
 }
 
 main;
