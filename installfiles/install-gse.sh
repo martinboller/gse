@@ -161,7 +161,7 @@ install_prerequisites() {
     apt-get -qq -y clean > /dev/null 2>&1;
     # Python pip packages
     echo -e "\e[1;36m...installing python and python-pip\e[0m";
-    apt-get -qq -y install python3-pip > /dev/null 2>&1;
+    apt-get -qq -y install python3-pip python-wheel-common > /dev/null 2>&1;
     python3 -m pip install --upgrade pip > /dev/null 2>&1;
     # Prepare directories for scan feed data
     echo -e "\e[1;36m...preparing directories for scan feed data\e[0m";

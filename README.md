@@ -69,6 +69,9 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ## Latest changes
 
+### 2024-02-14 - pg-gvm updated
+- pg-gvm versons 22.6.5
+
 ### 2024-02-14 - Install optimizations and Maximum Rows Returned set to unlimited
  - Installation of requirements for PDF report generation significantly faster
  - Configured "Max Rows Per Page to unlimited (0) - Documentation states that the default value for "Max Rows Per Page" is 1000 and that 0 indicates no limit. Were starting to generate quite large configs and scans so needed that.
@@ -92,7 +95,6 @@ Node.js for Debian 12 | Debian Repo | 18.x
   AttributeError: 'MQTTClient' object has no attribute '_sock'
 
 ---
-
 
 ### 2024-02-02 - January Greenbone Releases
  - greenbone-feedsync and GSAD updated.
@@ -577,6 +579,11 @@ If you want to check the certificates are correct and contain the desired inform
 <b>For the secondary with ospd-openvas listening on 9390</b><br>
 ```openssl s_client -showcerts -servername secondary_host_name -connect secondary_host_name:9390```
 
+---
+
+When removing Vagrant specific configs, control the VMs using the Hypervisors specific tools, for VirtualBox:
+- vboxmanage startvm manticore --type headless
+- vboxmanage startvm aboleth --type headless
 
 ---
 
