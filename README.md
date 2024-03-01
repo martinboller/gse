@@ -33,7 +33,7 @@ Name | URL | Version
 gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.8.0
 ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.6.2
 openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 22.7.9
-GVM Daemon | https://github.com/greenbone/gvmd/ | 23.3.0
+GVM Daemon | https://github.com/greenbone/gvmd/ | 23.4.0
 GSA Daemon | https://github.com/greenbone/gsad/ | 22.9.1
 GSA | https://github.com/greenbone/gsa/ | 23.0.0
 openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.6
@@ -69,8 +69,11 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ## Latest changes
 
+### 2024-03-01 - GVMD updated
+- gvmd version 23.4.0
+
 ### 2024-02-14 - pg-gvm updated
-- pg-gvm versons 22.6.5
+- pg-gvm version 22.6.5
 
 ### 2024-02-14 - Install optimizations and Maximum Rows Returned set to unlimited
  - Installation of requirements for PDF report generation significantly faster
