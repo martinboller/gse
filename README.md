@@ -21,7 +21,8 @@ the file deleted. Do NOT delete the user admin unless you also change the feedow
 
 To create a secondary see instructions later - but running the script _add-secondary-2-primary.sh_ does the work required on the primary as well as on the secondary, hence this is the preferred method<sup>1</sup>.
 
-<sup>1</sup> You can install the complete installation on a secondary, that is include GSAD etc, but there's no good reason to. The secondary with ospd-openvas and openvas only is a small efficient thing with a smaller attack surface.
+<sup>1</sup> You can install the complete installation on a secondary, that is include GVMD, GSAD etc, but there's no good reason to. The secondary with notus, ospd-openvas,
+ and openvas only is a small efficient thing with a smaller attack surface.
 
 Note: Due to the ugly hack made removing the Vagrant NIC uses (it gave me a lot of issues) use vboxmanage to control the VM afterwards, example: *vboxmanage startvm manticore --type=headless*
 
@@ -85,6 +86,7 @@ Node.js for Debian 12 | Debian Repo | 18.x
 ### 2024-02-11 - PAHO-MQTT 2.0.0 breaking changes
  - Forcing installation of paho-mqtt 1.6.1 as 2.0.0 appear to break ospd-openvas and notus-scanner
  - With 2.0.0 the following breakage happen
+
 ---
   
   Traceback (most recent call last):
