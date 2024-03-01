@@ -6,6 +6,7 @@ Installation will be located in
 - /opt/gvm/ for binaries.
 - /var/lib/gvm/ for gvm data CA and feed data.
 - /var/lib/openvas/ for OpenVAS feed data (.nasl files)
+- /var/lib/notus/ for notus feed data.
 
 ### Design principles:
   - Dedicated to GVM, nothing else.
