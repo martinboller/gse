@@ -32,7 +32,7 @@ Note: Due to the ugly hack made removing the Vagrant NIC uses (it gave me a lot 
 Versions used:
 Name | URL | Version
 ---|---|---
-gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.8.0
+gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.9.0
 ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.6.2
 openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 22.7.9
 GVM Daemon | https://github.com/greenbone/gvmd/ | 23.4.0
@@ -70,6 +70,9 @@ Node.js for Debian 12 | Debian Repo | 18.x
 ----
 
 ## Latest changes
+
+### 2024-03-05 - gvm-libs updated
+- gvm-libs version 22.9.0
 
 ### 2024-03-01 - GVMD updated
 - gvmd version 23.4.0
