@@ -71,6 +71,9 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ## Latest changes
 
+### 2024-03-13 - gvmd updated
+- gvmd version 23.5.0
+
 ### 2024-03-05 - gvm-libs updated
 - gvm-libs version 22.9.0
 
