@@ -38,7 +38,7 @@ install_prerequisites() {
     apt-get -qq -y install --fix-policy > /dev/null 2>&1;
     echo -e "\e[1;36m...installing required packages\e[0m";
     apt-get -qq -y install adduser wget whois build-essential devscripts git unzip zip apt-transport-https ca-certificates \
-        curl gnupg2 software-properties-common dnsutils dirmngr --install-recommends  > /dev/null 2>&1;
+        curl gnupg2 software-properties-common dnsutils libcurl4-openssl-dev dirmngr --install-recommends  > /dev/null 2>&1;
 
     # Set locale
     echo -e "\e[1;36m...setting locale\e[0m";
@@ -84,7 +84,7 @@ install_prerequisites() {
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-                    python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy libcurl4-openssl-dev > /dev/null 2>&1;
+                    python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
             echo -e "\e[1;36m...installing yarn\e[0m";
             npm install -g yarn --force > /dev/null 2>&1;
 
@@ -480,7 +480,7 @@ install_ospd_openvas() {
 }
 
 install_openvas() {
-    /usr/bin/logger 'install_openvas' -t 'gce-23.1.0';
+    /usr/bin/logger 'install_openvas()' -t 'gce-23.1.0';
     echo -e "\e[1;32minstall_openvas()\e[0m";
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # Configure and build scanner
