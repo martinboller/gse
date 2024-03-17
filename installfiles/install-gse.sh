@@ -84,7 +84,7 @@ install_prerequisites() {
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-                    python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
+                    python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy libcurl4-openssl-dev > /dev/null 2>&1;
             echo -e "\e[1;36m...installing yarn\e[0m";
             npm install -g yarn --force > /dev/null 2>&1;
 

@@ -30,7 +30,7 @@ install_prerequisites() {
     echo -e "\e[1;36m...install tools missing if installed from Debian net-install\e[0m";
     apt-get -qq -y install --fix-policy > /dev/null 2>&1;
     apt-get -qq -y install adduser wget whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 \
-        software-properties-common dnsutils dirmngr --install-recommends  > /dev/null 2>&1;
+        software-properties-common dnsutils libcurl4-openssl-dev dirmngr --install-recommends  > /dev/null 2>&1;
     # Set locale
     locale-gen > /dev/null 2>&1;
     update-locale > /dev/null 2>&1;
