@@ -955,6 +955,21 @@ remove_vagrant_user() {
     echo -e "\e[1;32mremove_vagrant_user() finished\e[0m";
 }
 
+create_openvas_version_script() {
+    /usr/bin/logger 'create_openvas_version_script()' -t 'gce-23.1.0';
+    echo -e "\e[1;32mcreate_openvas_version_script()\e[0m";
+    mkdir /opt/gvm/scripts;
+    cat << __EOF__  > /opt/gvm/scripts/feed-version.sh
+#!/bin/bash
+echo -e "$HOSTNAME OpenVAS Feed Version:\e[1;32m" $(grep PLUGIN_SET /var/lib/openvas/plugins/plugin_feed_info.inc | cut -c 15-26) "\e[0m"
+__EOF__
+    sync
+    chown -R gvm:gvm /opt/gvm/scripts;
+    chmod 755 /opt/gvm/scripts/*.sh;
+    /usr/bin/logger 'create_openvas_version_script() finished' -t 'gce-23.1.0';
+    echo -e "\e[1;32mcreate_openvas_version_script() finished\e[0m";
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
