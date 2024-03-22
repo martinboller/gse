@@ -961,7 +961,7 @@ create_openvas_version_script() {
     mkdir /opt/gvm/scripts;
     cat << __EOF__  > /opt/gvm/scripts/feed-version.sh
 #!/bin/bash
-echo -e "$HOSTNAME OpenVAS Feed Version:\e[1;32m" $(grep PLUGIN_SET /var/lib/openvas/plugins/plugin_feed_info.inc | cut -c 15-26) "\e[0m"
+echo -e "\$HOSTNAME OpenVAS Feed Version:\e[1;32m" \$(grep PLUGIN_SET /var/lib/openvas/plugins/plugin_feed_info.inc | cut -c 15-26) "\e[0m"
 __EOF__
     sync
     chown -R gvm:gvm /opt/gvm/scripts;
