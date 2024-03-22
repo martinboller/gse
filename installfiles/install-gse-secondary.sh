@@ -1038,6 +1038,7 @@ main() {
     clean_env;
     remove_vagrant_nic;
     remove_vagrant_user;
+    create_openvas_version_script;
     echo -e;
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
     echo -e "\e[1;36m  Run add-secondary-2-primary on the primary server to configure this secondary\e[0m";
