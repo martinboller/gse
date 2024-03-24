@@ -51,7 +51,7 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ### References
 
-[API Reference for Greenbone GMP 22.4](https://docs.greenbone.net/API/GMP/gmp-22.4.html)
+[API Reference for Greenbone GMP 22.5](https://docs.greenbone.net/API/GMP/gmp-22.5.html)
 
 ### Install on Debian 11 or 12 directly (not needed when using Vagrant)
 
