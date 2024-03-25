@@ -584,7 +584,7 @@ update_feed_data() {
     ## This relies on the configure_greenbone_updates script
     echo -e "\e[1;36m...updating feed data\e[0m";
     echo -e "\e[1;36m...please be patient. This could take a while\e[0m";
-    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --compression-level 6 > /dev/null 2>&1;
+    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --compression-level 9 > /dev/null 2>&1;
     echo -e "\e[1;32mupdate_feed_data() finished\e[0m";
     /usr/bin/logger 'update_feed_data finished' -t 'gce-23.1.0';
 }
@@ -1039,7 +1039,7 @@ After=network.target networking.service
 Documentation=man:gvmd(8)
 
 [Service]
-ExecStart=/opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm --gvmd-lock-file /run/gvmd/feed-update.lock --openvas-lock-file /run/gvmd/feed-update.lock --compression-level 6
+ExecStart=/opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm --gvmd-lock-file /run/gvmd/feed-update.lock --openvas-lock-file /run/gvmd/feed-update.lock --compression-level 9
 TimeoutSec=900
 
 [Install]
