@@ -1047,7 +1047,7 @@ main() {
     echo -e;
     /usr/bin/logger 'Installation complete - will reboot in 30 seconds' -t 'gce-23.1.0';
     echo -e "\e[1;32mSecondary Server Install main() finished\e[0m";
-    sync; sleep 30; systemctl reboot;
+    #sync; sleep 30; systemctl reboot;
 }
 
 main;
