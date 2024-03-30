@@ -319,7 +319,7 @@ install_openvas_smb() {
     echo -e "\e[1;36m...make install OpenVAS SMB\e[0m";
     make install > /dev/null 2>&1;
     sync;
-    echo -e "\e[1;36m...load libraries for OpenVAS SMB\e[0m";
+    echo -e "\e[1;36m...load OpenVAS SMB libraries\e[0m";
     ldconfig > /dev/null 2>&1;
     echo -e "\e[1;32minstall_openvas_smb() finished\e[0m";
     /usr/bin/logger 'install_openvas_smb finished' -t 'gce-23.1.0';
@@ -365,7 +365,7 @@ install_openvas() {
     /usr/bin/logger '..Rebuild make cache, OpenVAS Scanner' -t 'gce-23.1.0';
     make rebuild_cache > /dev/null 2>&1;
     sync;
-    echo -e "\e[1;36m...load libraries for OpenVAS Scanner\e[0m";
+    echo -e "\e[1;36m...load OpenVAS Scanner libraries\e[0m";
     ldconfig > /dev/null 2>&1;
     echo -e "\e[1;32minstall_openvas() finished\e[0m";
     /usr/bin/logger 'install_openvas finished' -t 'gce-23.1.0';
@@ -441,7 +441,7 @@ update_feed_data() {
     ## This relies on the configure_greenbone_updates script
     echo -e "\e[1;36m...updating feed data\e[0m";
     echo -e "\e[1;36m...this could take a while\e[0m";
-    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type nvt --user gvm --group gvm > /dev/null 2>&1;
+    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm --openvas-lock-file /run/gvmd/feed-update.lock > /dev/null 2>&1;
     echo -e "\e[1;32mupdate_feed_data() finished\e[0m";
     /usr/bin/logger 'update_feed_data finished' -t 'gce-23.1.0';
 }
