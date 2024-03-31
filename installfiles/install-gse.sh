@@ -583,8 +583,8 @@ update_feed_data() {
     echo -e "\e[1;32mupdate_feed_data() \e[0m";
     ## This relies on the configure_greenbone_updates script
     echo -e "\e[1;36m...updating feed data\e[0m";
-    echo -e "\e[1;36m...please be patient. This could take a while\e[0m";
-    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm --gvmd-lock-file /run/gvmd/feed-update.lock --openvas-lock-file /run/gvmd/feed-update.lock;
+    echo -e "\e[1;36m...This may take a few minutes, please wait...\e[0m";
+    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm;
     echo -e "\e[1;32mupdate_feed_data() finished\e[0m";
     /usr/bin/logger 'update_feed_data finished' -t 'gce-23.1.0';
 }

@@ -441,7 +441,7 @@ update_feed_data() {
     ## This relies on the configure_greenbone_updates script
     echo -e "\e[1;36m...updating feed data\e[0m";
     echo -e "\e[1;36m...this could take a while\e[0m";
-    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm --openvas-lock-file /run/gvmd/feed-update.lock > /dev/null 2>&1;
+    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type nvt --user gvm --group gvm > /dev/null 2>&1;
     echo -e "\e[1;32mupdate_feed_data() finished\e[0m";
     /usr/bin/logger 'update_feed_data finished' -t 'gce-23.1.0';
 }
