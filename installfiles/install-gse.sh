@@ -465,16 +465,13 @@ install_openvas_smb() {
 install_ospd_openvas() {
     /usr/bin/logger 'install_ospd_openvas' -t 'gce-23.1.0';
     echo -e "\e[1;32minstall_ospd_openvas()\e[0m";
-    # Install from repo
-    #su gvm -c 'source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas';
-    # install from downloaded source
-    echo -e "\e[1;36m...installing ospd-openvas requirements\e[0m";
-    # Temporary workaround for 22.7.0 not installing without install earlier version first
-    su gvm -c 'source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==22.6.1';
     echo -e "\e[1;36m...installing ospd-openvas\e[0m";
-    cd /opt/gvm/src/greenbone > /dev/null 2>&1;
-    cd ospd-openvas > /dev/null 2>&1;
-    su gvm -c 'source ~/gvmpy/bin/activate;python3 -m pip install .' > /dev/null 2>&1;
+    # Install from repo
+    echo -e "\e[1;36m...installing ospd-openvas requirements\e[0m";
+    su gvm -c "source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==$OSPDOPENVAS --force-reinstall --use-pep517";
+    #cd /opt/gvm/src/greenbone > /dev/null 2>&1;
+    #cd ospd-openvas > /dev/null 2>&1;
+    #su gvm -c 'source ~/gvmpy/bin/activate;python3 -m pip install .' > /dev/null 2>&1;
     sync
     # For use when testing (just comment uncomment poetry install in "main" and here)
     #/usr/poetry/bin/poetry install;
