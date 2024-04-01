@@ -294,10 +294,10 @@ install_gvm_libs() {
 install_python_gvm() {
     /usr/bin/logger 'install_python_gvm' -t 'gce-23.1.0';
     # Installing from repo
-    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install python-gvm';
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install python-gvm==$PYTHONGVM";
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd python-gvm/ > /dev/null 2>&1;
-    su gvm -c '~/source gvmpy/bin/activate; python3 -m pip install .';
+    #su gvm -c '~/source gvmpy/bin/activate; python3 -m pip install .';
     #/usr/poetry/bin/poetry install;
     /usr/bin/logger 'install_python_gvm finished' -t 'gce-23.1.0';
 }
@@ -328,14 +328,15 @@ install_openvas_smb() {
 install_ospd_openvas() {
     /usr/bin/logger 'install_ospd_openvas' -t 'gce-23.1.0';
     echo -e "\e[1;32minstall_ospd_openvas()\e[0m";
-    # Install from PyPi repo
-    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install ospd-openvas';
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # Configure and build scanner
     # install from source
     echo -e "\e[1;36m...installing ospd-openvas\e[0m";
-    cd ospd-openvas > /dev/null 2>&1;
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
+    #cd ospd-openvas > /dev/null 2>&1;
+    # Install from PyPi repo
+    su gvm -c "source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==$OSPDOPENVASOLD --use-pep517";
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install ospd-openvas==$OSPDOPENVAS --force-upgrade --use-pep517" > /dev/null 2>&1;
+    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
     # For use when testing (just comment uncomment poetry install in "main" and here)
     #/usr/poetry/bin/poetry install;
     echo -e "\e[1;32minstall_ospd_openvas() finished\e[0m";
@@ -402,8 +403,8 @@ install_greenbone_feed_sync() {
     # install from source
     echo -e "\e[1;36m...installing greenbone-feed-sync\e[0m";
     cd greenbone-feed-sync > /dev/null 2>&1;
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
-#    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install greenbone-feed-sync' > /dev/null 2>&1;
+    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install greenbone-feed-sync==$FEEDSYNC" > /dev/null 2>&1;
     /usr/bin/logger 'install_greenbone_feed_sync() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32minstall_greenbone_feed_sync() finished\e[0m";
 }
@@ -464,7 +465,7 @@ install_impacket() {
     /usr/bin/logger 'install_impacket' -t 'gce-23.1.0';
     echo -e "\e[1;32minstall_impacket() \e[0m";
     # Install impacket
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install impacket' > /dev/null 2>&1;
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install impacket==$IMPACKET" > /dev/null 2>&1;
     echo -e "\e[1;32minstall_impacket() finished\e[0m";
     /usr/bin/logger 'install_impacket finished' -t 'gce-23.1.0';
 }
@@ -477,12 +478,12 @@ install_notus() {
     cd notus/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
     echo -e "\e[1;36m...Install paho mqtt pypi package version 1.6.1\e[0m";
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install paho-mqtt==1.6.1'
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install paho-mqtt==$PAHOMQTT"
     echo -e "\e[1;36m...Install notus scanner Python pip module (notus-scanner) \e[0m";
     # From Python PyPi
-    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner' > /dev/null 2>&1; 
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner==$NOTUS" > /dev/null 2>&1; 
     # From downloaded source
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1; 
+    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1; 
     sync;
     echo -e "\e[1;32minstall_notus() finished\e[0m";
     /usr/bin/logger 'install_notus finished' -t 'gce-23.1.0';

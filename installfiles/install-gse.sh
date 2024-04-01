@@ -379,12 +379,12 @@ install_notus() {
     cd notus/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
     echo -e "\e[1;36m...Install paho mqtt pypi package version 1.6.1\e[0m";
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install paho-mqtt==1.6.1'
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install paho-mqtt==$PAHOMQTT"
     echo -e "\e[1;36m...Install notus scanner Python pip module (notus-scanner) \e[0m";
     # From Python PyPi
-    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner' > /dev/null 2>&1; 
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner==$NOTUS" > /dev/null 2>&1; 
     # From downloaded source
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1; 
+    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1; 
     sync;
     echo -e "\e[1;32minstall_notus() finished\e[0m";
     /usr/bin/logger 'install_notus finished' -t 'gce-23.1.0';
@@ -420,10 +420,10 @@ install_python_gvm() {
     echo -e "\e[1;32minstall_python_gvm()\e[0m";
     # Installing from repo
     echo -e "\e[1;36m...installing python-gvm\e[0m";
-    #su gvm -c 'source ~/gvmpy/bin/activate; /usr/bin/python3 -m pip install python-gvm';
-    cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
-    cd python-gvm/ > /dev/null 2>&1;
-    su gvm -c 'source ~/gvmpy/bin/activate; /usr/bin/python3 -m pip install .' > /dev/null 2>&1;
+    su gvm -c "source ~/gvmpy/bin/activate; /usr/bin/python3 -m pip install python-gvm==$PYTHONGVM";
+    #cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
+    #cd python-gvm/ > /dev/null 2>&1;
+    #su gvm -c 'source ~/gvmpy/bin/activate; /usr/bin/python3 -m pip install .' > /dev/null 2>&1;
     #/usr/poetry/bin/poetry install;
     echo -e "\e[1;32minstall_python_gvm() finished\e[0m";
     /usr/bin/logger 'install_python_gvm finished' -t 'gce-23.1.0';
@@ -467,8 +467,9 @@ install_ospd_openvas() {
     echo -e "\e[1;32minstall_ospd_openvas()\e[0m";
     echo -e "\e[1;36m...installing ospd-openvas\e[0m";
     # Install from repo
-    echo -e "\e[1;36m...installing ospd-openvas requirements\e[0m";
-    su gvm -c "source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==$OSPDOPENVAS --force-reinstall --use-pep517";
+    echo -e "\e[1;36m...installing ospd-openvas workaround\e[0m";
+    su gvm -c "source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==$OSPDOPENVASOLD --use-pep517";
+    su gvm -c "source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==$OSPDOPENVAS --upgrade --use-pep517";
     #cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     #cd ospd-openvas > /dev/null 2>&1;
     #su gvm -c 'source ~/gvmpy/bin/activate;python3 -m pip install .' > /dev/null 2>&1;
@@ -548,9 +549,9 @@ install_greenbone_feed_sync() {
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # install from source
     echo -e "\e[1;36m...installing greenbone-feed-sync\e[0m";
-    cd greenbone-feed-sync > /dev/null 2>&1;
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
-#    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install greenbone-feed-sync' > /dev/null 2>&1;
+    #cd greenbone-feed-sync > /dev/null 2>&1;
+    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install greenbone-feed-sync==$FEEDSYNC" > /dev/null 2>&1;
     /usr/bin/logger 'install_greenbone_feed_sync() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32minstall_greenbone_feed_sync() finished\e[0m";
 }
@@ -662,10 +663,9 @@ install_gvm_tools() {
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     echo -e "\e[1;36m...installing GVM-tools\e[0m";
     # From Python PyPi Repo
-    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install gvm-tools';
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install gvm-tools==$GVMTOOLS";
     # From downloaded sources
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
-#    python3 -m pip install . > /dev/null 2>&1;
+    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
 #    /usr/poetry/bin/poetry install > /dev/null 2>&1;
     # Increase default timeouts from 60 secs to 600 secs
     export PY_VERSION="$(ls /opt/gvm/gvmpy/lib/)"
@@ -679,7 +679,7 @@ install_impacket() {
     /usr/bin/logger 'install_impacket' -t 'gce-23.1.0';
     echo -e "\e[1;32minstall_impacket() \e[0m";
     # Install impacket
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install impacket' > /dev/null 2>&1;
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install impacket==$IMPACKET" > /dev/null 2>&1;
     echo -e "\e[1;32minstall_impacket() finished\e[0m";
     /usr/bin/logger 'install_impacket finished' -t 'gce-23.1.0';
 }
