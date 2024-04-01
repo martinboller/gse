@@ -468,6 +468,9 @@ install_ospd_openvas() {
     # Install from repo
     #su gvm -c 'source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas';
     # install from downloaded source
+    echo -e "\e[1;36m...installing ospd-openvas requirements\e[0m";
+    # Temporary workaround for 22.7.0 not installing without install earlier version first
+    su gvm -c 'source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==22.6.1';
     echo -e "\e[1;36m...installing ospd-openvas\e[0m";
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     cd ospd-openvas > /dev/null 2>&1;
