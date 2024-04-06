@@ -83,7 +83,7 @@ install_prerequisites() {
             apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
-                xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
+                python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                     python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
             echo -e "\e[1;36m...installing yarn\e[0m";
             npm install -g yarn --force > /dev/null 2>&1;
@@ -105,7 +105,7 @@ install_prerequisites() {
             apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
-                xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
+                python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                     python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy cmdtest npm > /dev/null 2>&1;
             echo -e "\e[1;36m...installing yarn\e[0m";
             npm install -g yarn --force > /dev/null 2>&1;
@@ -123,7 +123,7 @@ install_prerequisites() {
             apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
-                xml-twig-tools python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
+                python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                 python3-defusedxml python3-pip python3-psutil virtualenv python-impacket python-scapy > /dev/null 2>&1;
             echo -e "\e[1;36m...installing yarn\e[0m";
             npm install -g yarn --force > /dev/null 2>&1;
@@ -1647,7 +1647,10 @@ configure_maxrows() {
 
     /usr/bin/logger 'configure_maxrows() finished' -t 'gce-23.1.0';
     echo -e "\e[1;32mconfigure_maxrows() finished\e[0m";
-    
+}
+
+send_mail() {
+    (echo "To: $MAIL_ADDRESS";    echo "Reply-To: $MAIL_ADDRESS";   echo "Subject: Installed GVM on $(hostname -f)";    echo "";    echo "Server: $(hostname -f) \n Running: $gvmd") | sendmail $RCPT_TO
 }
 
 ##################################################################################################################
@@ -1762,6 +1765,9 @@ main() {
     #clean_env;
     remove_vagrant_nic;
     remove_vagrant_user;
+    if [ "$INSTALL_MAIL_SERVER" == "Yes" ]; then
+        send_mail;
+    fi
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gce-23.1.0';
     echo -e;
     echo -e "\e[1;32mInstallation complete - will reboot in 30 seconds\e[0m";
