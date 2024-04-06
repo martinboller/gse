@@ -257,9 +257,9 @@ install_libxml2() {
     /usr/bin/logger '..autogen libxml2' -t 'gce-23.1.0';
     echo -e "\e[1;36m...autogen libxml2()\e[0m";
     ./autogen.sh > /dev/null 2>&1;
-    /usr/bin/logger '..make libxml2' -t 'gce-23.1.0';
-    echo -e "\e[1;36m...make libxml2()\e[0m";
-    make > /dev/null 2>&1;
+    # /usr/bin/logger '..make libxml2' -t 'gce-23.1.0';
+    # echo -e "\e[1;36m...make libxml2()\e[0m";
+    # make > /dev/null 2>&1;
     /usr/bin/logger '..make install libxml2' -t 'gce-23.1.0';
     echo -e "\e[1;36m...make install libxml2()\e[0m";
     make install > /dev/null 2>&1;
@@ -278,9 +278,9 @@ install_gvm_libs() {
     /usr/bin/logger '..cmake Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
     echo -e "\e[1;36m...cmake Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
-    /usr/bin/logger '..make Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
-    echo -e "\e[1;36m...make Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
-    make > /dev/null 2>&1;
+    # /usr/bin/logger '..make Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
+    # echo -e "\e[1;36m...make Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
+    # make > /dev/null 2>&1;
     #make doc-full > /dev/null 2>&1;
     /usr/bin/logger '..make install Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
     echo -e "\e[1;36m...make install Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
@@ -312,9 +312,9 @@ install_openvas_smb() {
     /usr/bin/logger '..cmake OpenVAS SMB' -t 'gce-23.1.0';
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
-    /usr/bin/logger '..make OpenVAS SMB' -t 'gce-23.1.0';
-    echo -e "\e[1;36m...make OpenVAS SMB\e[0m";
-    make > /dev/null 2>&1;                
+    # /usr/bin/logger '..make OpenVAS SMB' -t 'gce-23.1.0';
+    # echo -e "\e[1;36m...make OpenVAS SMB\e[0m";
+    # make > /dev/null 2>&1;                
     /usr/bin/logger '..make install OpenVAS SMB' -t 'gce-23.1.0';
     echo -e "\e[1;36m...make install OpenVAS SMB\e[0m";
     make install > /dev/null 2>&1;
@@ -355,9 +355,9 @@ install_openvas() {
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
     /usr/bin/logger '..make OpenVAS Scanner' -t 'gce-23.1.0';
-    echo -e "\e[1;36m...make OpenVAS Scanner\e[0m";
-    # make it
-    make > /dev/null 2>&1;
+    # echo -e "\e[1;36m...make OpenVAS Scanner\e[0m";
+    # # make it
+    # make > /dev/null 2>&1;
     # build more developer-oriented documentation
     #make doc-full > /dev/null 2>&1; 
     /usr/bin/logger '..make install OpenVAS Scanner' -t 'gce-23.1.0';

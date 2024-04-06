@@ -329,9 +329,9 @@ install_libxml2() {
     /usr/bin/logger '..autogen libxml2' -t 'gce-23.1.0';
     echo -e "\e[1;36m...autogen libxml2()\e[0m";
     ./autogen.sh
-    /usr/bin/logger '..make libxml2' -t 'gce-23.1.0';
-    echo -e "\e[1;36m...make libxml2()\e[0m";
-    make;
+    # /usr/bin/logger '..make libxml2' -t 'gce-23.1.0';
+    # echo -e "\e[1;36m...make libxml2()\e[0m";
+    # make;
     /usr/bin/logger '..make install libxml2' -t 'gce-23.1.0';
     echo -e "\e[1;36m...make install libxml2()\e[0m";
     make install;
@@ -359,9 +359,9 @@ install_pggvm() {
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     echo -e "\e[1;36m...cmake pg-gvm PostgreSQL server extension\e[0m";
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
-    /usr/bin/logger '..make pg-gvm PostgreSQL server extension' -t 'gce-23.1.0';
-    echo -e "\e[1;36m...make pg-gvm PostgreSQL server extension\e[0m";
-    make > /dev/null 2>&1;
+    #/usr/bin/logger '..make pg-gvm PostgreSQL server extension' -t 'gce-23.1.0';
+    #echo -e "\e[1;36m...make pg-gvm PostgreSQL server extension\e[0m";
+    #make > /dev/null 2>&1;
     #/usr/bin/logger '..make pg-gvm libraries Documentation' -t 'gce-23.1.0';
     #make doc-full;
     /usr/bin/logger '..make install pg-gvm PostgreSQL server extension' -t 'gce-23.1.0';
@@ -400,9 +400,9 @@ install_gvm_libs() {
     /usr/bin/logger '..cmake Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
     echo -e "\e[1;36m...cmake Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
-    /usr/bin/logger '..make Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
-    echo -e "\e[1;36m...make Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
-    make > /dev/null 2>&1;
+    # /usr/bin/logger '..make Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
+    # echo -e "\e[1;36m...make Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
+    # make > /dev/null 2>&1;
     #/usr/bin/logger '..make gvm libraries Documentation' -t 'gce-23.1.0';
     #make doc-full;
     /usr/bin/logger '..make install Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-23.1.0';
@@ -447,9 +447,9 @@ install_openvas_smb() {
     /usr/bin/logger '..cmake OpenVAS SMB' -t 'gce-23.1.0';
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
-    /usr/bin/logger '..make OpenVAS SMB' -t 'gce-23.1.0';
-    echo -e "\e[1;36m...make OpenVAS SMB\e[0m";
-    make > /dev/null 2>&1;                
+    # /usr/bin/logger '..make OpenVAS SMB' -t 'gce-23.1.0';
+    # echo -e "\e[1;36m...make OpenVAS SMB\e[0m";
+    # make > /dev/null 2>&1;                
     /usr/bin/logger '..make Openvas SMB Documentation' -t 'gce-23.1.0';
     #make doc-full;
     /usr/bin/logger '..make install OpenVAS SMB' -t 'gce-23.1.0';
@@ -494,9 +494,9 @@ install_openvas() {
     /usr/bin/logger '..make OpenVAS Scanner' -t 'gce-23.1.0';
     #/usr/bin/logger '..make Openvas Scanner Documentation' -t 'gce-23.1.0';
     #make doc-full;
-    echo -e "\e[1;36m...make OpenVAS Scanner\e[0m";
-    # make it
-    make > /dev/null 2>&1;
+    # echo -e "\e[1;36m...make OpenVAS Scanner\e[0m";
+    # # make it
+    # make > /dev/null 2>&1;
     # build more developer-oriented documentation
     #make doc-full > /dev/null 2>&1; 
     /usr/bin/logger '..make install OpenVAS Scanner' -t 'gce-23.1.0';
@@ -521,9 +521,9 @@ install_gvm() {
     echo -e "\e[1;36m...cmake Greenbone Vulnerability Manager (GVM)\e[0m";
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
-    /usr/bin/logger '..make GVM Daemon' -t 'gce-23.1.0';
-    echo -e "\e[1;36m...make Greenbone Vulnerability Manager (GVM)\e[0m";
-    make > /dev/null 2>&1;
+    # /usr/bin/logger '..make GVM Daemon' -t 'gce-23.1.0';
+    # echo -e "\e[1;36m...make Greenbone Vulnerability Manager (GVM)\e[0m";
+    # make > /dev/null 2>&1;
     #/usr/bin/logger '..make documentation for GVM Daemon' -t 'gce-23.1.0';
     #make doc-full;
     /usr/bin/logger '..make install GVM Daemon' -t 'gce-23.1.0';
@@ -602,9 +602,9 @@ install_gsad() {
     echo -e "\e[1;36m...cmake Greenbone Security Assistant Daemon (GSAD)\e[0m";
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
-    /usr/bin/logger '..make GSA Daemon' -t 'gce-23.1.0';
-    echo -e "\e[1;36m...make Greenbone Security Assistant Daemon (GSAD)\e[0m";
-    make > /dev/null 2>&1; # build the libraries
+    # /usr/bin/logger '..make GSA Daemon' -t 'gce-23.1.0';
+    # echo -e "\e[1;36m...make Greenbone Security Assistant Daemon (GSAD)\e[0m";
+    # make > /dev/null 2>&1; # build the libraries
     #/usr/bin/logger '..make documentation for GSA Daemon' -t 'gce-23.1.0';
     #make doc-full;       # build more developer-oriented documentation
     /usr/bin/logger '..make install GSA Daemon' -t 'gce-23.1.0';
@@ -720,6 +720,36 @@ __EOF__
 
     echo -e "\e[1;32mprepare_postgresql() finished\e[0m";
     /usr/bin/logger 'prepare_postgresql finished' -t 'gce-23.1.0';
+}
+
+tune_postgresql() {
+    /usr/bin/logger 'tune_postgresql()' -t 'gce-23.1.0';
+    echo -e "\e[1;32mtune_postgresql()\e[0m";
+
+    echo -e "\e[1;36m...Setting optimized postgres values";
+    ## These values are stored in /var/lib/postgresql/15/main/postgresql.auto.conf
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_connections = \"$pg_max_connections\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET shared_buffers = \"$pg_shared_buffers\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET effective_cache_size = \"$pg_effective_cache_size\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET maintenance_work_mem = \"$pg_maintenance_work_mem\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET checkpoint_completion_target = \"$pg_checkpoint_completion_target\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET wal_buffers = \"$pg_wal_buffers\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET default_statistics_target = \"$pg_default_statistics_target\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET random_page_cost = \"$pg_random_page_cost\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET effective_io_concurrency = \"$pg_effective_io_concurrency\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET work_mem = \"$pg_work_mem\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET huge_pages = \"$pg_huge_pages\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET min_wal_size = \"$pg_min_wal_size\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_wal_size = \"$pg_max_wal_size\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_worker_processes = \"$pg_max_worker_processes\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_parallel_workers_per_gather = \"$pg_max_parallel_workers_per_gather\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_parallel_workers = \"$pg_max_parallel_workers\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_parallel_maintenance_workers = \"$pg_max_parallel_maintenance_workers\"'";
+        
+    echo -e "\e[1;36m...Restarting PostgreSql";
+    systemctl restart postgresql.service;
+    /usr/bin/logger 'tune_postgresql() finished' -t 'gce-23.1.0';
+    echo -e "\e[1;32mtune_postgresql() finished\e[0m";
 }
 
 configure_openvas() {
@@ -1223,17 +1253,21 @@ prepare_db_maintenance() {
     /usr/bin/logger 'prepare_db_maintenance()' -t 'gce-23.1.0';
     ## Weekly maintenance
     cat << __EOF__ > /etc/cron.weekly/gvmd-maintenance
-su gvm -c '/opt/gvm/sbin/gvmd --optimize=vacuum' > /dev/null 2>&1;
-su gvm -c '/opt/gvm/sbin/gvmd --optimize=analyze' > /dev/null 2>&1;
-su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-result-nvts' > /dev/null 2>&1;
-su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-config-prefs' > /dev/null 2>&1;
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=analyze';
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-report-formats';
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-result-nvts';
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-config-prefs';
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-result-severities';
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=update-report-cache';
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=vacuum';
 # End of maintenance
 __EOF__
 
     ## Daily Maintenance
     cat << __EOF__  > /etc/cron.daily/gvmd-maintenance
-su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-result-severities' > /dev/null 2>&1;
-su gvm -c '/opt/gvm/sbin/gvmd --optimize=update-report-cache' > /dev/null 2>&1;
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=analyze';
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=cleanup-result-severities';
+su gvm -c '/opt/gvm/sbin/gvmd --optimize=update-report-cache';
 __EOF__
     chmod 755 /etc/cron.weekly/gvmd-maintenance
     chmod 755 /etc/cron.daily/gvmd-maintenance
@@ -1701,6 +1735,7 @@ main() {
     fi
     # Configuration of installed components
     prepare_postgresql;
+    tune_postgresql;
     configure_redis;
     configure_gvm;
     configure_openvas;
