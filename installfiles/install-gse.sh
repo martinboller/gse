@@ -29,13 +29,13 @@ install_prerequisites() {
     # Install prerequisites
     # Some APT gymnastics to ensure it is all cleaned up
     apt-get -qq update > /dev/null 2>&1;
-    apt-get -qq -y install --fix-broken > /dev/null 2>&1;
-    apt-get -qq -y install --fix-missing > /dev/null 2>&1;
+    #apt-get -qq -y install --fix-broken > /dev/null 2>&1;
+    #apt-get -qq -y install --fix-missing > /dev/null 2>&1;
     # Install some basic tools on a Debian net install
     echo -e "\e[1;36m...install tools not available if installed from Debian net-install\e[0m";
     /usr/bin/logger '..install some basic tools not available if installed from Debian net install' -t 'gce-23.1.0';
     echo -e "\e[1;36m...fix-policy for apt\e[0m";
-    apt-get -qq -y install --fix-policy > /dev/null 2>&1;
+    #apt-get -qq -y install --fix-policy > /dev/null 2>&1;
     echo -e "\e[1;36m...installing required packages\e[0m";
     apt-get -qq -y install adduser wget whois build-essential devscripts git unzip zip apt-transport-https ca-certificates \
         curl gnupg2 software-properties-common dnsutils libcurl4-openssl-dev dirmngr --install-recommends  > /dev/null 2>&1;
