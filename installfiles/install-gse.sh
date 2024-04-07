@@ -1411,7 +1411,7 @@ configure_nginx() {
     /usr/bin/logger 'configure_nginx()' -t 'gce-23.1.0';
     echo -e "\e[1;32mconfigure_nginx()\e[0m";
     echo -e "\e[1;36m...configuring diffie hellman parameters file\e[0m";
-    openssl dhparam -out /etc/nginx/dhparam.pem 2048 > /dev/null 2>&1;
+    openssl dhparam -out /etc/nginx/dhparam.pem 2048 & > /dev/null 2>&1;
     # TLS
     echo -e "\e[1;36m...configuring site\e[0m";
     cat << __EOF__ > /etc/nginx/sites-available/default;
