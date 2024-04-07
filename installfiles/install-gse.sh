@@ -379,7 +379,7 @@ install_notus() {
     cd notus/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
     echo -e "\e[1;36m...Install paho mqtt pypi package version 1.6.1\e[0m";
-    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install paho-mqtt==$PAHOMQTT"
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install paho-mqtt==$PAHOMQTT" > /dev/null 2>&1;
     echo -e "\e[1;36m...Install notus scanner Python pip module (notus-scanner) \e[0m";
     # From Python PyPi
     su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner==$NOTUS" > /dev/null 2>&1; 
@@ -420,7 +420,7 @@ install_python_gvm() {
     echo -e "\e[1;32minstall_python_gvm()\e[0m";
     # Installing from repo
     echo -e "\e[1;36m...installing python-gvm\e[0m";
-    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install python-gvm==$PYTHONGVM --use-pep517";
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install python-gvm==$PYTHONGVM --use-pep517" > /dev/null 2>&1;
     #cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     #cd python-gvm/ > /dev/null 2>&1;
     #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
@@ -468,8 +468,8 @@ install_ospd_openvas() {
     echo -e "\e[1;36m...installing ospd-openvas\e[0m";
     # Install from repo
     echo -e "\e[1;36m...installing ospd-openvas workaround\e[0m";
-    su gvm -c "source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==$OSPDOPENVASOLD --use-pep517";
-    su gvm -c "source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==$OSPDOPENVAS --upgrade --use-pep517";
+    su gvm -c "source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==$OSPDOPENVASOLD --use-pep517" > /dev/null 2>&1;
+    su gvm -c "source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==$OSPDOPENVAS --upgrade --use-pep517" > /dev/null 2>&1;
     #cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     #cd ospd-openvas > /dev/null 2>&1;
     #su gvm -c 'source ~/gvmpy/bin/activate;python3 -m pip install .' > /dev/null 2>&1;
@@ -585,7 +585,7 @@ update_feed_data() {
     ## This relies on the configure_greenbone_updates script
     echo -e "\e[1;36m...updating feed data\e[0m";
     echo -e "\e[1;36m...This may take a few minutes, please wait...\e[0m";
-    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm;
+    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm > /dev/null 2>&1;
     echo -e "\e[1;32mupdate_feed_data() finished\e[0m";
     /usr/bin/logger 'update_feed_data finished' -t 'gce-23.1.0';
 }
@@ -704,19 +704,19 @@ prepare_postgresql() {
     su postgres -c 'createdb -O gvm gvmd;'
     # Setup permissions.
     echo -e "\e[1;36m...setting postgres permissions";
-    su postgres -c "psql gvmd -c 'create role dba with superuser noinherit;'"
-    su postgres -c "psql gvmd -c 'grant dba to gvm;'"
-    su postgres -c "psql gvmd -c 'grant dba to root;'"
+    su postgres -c "psql gvmd -c 'create role dba with superuser noinherit;'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'grant dba to gvm;'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'grant dba to root;'" > /dev/null 2>&1;
     #   Create DB extensions (also necessary when the database got dropped).
     echo -e "\e[1;36m...create postgres extensions";
-    su postgres -c 'psql gvmd -c "create extension \"uuid-ossp\";"'
-    su postgres -c 'psql gvmd -c "create extension \"pgcrypto\";"'
-    su postgres -c 'psql gvmd -c "create extension \"pg-gvm\";"'
-    export PGSQL_VERSION="$(ls /etc/postgresql/)"
+    su postgres -c 'psql gvmd -c "create extension \"uuid-ossp\";"' > /dev/null 2>&1;
+    su postgres -c 'psql gvmd -c "create extension \"pgcrypto\";"' > /dev/null 2>&1;
+    su postgres -c 'psql gvmd -c "create extension \"pg-gvm\";"' > /dev/null 2>&1;
+    export PGSQL_VERSION="$(ls /etc/postgresql/)" > /dev/null 2>&1;
     # Disable JIT for postgresql
         cat << __EOF__ > /etc/postgresql/$PGSQL_VERSION/main/conf.d/99-nojit.conf
 jit = off    
-__EOF__
+1__EOF__
 
     echo -e "\e[1;32mprepare_postgresql() finished\e[0m";
     /usr/bin/logger 'prepare_postgresql finished' -t 'gce-23.1.0';
@@ -728,23 +728,23 @@ tune_postgresql() {
 
     echo -e "\e[1;36m...Setting optimized postgres values";
     ## These values are stored in /var/lib/postgresql/15/main/postgresql.auto.conf
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_connections = \"$pg_max_connections\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET shared_buffers = \"$pg_shared_buffers\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET effective_cache_size = \"$pg_effective_cache_size\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET maintenance_work_mem = \"$pg_maintenance_work_mem\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET checkpoint_completion_target = \"$pg_checkpoint_completion_target\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET wal_buffers = \"$pg_wal_buffers\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET default_statistics_target = \"$pg_default_statistics_target\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET random_page_cost = \"$pg_random_page_cost\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET effective_io_concurrency = \"$pg_effective_io_concurrency\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET work_mem = \"$pg_work_mem\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET huge_pages = \"$pg_huge_pages\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET min_wal_size = \"$pg_min_wal_size\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_wal_size = \"$pg_max_wal_size\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_worker_processes = \"$pg_max_worker_processes\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_parallel_workers_per_gather = \"$pg_max_parallel_workers_per_gather\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_parallel_workers = \"$pg_max_parallel_workers\"'";
-    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_parallel_maintenance_workers = \"$pg_max_parallel_maintenance_workers\"'";
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_connections = \"$pg_max_connections\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET shared_buffers = \"$pg_shared_buffers\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET effective_cache_size = \"$pg_effective_cache_size\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET maintenance_work_mem = \"$pg_maintenance_work_mem\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET checkpoint_completion_target = \"$pg_checkpoint_completion_target\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET wal_buffers = \"$pg_wal_buffers\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET default_statistics_target = \"$pg_default_statistics_target\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET random_page_cost = \"$pg_random_page_cost\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET effective_io_concurrency = \"$pg_effective_io_concurrency\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET work_mem = \"$pg_work_mem\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET huge_pages = \"$pg_huge_pages\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET min_wal_size = \"$pg_min_wal_size\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_wal_size = \"$pg_max_wal_size\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_worker_processes = \"$pg_max_worker_processes\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_parallel_workers_per_gather = \"$pg_max_parallel_workers_per_gather\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_parallel_workers = \"$pg_max_parallel_workers\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_parallel_maintenance_workers = \"$pg_max_parallel_maintenance_workers\"'" > /dev/null 2>&1;
         
     echo -e "\e[1;36m...Restarting PostgreSql";
     systemctl restart postgresql.service;
