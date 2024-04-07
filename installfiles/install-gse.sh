@@ -716,7 +716,7 @@ prepare_postgresql() {
     # Disable JIT for postgresql
         cat << __EOF__ > /etc/postgresql/$PGSQL_VERSION/main/conf.d/99-nojit.conf
 jit = off    
-1__EOF__
+__EOF__
 
     echo -e "\e[1;32mprepare_postgresql() finished\e[0m";
     /usr/bin/logger 'prepare_postgresql finished' -t 'gce-23.1.0';
