@@ -1655,8 +1655,8 @@ send_mail() {
 
     echo -e "\e[1;32m...configuring Recipient and sender mail-addresses\e[0m";
     cat << __EOF__ > /etc/profile.d/gvmmail.sh
-export RCPT_TO=$RCPT_TO
-export MAIL_ADDRESS=$MAIL_ADDRESS 
+export RCPT_TO="$RCPT_TO"
+export MAIL_ADDRESS="$MAIL_ADDRESS" 
 __EOF__
     sync
     echo -e "\e[1;32m...Sending mail\e[0m";
