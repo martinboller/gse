@@ -420,10 +420,10 @@ install_python_gvm() {
     echo -e "\e[1;32minstall_python_gvm()\e[0m";
     # Installing from repo
     echo -e "\e[1;36m...installing python-gvm\e[0m";
-    su gvm -c "source ~/gvmpy/bin/activate; /usr/bin/python3 -m pip install python-gvm==$PYTHONGVM";
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install python-gvm==$PYTHONGVM --use-pep517";
     #cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     #cd python-gvm/ > /dev/null 2>&1;
-    #su gvm -c 'source ~/gvmpy/bin/activate; /usr/bin/python3 -m pip install .' > /dev/null 2>&1;
+    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
     #/usr/poetry/bin/poetry install;
     echo -e "\e[1;32minstall_python_gvm() finished\e[0m";
     /usr/bin/logger 'install_python_gvm finished' -t 'gce-23.1.0';

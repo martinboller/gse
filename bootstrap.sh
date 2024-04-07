@@ -56,10 +56,10 @@ gce_bootstrap_prerequisites() {
   sync > /dev/null 2>&1;
   echo -e "\e[36m ... cleaning up apt\e[0m";
   #apt-get -qq -y install --fix-policy > /dev/null 2>&1;
-  apt-get -qq update > /dev/null 2>&1;
-  apt-get -qq -y full-upgrade > /dev/null 2>&1
-  apt-get -qq -y --purge autoremove > /dev/null 2>&1
-  apt-get -qq autoclean > /dev/null 2>&1
+  #apt-get -qq update > /dev/null 2>&1;
+  #apt-get -qq -y full-upgrade > /dev/null 2>&1
+  #apt-get -qq -y --purge autoremove > /dev/null 2>&1
+  #apt-get -qq autoclean > /dev/null 2>&1
   sync > /dev/null 2>&1
 #  apt-get -y --fix-broken install > /dev/null 2>&1;
 #  apt-get -y --fix-missing install > /dev/null 2>&1;
