@@ -512,7 +512,7 @@ install_openvas() {
 }
 
 install_gvm() {
-    /usr/bin/logger 'install_gvm' -t 'gce-23.1.0';
+    /usr/bin/logger 'install_gvm()' -t 'gce-23.1.0';
     echo -e "\e[1;32minstall_gvm()\e[0m";
     cd /opt/gvm/src/greenbone;
     # Build Manager
@@ -531,7 +531,7 @@ install_gvm() {
     make install > /dev/null 2>&1;
     sync;
     echo -e "\e[1;32minstall_gvm() finished\e[0m";
-    /usr/bin/logger 'install_gvm finished' -t 'gce-23.1.0';
+    /usr/bin/logger 'install_gvm() finished' -t 'gce-23.1.0';
 }
 
 install_nmap() {
