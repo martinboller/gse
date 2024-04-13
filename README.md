@@ -55,7 +55,7 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ### Install on Debian 11 or 12 directly (not needed when using Vagrant)
 
-1. Modify the .env file to match your environment (especially if you need to send mail), however you may want to personalize it.
+1. Modify the .env file to match your environment (especially if you need to send mail), however you may want to personalize it even further.
 
 2. To install a primary, run: *export DEBIAN_FRONTEND=noninteractive; apt update ; apt -y full-upgrade ; apt -y install git; git clone https://github.com/martinboller/gse.git; cd gse/installfiles/; chmod 755 \*.sh; ./install-gse.sh*
 
@@ -70,6 +70,9 @@ Node.js for Debian 12 | Debian Repo | 18.x
 ----
 
 ## Latest changes
+### 2024-04-13 - Additional settings in .env
+- sysctl and grub settings in .env file
+
 ### 2024-03-28 - Updated component
 - gvmd version 23.5.2 ← Rolled back to 23.5.1 as 23.5.2 does not seem to communicate correctly with ospd-openvas
 
