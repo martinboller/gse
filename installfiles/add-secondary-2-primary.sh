@@ -85,7 +85,7 @@ show_scanner_status() {
         # Disable greenboneuser on secondary
         echo -e "\e[1;32mdisabling user $GREENBONEUSER on secondary $SECHOST\e[0m";
         sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" $GREENBONEUSER@$SECHOST "su - gvm -c '/opt/gvm/sbin/openvas --update-vt-info'"
-        sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" $GREENBONEUSER@$SECHOST "sudo passwd --lock $GREENBONEUSER"
+        sshpass -p $SECPASSWORD ssh -o "StrictHostKeyChecking no" $GREENBONEUSER@$SECHOST "passwd --lock $GREENBONEUSER"
     else
         echo -e "\e[1;31m ... Error: Secondary scanner $SECHOST UUID: $SCANNER_ID verified, please correct any errors and, \e[0m" 
         echo -e "\e[1;31m ... try re-adding scanner $SECHOST\e[0m"
