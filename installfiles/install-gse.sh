@@ -1712,7 +1712,7 @@ main() {
     # Create wrapper to start services with config files
     create_wrapper;
     # Install everything needed for Greenbone Community Edition
-    install_impacket;
+    #install_impacket;
     install_gvm_libs;
     # Temporary Workaround updating Libxml to newer version from source until Greenbone update to use Fix: Parse XML with XML_PARSE_HUGE
     #install_libxml2;
