@@ -38,7 +38,7 @@ install_prerequisites() {
     #apt-get -qq -y install --fix-policy > /dev/null 2>&1;
     echo -e "\e[1;36m...installing required packages\e[0m";
     apt-get -qq -y install adduser wget whois build-essential devscripts git unzip zip apt-transport-https ca-certificates \
-        curl gnupg2 software-properties-common dnsutils libcurl4-openssl-dev dirmngr --install-recommends  > /dev/null 2>&1;
+        curl gnupg2 software-properties-common dnsutils libcurl4-gnutls-dev dirmngr --install-recommends  > /dev/null 2>&1;
 
     # For development (unit tests)
     #apt-get -qq -y install libcgreen1 > /dev/null 2>&1;
@@ -1756,7 +1756,7 @@ main() {
     configure_greenbone_updates;
     configure_permissions;
     update_feed_data;
-    update_openvas_feed;
+    #update_openvas_feed;
     start_services;
     configure_feed_owner;
     configure_maxrows;

@@ -1030,7 +1030,7 @@ main() {
     configure_greenbone_updates;
     configure_permissions;
     update_feed_data;
-    update_openvas_feed;
+    #update_openvas_feed;
     start_services;
     create_scan_user;
     clean_env;
