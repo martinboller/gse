@@ -32,10 +32,10 @@ Note: Due to the ugly hack made removing the Vagrant NIC uses (it gave me a lot 
 Versions used:
 Name | URL | Version
 ---|---|---
-gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.9.0
-ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.7.0
+gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.9.1
+ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.7.1
 openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.0.1
-GVM Daemon | https://github.com/greenbone/gvmd/ | 23.5.1
+GVM Daemon | https://github.com/greenbone/gvmd/ | 23.6.0
 GSA Daemon | https://github.com/greenbone/gsad/ | 22.9.1
 GSA | https://github.com/greenbone/gsa/ | 23.0.0
 openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.6
@@ -70,6 +70,9 @@ Node.js for Debian 12 | Debian Repo | 18.x
 ----
 
 ## Latest changes
+### 2024-04-25 - Latest GCE versions
+- gvmd 23.6.0, gvm-libs 22.9.1, and ospd-openvas 22.7.1.
+
 ### 2024-04-13 - Additional settings in .env
 - sysctl and grub settings in .env file
 

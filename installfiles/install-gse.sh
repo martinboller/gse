@@ -1646,7 +1646,7 @@ export MAIL_ADDRESS="$MAIL_ADDRESS"
 __EOF__
     sync
     echo -e "\e[1;32m...Sending mail\e[0m";
-    (echo "To: $MAIL_ADDRESS"; echo "Reply-To: $MAIL_ADDRESS"; echo "Subject: Installed Greenbone Vulnerability Manager on $(hostname -f)"; echo ""; echo -e "Server: $(hostname -f) \n Running: \n OSPD-OpenVAS=$OSPDOPENVAS \n OpenVAS=$OPENVAS \n GVM-Daemon=$GVMD \n GSA-Daemon=$GSA \n GSA=$GSA \n OpenVAS-SMB=$OPENVASSMB \n Python-GVM=$PYTHONGVM \n GVM-Tools=$GVMTOOLS \n pg-gvm=$POSTGREGVM \n Notus-scanner=$NOTUS \n greenbone-feed-sync=$FEEDSYNC") | sendmail $RCPT_TO
+    (echo "To: $MAIL_ADDRESS"; echo "Reply-To: $MAIL_ADDRESS"; echo "Subject: Installed Greenbone Vulnerability Manager on $(hostname -f)"; echo ""; echo -e "Server: $(hostname -f) \n Running: \n OSPD-OpenVAS=$OSPDOPENVAS \n OpenVAS=$OPENVAS \n GVM-Daemon=$GVMD \n GSA-Daemon=$GSA \n GSA=$GSA \n OpenVAS-SMB=$OPENVASSMB \n Python-GVM=$PYTHONGVM \n GVM-Tools=$GVMTOOLS \n pg-gvm=$POSTGREGVM \n Notus-scanner=$NOTUS \n greenbone-feed-sync=$FEEDSYNC \n on $PRETTY_NAME") | sendmail $RCPT_TO
 
     /usr/bin/logger 'send_mail()' -t 'gce-2024-04-14';
     echo -e "\e[1;32msend_mail()\e[0m";
