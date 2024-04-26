@@ -70,14 +70,18 @@ Node.js for Debian 12 | Debian Repo | 18.x
 ----
 
 ## Latest changes
-### 2024-04-25 - Latest GCE versions
+### 2024-04-26 - Latest GCE versions
 - gvmd 23.6.0, gvm-libs 22.9.1, and ospd-openvas 22.7.1.
+- No need to install older ospd-openvas then upgrade, so removed.
 
 ### 2024-04-13 - Additional settings in .env
 - sysctl and grub settings in .env file
 
 ### 2024-03-28 - Updated component
-- gvmd version 23.5.2 ← Rolled back to 23.5.1 as 23.5.2 does not seem to communicate correctly with ospd-openvas
+- gvmd version 23.5.2 ← Rolled back to 23.5.1 as 23.5.2 does not seem to communicate correctly with ospd-openvas²
+
+² Turned out to be a badly configured alert that broke scanning. The alert triggered and an e-mail was sent, however GVMD never requested
+ospd-openvas to scan.
 
 ### 2024-03-17 - Updated component
 - ospd-openvas version 22.7.0
