@@ -439,7 +439,7 @@ update_feed_data() {
     ## This relies on the configure_greenbone_updates script
     echo -e "\e[1;36m...updating feed data\e[0m";
     echo -e "\e[1;36m...this could take a while\e[0m";
-    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type nvt --user gvm --group gvm > /dev/null 2>&1;
+    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type nvt --config /etc/ospd/greenbone-feed-sync.toml > /dev/null 2>&1;
     echo -e "\e[1;32mupdate_feed_data() finished\e[0m";
     /usr/bin/logger 'update_feed_data finished' -t 'gce-2024-04-14';
 }
@@ -630,8 +630,8 @@ configure_greenbone_updates() {
     echo -e "\e[1;32mconfigure_greenbone_updates() \e[0m";
    # Configure daily GVM updates timer and service
     # Timer
-    echo -e "\e[1;36m...create gse-update timer\e[0m";
-    cat << __EOF__ > /lib/systemd/system/gse-update.timer
+    echo -e "\e[1;36m...create gce-update timer\e[0m";
+    cat << __EOF__ > /lib/systemd/system/gce-update.timer
 [Unit]
 Description=Daily job to update nvt feed
 
@@ -642,29 +642,44 @@ OnBootSec=37min
 OnCalendar=*-*-* 18:00:00
 RandomizedDelaySec=7200
 # Specify service
-Unit=gse-update.service
+Unit=gce-update.service
 
 [Install]
 WantedBy=multi-user.target
 __EOF__
 
-    ## Create gse-update.service
-    echo -e "\e[1;36m...create gse-update service\e[0m";
-    cat << __EOF__ > /lib/systemd/system/gse-update.service
+    ## Create gce-update.service
+    echo -e "\e[1;36m...create gce-update service\e[0m";
+    cat << __EOF__ > /lib/systemd/system/gce-update.service
 [Unit]
 Description=gse updater
 After=network.target networking.service
 Documentation=man:gvmd(8)
 
 [Service]
-ExecStart=/opt/gvm/gvmpy/bin/greenbone-feed-sync --type nvt --user gvm --group gvm --openvas-lock-file /run/gvm/feed-update.lock
+ExecStart=/opt/gvm/gvmpy/bin/greenbone-feed-sync --type $feedtypescanner --config /etc/ospd/greenbone-feed-sync.toml
 TimeoutSec=300
 
 [Install]
 WantedBy=multi-user.target
 __EOF__
+
+    cat << __EOF__ > /etc/ospd/greenbone-feed-sync.toml
+[greenbone-feed-sync]
+gvmd-lock-file = "$gvmdlockfile"
+openvas-lock-file = "$gvmdlockfile"
+user = "$feeduser"
+group = "$feedgroup"
+__EOF__
+
+    if [ "ALTERNATIVE_FEED"="Yes" ];
+    then
+        cat << __EOF__ >> /etc/ospd/greenbone-feed-sync.toml
+feed-url = "$FEED_URL"
+__EOF__
+    fi
     sync;
-    chmod +x /opt/gvm/gse-updater/gse-updater.sh > /dev/null 2>&1;
+    chmod +x /opt/gvm/gce-updater/gce-updater.sh > /dev/null 2>&1;
     echo -e "\e[1;32mconfigure_greenbone_updates() finished\e[0m";
     /usr/bin/logger 'configure_greenbone_updates finished' -t 'gce-2024-04-14';
 }   
@@ -689,14 +704,14 @@ start_services() {
     # Start notus-scanner
     echo -e "\e[1;36m...restarting ospd-openvas service\e[0m";
     systemctl restart notus-scanner.service > /dev/null 2>&1;
-    # Enable gse-update timer and service
-    echo -e "\e[1;36m...enabling gse-update timer and service\e[0m";
-    systemctl enable gse-update.timer > /dev/null 2>&1;
-    systemctl enable gse-update.service > /dev/null 2>&1;
+    # Enable gce-update timer and service
+    echo -e "\e[1;36m...enabling gce-update timer and service\e[0m";
+    systemctl enable gce-update.timer > /dev/null 2>&1;
+    systemctl enable gce-update.service > /dev/null 2>&1;
     # Will start after next reboot - may disturb the initial update
-    echo -e "\e[1;36m...starting gse-update timer\e[0m";
-    systemctl start gse-update.timer > /dev/null 2>&1;
-    # Check status of critical service ospd-openvas.service and gse-update
+    echo -e "\e[1;36m...starting gce-update timer\e[0m";
+    systemctl start gce-update.timer > /dev/null 2>&1;
+    # Check status of critical service ospd-openvas.service and gce-update
     echo -e
     echo 'Checking core daemons.....';
     if systemctl is-active --quiet notus-scanner.service;
@@ -708,13 +723,13 @@ start_services() {
         /usr/bin/logger 'notus-scanner.service FAILED!\e[0m' -t 'gce-2024-04-14';
     fi
 
-    if systemctl is-active --quiet gse-update.timer;
+    if systemctl is-active --quiet gce-update.timer;
     then
-        echo 'gse-update.timer started successfully';
-        /usr/bin/logger 'gse-update.timer started successfully' -t 'gce-2024-04-14';
+        echo 'gce-update.timer started successfully';
+        /usr/bin/logger 'gce-update.timer started successfully' -t 'gce-2024-04-14';
     else
-        echo 'gse-update.timer FAILED! Updates will not be automated';
-        /usr/bin/logger 'gse-update.timer FAILED! Updates will not be automated' -t 'gce-2024-04-14';
+        echo 'gce-update.timer FAILED! Updates will not be automated';
+        /usr/bin/logger 'gce-update.timer FAILED! Updates will not be automated' -t 'gce-2024-04-14';
     fi
     echo -e "\e[1;32m ... start:services() finished\e[0m";
     /usr/bin/logger 'start_services finished' -t 'gce-2024-04-14';
@@ -968,6 +983,55 @@ __EOF__
     echo -e "\e[1;32mcreate_openvas_version_script() finished\e[0m";
 }
 
+create_wrapper() {
+    echo -e "\e[1;32mcreate_wrapper()\e[0m";
+    /usr/bin/logger 'create_wrapper' -t 'gce-2024-04-14';
+    cat << __EOF__ > /usr/bin/wrapper
+#!/usr/bin/env python3
+
+import argparse
+import os
+
+def read_config_file(config):
+    parameters = []
+    if not config:
+        return parameters
+    if not os.path.exists(config):
+        return parameters
+    with open(config, "r") as configfile:
+        for line in configfile:
+            line = line.strip()
+            if line.startswith("#") or not line:
+                continue
+            parameters.append(line)
+    return parameters
+
+def run_command(command, parameters, prefix=[]):
+    command_line = prefix + [command] + parameters
+    os.execv(command_line[0], command_line)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("command", help="Path to executable")
+    parser.add_argument(
+        "config",
+        help="Path to configuration file"
+    )
+    parser.add_argument(
+        "--prefix",
+        help="Path to configuration file containing the prefix"
+    )
+    args = parser.parse_args()
+    prefix = read_config_file(args.prefix)
+    parameters = read_config_file(args.config)
+    run_command(args.command, parameters, prefix)
+__EOF__
+    sync;
+    chmod 755 /usr/bin/wrapper > /dev/null 2>&1;
+    echo -e "\e[1;32mcreate_wrapper() finished\e[0m";
+    /usr/bin/logger 'create_wrapper finished' -t 'gce-2024-04-14';
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -1005,7 +1069,8 @@ main() {
     prepare_nix;
     prepare_source;
     prepare_gvmpy;
-    
+    create_wrapper;
+
     # Installation of specific components
     # Only install poetry when testing
     #install_poetry;

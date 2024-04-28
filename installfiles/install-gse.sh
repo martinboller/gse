@@ -569,7 +569,7 @@ update_feed_data() {
     ## This relies on the configure_greenbone_updates script
     echo -e "\e[1;36m...updating feed data\e[0m";
     echo -e "\e[1;36m...This may take a few minutes, please wait...\e[0m";
-    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm > /dev/null 2>&1;
+    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --config /etc/ospd/greenbone-feed-sync.toml > /dev/null 2>&1;
     echo -e "\e[1;32mupdate_feed_data() finished\e[0m";
     /usr/bin/logger 'update_feed_data finished' -t 'gce-2024-04-14';
 }
@@ -1027,10 +1027,10 @@ configure_greenbone_updates() {
     echo -e "\e[1;32mconfigure_greenbone_updates() \e[0m";
     # Configure daily GVM updates timer and service using the new grenbone-update-sync python code
     # Timer
-    echo -e "\e[1;36m...create gse-update timer\e[0m";
-    cat << __EOF__ > /lib/systemd/system/gse-update.timer
+    echo -e "\e[1;36m...create gce-update timer\e[0m";
+    cat << __EOF__ > /lib/systemd/system/gce-update.timer
 [Unit]
-Description=Daily job to update nvt feed
+Description=Daily job to update vulnerability feeds
 
 [Timer]
 # Do not run for the first 37 minutes after boot
@@ -1039,27 +1039,42 @@ OnBootSec=37min
 OnCalendar=*-*-* 18:00:00
 RandomizedDelaySec=7200
 # Specify service
-Unit=gse-update.service
+Unit=gce-update.service
 
 [Install]
 WantedBy=multi-user.target
 __EOF__
 
-    ## Create gse-update.service
-    echo -e "\e[1;36m...create gse-update service\e[0m";
-    cat << __EOF__ > /lib/systemd/system/gse-update.service
+    ## Create gce-update.service
+    echo -e "\e[1;36m...create gce-update service\e[0m";
+    cat << __EOF__ > /lib/systemd/system/gce-update.service
 [Unit]
-Description=gse updater
+Description=gce feed updater
 After=network.target networking.service
 Documentation=man:gvmd(8)
 
 [Service]
-ExecStart=/opt/gvm/gvmpy/bin/greenbone-feed-sync --type all --user gvm --group gvm --gvmd-lock-file /run/gvmd/feed-update.lock --openvas-lock-file /run/gvmd/feed-update.lock
+ExecStart=/opt/gvm/gvmpy/bin/greenbone-feed-sync --type $feedtype --config /etc/gvm/greenbone-feed-sync.toml
 TimeoutSec=900
 
 [Install]
 WantedBy=multi-user.target
 __EOF__
+
+    cat << __EOF__ > /etc/gvm/greenbone-feed-sync.toml
+[greenbone-feed-sync]
+gvmd-lock-file = "$gvmdlockfile"
+openvas-lock-file = "$gvmdlockfile"
+user = "$feeduser"
+group = "$feedgroup"
+__EOF__
+
+    if [ "ALTERNATIVE_FEED"="Yes" ];
+    then
+        cat << __EOF__ >> /etc/gvm/greenbone-feed-sync.toml
+feed-url = "$FEED_URL"
+__EOF__
+    fi
     sync;
     echo -e "\e[1;32mconfigure_greenbone_updates() finished\e[0m";
     /usr/bin/logger 'configure_greenbone_updates finished' -t 'gce-2024-04-14';
@@ -1092,16 +1107,16 @@ start_services() {
     systemctl restart gvmd.service > /dev/null 2>&1;
     echo -e "\e[1;36m...restarting gsad service\e[0m";
     systemctl restart gsad.service > /dev/null 2>&1;
-    # Enable gse-update timer and service
-    echo -e "\e[1;36m...enabling gse-update timer and service\e[0m";
-    systemctl enable gse-update.timer > /dev/null 2>&1;
-    systemctl enable gse-update.service > /dev/null 2>&1;
+    # Enable gce-update timer and service
+    echo -e "\e[1;36m...enabling gce-update timer and service\e[0m";
+    systemctl enable gce-update.timer > /dev/null 2>&1;
+    systemctl enable gce-update.service > /dev/null 2>&1;
     # restart NGINX
     echo -e "\e[1;36m...restarting nginx service\e[0m";
     systemctl restart nginx.service > /dev/null 2>&1;
     # Will start after next reboot - may disturb the initial update
-    echo -e "\e[1;36m...starting gse-update timer\e[0m";
-    systemctl start gse-update.timer > /dev/null 2>&1;
+    echo -e "\e[1;36m...starting gce-update timer\e[0m";
+    systemctl start gce-update.timer > /dev/null 2>&1;
     # Check status of critical services
     # gvmd.service
     echo -e
@@ -1142,13 +1157,13 @@ start_services() {
         echo -e "\e[1;31mnotus-scanner.service FAILED!";
         /usr/bin/logger 'notus-scanner.service FAILED!\e[0m' -t 'gce-2024-04-14';
     fi
-    if systemctl is-active --quiet gse-update.timer;
+    if systemctl is-active --quiet gce-update.timer;
     then
-        echo -e "\e[1;32mgse-update.timer started successfully\e[0m"
-        /usr/bin/logger 'gse-update.timer started successfully' -t 'gce-2024-04-14';
+        echo -e "\e[1;32mgce-update.timer started successfully\e[0m"
+        /usr/bin/logger 'gce-update.timer started successfully' -t 'gce-2024-04-14';
     else
-        echo -e "\e[1;31mgse-update.timer FAILED! Updates will not be automated\e[0m";
-        /usr/bin/logger 'gse-update.timer FAILED! Updates will not be automated' -t 'gce-2024-04-14';
+        echo -e "\e[1;31mgce-update.timer FAILED! Updates will not be automated\e[0m";
+        /usr/bin/logger 'gce-update.timer FAILED! Updates will not be automated' -t 'gce-2024-04-14';
     fi
     echo -e "\e[1;32mstart_services() finished\e[0m";
     /usr/bin/logger 'start_services finished' -t 'gce-2024-04-14';
