@@ -38,7 +38,7 @@ Description=Daily job to update nvt feed
 # Do not run for the first 7 minutes after boot
 OnBootSec=7min
 OnUnitActiveSec=1h
-RandomizedDelaySec=300
+RandomizedDelaySec=600
 # Specify service
 Unit=feed-update.service
 
