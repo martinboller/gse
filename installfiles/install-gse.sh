@@ -1783,7 +1783,7 @@ main() {
     fi
     /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gce-2024-04-14';
     echo -e;
-    echo -e "\e[1;32mInstallation complete - will reboot in 30 seconds\e[0m";
+    echo -e "\e[1;32mInstallation complete - will reboot in 10 seconds\e[0m";
     echo -e "\e[1;32mPrimary Server Install main() finished\e[0m";
     echo -e;
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
@@ -1792,7 +1792,7 @@ main() {
     echo -e "\e[1;32mPlease change the initial password, but do NOT delete user admin, as it is also the feedowner\e[0m"; 
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
     echo -e;
-    #sync; sleep 5; systemctl reboot;
+    sync; sleep 10; systemctl reboot;
 }
 
 main;

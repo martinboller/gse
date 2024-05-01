@@ -158,8 +158,8 @@ Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/b
 __EOF__
     echo -e "\e[1;36m...configuring tmpfiles.d for greenbone run files\e[0m";
     cat << __EOF__ > /etc/tmpfiles.d/greenbone.conf
-d /run/gvm 1775 gvm gvm
-d /run/gvm/gse 1775 root
+d /run/gvmd 1775 gvm gvm
+d /run/gvmd/gse 1775 root
 d /run/ospd 1775 gvm gvm
 d /run/ospd/gse 1775 root
 d /var/log/gvm 1775 gvm gvm
@@ -560,7 +560,7 @@ Environment="PATH=/opt/gvm/sbin:/opt/gvm/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 User=gvm
 Group=gvm
 # Change log-level to info before production
-ExecStart=/opt/gvm/gvmpy/bin/ospd-openvas --port=9390 --bind-address=0.0.0.0 --pid-file=/run/gvm/ospd-openvas.pid --lock-file-dir=/run/gvm/ --key-file=/var/lib/gvm/private/CA/secondary-key.pem --cert-file=/var/lib/gvm/CA/secondary-cert.pem --ca-file=/var/lib/gvm/CA/cacert.pem --log-file=/var/log/gvm/ospd-openvas.log
+ExecStart=/opt/gvm/gvmpy/bin/ospd-openvas --port=9390 --bind-address=0.0.0.0 --pid-file=/run/gvmd/ospd-openvas.pid --lock-file-dir=/run/gvmd/ --key-file=/var/lib/gvm/private/CA/secondary-key.pem --cert-file=/var/lib/gvm/CA/secondary-cert.pem --ca-file=/var/lib/gvm/CA/cacert.pem --log-file=/var/log/gvm/ospd-openvas.log
 # --log-level in ospd-openvas.conf can be debug too, info is default
 # This works asynchronously, but does not take the daemon down during the reload so it is ok.
 Restart=on-failure
@@ -581,7 +581,7 @@ socket_mode = 0o766
 unix_socket = /run/ospd/ospd-openvas.sock
 pid_file = /run/ospd/ospd-openvas.pid
 ; default = /run/ospd
-lock_file_dir = /run/gvm
+lock_file_dir = /run/gvmd
 
 ; max_scans, is the number of scan/task to be started before start to queuing.
 max_scans = 0
@@ -858,7 +858,7 @@ from gvm.protocols.gmp import Gmp
 from gvm.transforms import EtreeTransform
 from gvm.xml import pretty_print
 
-connection = UnixSocketConnection(path = '/run/gvm/gvmd.sock')
+connection = UnixSocketConnection(path = '/run/gvmd/gvmd.sock')
 transform = EtreeTransform()
 
 with Gmp(connection, transform=transform) as gmp:
@@ -1108,9 +1108,9 @@ main() {
     echo -e "\e[1;36m  You will need hostname: \e[1;33m$HOSTNAME\e[0m and password: \e[1;33m$greenbone_secret\e[0m";
     echo -e "\e[1;32m****************************************************************************************************\e[0m";
     echo -e;
-    /usr/bin/logger 'Installation complete - will reboot in 30 seconds' -t 'gce-2024-04-14';
+    /usr/bin/logger 'Installation complete - will reboot in 10 seconds' -t 'gce-2024-04-14';
     echo -e "\e[1;32mSecondary Server Install main() finished\e[0m";
-    #sync; sleep 30; systemctl reboot;
+    sync; sleep 10; systemctl reboot;
 }
 
 main;
