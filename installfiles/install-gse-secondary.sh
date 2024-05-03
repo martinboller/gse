@@ -331,8 +331,8 @@ install_ospd_openvas() {
     echo -e "\e[1;36m...installing ospd-openvas\e[0m";
     #cd ospd-openvas > /dev/null 2>&1;
     # Install from PyPi repo
-    su gvm -c "source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==$OSPDOPENVASOLD --use-pep517";
-    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install ospd-openvas==$OSPDOPENVAS --force-upgrade --use-pep517" > /dev/null 2>&1;
+    #su gvm -c "source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==$OSPDOPENVASOLD --use-pep517";
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install ospd-openvas==$OSPDOPENVAS --use-pep517" > /dev/null 2>&1;
     #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
     # For use when testing (just comment uncomment poetry install in "main" and here)
     #/usr/poetry/bin/poetry install;
