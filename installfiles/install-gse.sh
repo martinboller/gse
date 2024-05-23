@@ -1069,8 +1069,7 @@ user = "$feeduser"
 group = "$feedgroup"
 __EOF__
 
-    if [ "ALTERNATIVE_FEED"="Yes" ];
-    then
+    if [ "ALTERNATIVE_FEED" == "Yes" ]; then
         cat << __EOF__ >> /etc/gvm/greenbone-feed-sync.toml
 feed-url = "$FEED_URL"
 __EOF__

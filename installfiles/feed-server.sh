@@ -56,10 +56,12 @@ After=network.target networking.service
 ConditionKernelCommandLine=!recovery
 
 [Service]
-Type=forking
-ExecStart=rsync -avz rsync://feed.community.greenbone.net/community/ /var/feedupdate/community/
+Type=simple
+User=root
+Group=root
+ExecStart=rsync -rz rsync://feed.community.greenbone.net/community/ /var/feedupdate/community/
 Restart=on-failure
-RestartSec=10
+RestartSec=60
 
 [Install]
 WantedBy=multi-user.target
