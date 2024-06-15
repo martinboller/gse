@@ -70,6 +70,9 @@ Node.js for Debian 12 | Debian Repo | 18.x
 ----
 
 ## Latest changes
+### 2024-06-14 - Latest gvm-libs
+- gvm-libs 22.10.0
+
 ### 2024-06-13 - Latest openvas-scanner
 - openvas-scanner 23.4.1
 
