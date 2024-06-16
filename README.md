@@ -32,7 +32,7 @@ Note: Due to the ugly hack made removing the Vagrant NIC uses (it gave me a lot 
 Versions used:
 Name | URL | Version
 ---|---|---
-gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.9.1
+gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.10.0
 ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.7.1
 openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.4.1
 GVM Daemon | https://github.com/greenbone/gvmd/ | 23.6.2
