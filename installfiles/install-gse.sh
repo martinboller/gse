@@ -1073,7 +1073,7 @@ group = "$feedgroup"
 compression-level = 6
 __EOF__
 
-    if [ "ALTERNATIVE_FEED" == "Yes" ]; then
+if [ "$ALTERNATIVE_FEED" == "Yes" ]; then
         cat << __EOF__ >> /etc/gvm/greenbone-feed-sync.toml
 feed-url = "$FEED_URL"
 __EOF__
@@ -1697,6 +1697,7 @@ main() {
     # Configure environment from .env file
     set -a; source $ENV_DIR/.env;
     echo -e "\e[1;36m....env file version $ENV_VERSION used\e[0m"
+    echo -e "\e[1;36m....Using alternative feed: $ALTERNATIVE_FEED, $FEED_URL\e[0m"
    
     # Vagrant acts up at times with eth0, so check if running Vagrant and toggle it down/up
     toggle_vagrant_nic;
