@@ -1070,7 +1070,7 @@ gvmd-lock-file = "$gvmdlockfile"
 openvas-lock-file = "$gvmdlockfile"
 user = "$feeduser"
 group = "$feedgroup"
-compression-level = 6
+compression-level = $COMPRESSIONLEVEL
 __EOF__
 
 if [ "$ALTERNATIVE_FEED" == "Yes" ]; then
