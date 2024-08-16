@@ -42,7 +42,7 @@ openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.6
 python-gvm | https://github.com/greenbone/python-gvm/ | 24.7.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 24.7.0
 pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.5
-notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.3
+notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.4
 greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 24.3.0 
 Node.js for Debian 11 | https://deb.nodesource.com/ | 20.x
 Node.js for Debian 12 | Debian Repo | 18.x
@@ -71,7 +71,9 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ## Latest changes
 
-## Latest changes
+### 2024-08-16 - Latest updates
+- notus-scanner v22.6.4
+
 ### 2024-08-08 - Latest updates
 - openvas-scanner v23.8.4
 
