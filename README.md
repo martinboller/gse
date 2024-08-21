@@ -71,6 +71,9 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ## Latest changes
 
+### 2024-08-21 - Latest updates
+- openvas-scanner v23.8.5
+
 ### 2024-08-16 - Latest updates
 - notus-scanner v22.6.4
 
