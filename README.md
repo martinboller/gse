@@ -37,7 +37,7 @@ ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.7.1
 openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.9.0
 GVM Daemon | https://github.com/greenbone/gvmd/ | 23.10.0
 GSA Daemon | https://github.com/greenbone/gsad/ | 22.12.0
-GSA | https://github.com/greenbone/gsa/ | 23.3.0
+GSA | https://github.com/greenbone/gsa/ | 24.0.1
 openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.6
 python-gvm | https://github.com/greenbone/python-gvm/ | 24.8.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 24.8.0
@@ -70,6 +70,10 @@ Node.js for Debian 12 | Debian Repo | 18.x
 ----
 
 ## Latest changes
+
+
+### 2024-10-16 - gsa web frontend updated
+- gsa v24.0.1
 
 ### 2024-09-11 - Latest updates
 - gvmd v23.10.0, openvas-scanner v23.9.0
