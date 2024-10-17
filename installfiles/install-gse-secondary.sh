@@ -61,7 +61,7 @@ install_prerequisites() {
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                 python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
-            apt-get install gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libcjson-dev\
+            apt-get install -qq -y gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libcjson-dev\
                 libglib2.0-dev libjson-glib-dev libpcap-dev libgpgme-dev bison libksba-dev \
                 libsnmp-dev libgcrypt20-dev redis-server libbsd-dev libcurl4-gnutls-dev > /dev/null 2>&1;
      
