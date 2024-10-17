@@ -32,11 +32,11 @@ Note: Due to the ugly hack made removing the Vagrant NIC uses (it gave me a lot 
 Versions used:
 Name | URL | Version
 ---|---|---
-gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.12.2
+gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.13.0
 ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.7.1
 openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.9.0
-GVM Daemon | https://github.com/greenbone/gvmd/ | 23.10.0
-GSA Daemon | https://github.com/greenbone/gsad/ | 22.12.0
+GVM Daemon | https://github.com/greenbone/gvmd/ | 24.0.0
+GSA Daemon | https://github.com/greenbone/gsad/ | 24.0.0
 GSA | https://github.com/greenbone/gsa/ | 24.0.1
 openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.6
 python-gvm | https://github.com/greenbone/python-gvm/ | 24.8.0
