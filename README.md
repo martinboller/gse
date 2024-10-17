@@ -71,6 +71,8 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ## Latest changes
 
+### 2024-10-17 - gsa, gsad, gvmd, and gvm-libs updated
+- gsa v24.0.1, gvm-libs v22.13.0, gvmd v24.0.0, and gsad v24.0.0
 
 ### 2024-10-16 - gsa web frontend updated
 - gsa v24.0.1
