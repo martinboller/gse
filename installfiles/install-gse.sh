@@ -58,34 +58,7 @@ install_prerequisites() {
     # Other pre-requisites for GSE
     echo -e "\e[1;36m...other prerequisites for Greenbone Community Edition\e[0m";
 
-    if [ $VER -eq "11" ] 
-        then
-            /usr/bin/logger '..install_prerequisites_debian_11_bullseye' -t 'gce-2024-06-29';
-            echo -e "\e[1;36m...install_prerequisites_debian_11_bullseye\e[0m";
-            # Prepare package sources for NODEJS 18.x or newer (now running with 20.x)
-            echo -e "\e[1;36m...Installing node 20\e[0m";
-            curl -fsSL https://deb.nodesource.com/gpgkey/nodesource.gpg.key | gpg --dearmor | sudo tee "$NODE_KEYRING" > /dev/null 2>&1;
-            gpg --no-default-keyring --keyring "$NODE_KEYRING" --list-keys > /dev/null 2>&1;
-            echo "deb [signed-by=$NODE_KEYRING] https://deb.nodesource.com/$NODE_VERSION $DISTRIBUTION main" | sudo tee /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1;
-            echo "deb-src [signed-by=$NODE_KEYRING] https://deb.nodesource.com/$NODE_VERSION $DISTRIBUTION main" | sudo tee -a /etc/apt/sources.list.d/nodesource.list > /dev/null 2>&1;
-            apt update > /dev/null 2>&1;
-            # Install pre-requisites for gvmd on bullseye (debian 11)
-            apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
-                postgresql-server-dev-13 pkg-config libical-dev xsltproc > /dev/null 2>&1;        
-            # Removed doxygen for now
-            # Other pre-requisites for GSE - Bullseye / Debian 11
-            /usr/bin/logger '....Other prerequisites for Greenbone Community Edition on Debian 11' -t 'gce-2024-06-29';
-            echo -e "\e[1;36m...installing prerequisites for Greenbone Community Edition\e[0m";
-            apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
-                bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
-                sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
-                python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-                    python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy libcjson-dev > /dev/null 2>&1;
-#            echo -e "\e[1;36m...installing yarn\e[0m";
-#            npm install -g yarn --force > /dev/null 2>&1;
-
-
-    elif [ $VER -eq "12" ] 
+    if [ $VER -eq "12" ] 
         then
             /usr/bin/logger '..install prerequisites Debian 12 Bookworm' -t 'gce-2024-06-29';
             echo -e "\e[1;36m...install prerequisites Debian 12 Bookworm\e[0m";

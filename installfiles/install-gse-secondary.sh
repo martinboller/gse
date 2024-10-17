@@ -45,43 +45,25 @@ install_prerequisites() {
     apt-get -qq -y install libpaho-mqtt-dev python3 python3-pip python3-setuptools python3-psutil python3-gnupg python3-venv > /dev/null 2>&1;
     
     # Other pre-requisites for GSE
-    if [ $VER -eq "11" ] 
-        then
-            /usr/bin/logger '..install_prerequisites_debian_11_bullseye' -t 'gce-2024-06-29';
-            echo -e "\e[1;36m...installing prequisites Debian 11\e[0m";
-            # Install pre-requisites for gvmd on bullseye (debian 11)
-            apt-get -qq -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc doxygen > /dev/null 2>&1;        
-            echo -e "\e[1;36m...other prerequisites for Greenbone Community Edition\e[0m";
-            # Other pre-requisites for GSE - Bullseye / Debian 11
-            /usr/bin/logger '....Other prerequisites for Greenbone Community Edition on Debian 11' -t 'gce-2024-06-29';
-            apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc > /dev/null 2>&1;        
-            apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
-                bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz rpm nsis \
-                sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
-                python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-                python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
-            apt-get install gcc pkg-config libssh-gcrypt-dev libgnutls28-dev \
-                libglib2.0-dev libjson-glib-dev libpcap-dev libgpgme-dev bison libksba-dev \
-                libsnmp-dev libgcrypt20-dev redis-server libbsd-dev libcurl4-gnutls-dev > /dev/null 2>&1;
-        
-    elif [ $VER -eq "12" ]
+   
+   if [ $VER -eq "12" ]
         then
             /usr/bin/logger '..install_prerequisites_debian_12_bookworm' -t 'gce-2024-06-29';
             echo -e "\e[1;36m...installing prequisites Debian 12 Bookworm\e[0m";
             # Install pre-requisites for gvmd on Bookworm (debian 12)
-            apt-get -qq -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc doxygen > /dev/null 2>&1;        
+            apt-get -qq -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc doxygen;        
             echo -e "\e[1;36m...other prerequisites for Greenbone Community Edition\e[0m";
             # Other pre-requisites for GSE - Bookworm / Debian 12
             /usr/bin/logger '....Other prerequisites for Greenbone Community Edition on Debian 12' -t 'gce-2024-06-29';
-            apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc > /dev/null 2>&1;        
+            apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc;        
             apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-                python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
+                python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy;
             apt-get install gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libcjson-dev\
                 libglib2.0-dev libjson-glib-dev libpcap-dev libgpgme-dev bison libksba-dev \
-                libsnmp-dev libgcrypt20-dev redis-server libbsd-dev libcurl4-gnutls-dev > /dev/null 2>&1;
+                libsnmp-dev libgcrypt20-dev redis-server libbsd-dev libcurl4-gnutls-dev;
      
         else
             /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'gce-2024-06-29';
