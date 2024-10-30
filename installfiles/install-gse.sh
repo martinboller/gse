@@ -77,9 +77,8 @@ install_prerequisites() {
                 python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                     python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy cmdtest npm > /dev/null 2>&1;
             echo -e "\e[1;36m...installing yarn\e[0m";
-            apt-get -qq -y install gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libjson-glib-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev libgcrypt20-dev redis-server libbsd-dev libcurl4-gnutls-dev > /dev/null 2>&1;
-            apt-get -qq -y install libcjson-dev > /dev/null 2>&1;
-#            npm install -g yarn --force > /dev/null 2>&1;
+            apt-get -qq -y install gcc pkg-config libssh-4 libssh-dev libgnutls28-dev libglib2.0-dev libjson-glib-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev libgcrypt20-dev redis-server libbsd-dev libcurl4-gnutls-dev > /dev/null 2>&1;
+            apt-get -qq -y install libcjson-dev pnscan > /dev/null 2>&1;
         else
             /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'gce-2024-06-29';
             echo -e "\e[1;36m...Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION\e[0m";
