@@ -979,11 +979,11 @@ __EOF__
 configure_feed_owner() {
     /usr/bin/logger 'configure_feed_owner' -t 'gce-2024-06-29';
     echo -e "\e[1;32mconfigure_feed_owner() \e[0m";
-    echo "User admin for GVM $HOSTNAME " >> /var/lib/gvm/adminuser;
+    echo "User $GVM_ADMINUSER for GVM $HOSTNAME " >> /var/lib/gvm/adminuser;
     echo -e "\e[1;36m...configuring feed owner\e[0m";
     if systemctl is-active --quiet gvmd.service;
     then
-        su gvm -c '/opt/gvm/sbin/gvmd --create-user=admin' >> /var/lib/gvm/adminuser;
+        su gvm -c "/opt/gvm/sbin/gvmd --create-user=$GVM_ADMINUSER" >> /var/lib/gvm/adminuser;
         su gvm -c '/opt/gvm/sbin/gvmd --get-users --verbose' > /var/lib/gvm/feedowner;
         awk -F " " {'print $2'} /var/lib/gvm/feedowner > /var/lib/gvm/uuid;
         # Ensure UUID is available in user gvm context
