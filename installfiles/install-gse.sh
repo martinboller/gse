@@ -577,8 +577,8 @@ install_gsa_web() {
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     # GSA prerequisites
-    /usr/bin/logger '..installing Yarn' -t 'gce-2024-06-29';
-    echo -e "\e[1;36m...installing yarn\e[0m";
+    #/usr/bin/logger '..installing Yarn' -t 'gce-2024-06-29';
+    #echo -e "\e[1;36m...installing yarn\e[0m";
     #apt-get -qq -y install yarnpkg > /dev/null 2>&1;
     # Terser is a new requirement 
     npm add -D terser > /dev/null 2>&1;
