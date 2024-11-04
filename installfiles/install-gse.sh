@@ -625,8 +625,7 @@ install_gvm_tools() {
 #    /usr/poetry/bin/poetry install > /dev/null 2>&1;
     # Increase default timeouts from 60 secs to 600 secs
     export PY_VERSION="$(ls /opt/gvm/gvmpy/lib/)"
-    sed -ie 's/DEFAULT_READ_TIMEOUT = 60/DEFAULT_READ_TIMEOUT = 600/' /opt/gvm/gvmpy/lib/$PY_VERSION/site-packages/gvm/connections.py
-    sed -ie 's/DEFAULT_TIMEOUT = 60/DEFAULT_TIMEOUT = 600/' /opt/gvm/gvmpy/lib/$PY_VERSION/site-packages/gvm/connections.py
+    sed -ie 's/DEFAULT_READ_TIMEOUT = 60/DEFAULT_TIMEOUT = 600/' /opt/gvm/gvmpy/lib/$PY_VERSION/site-packages/gvm/connections/_connection.py
     echo -e "\e[1;32minstall_gvm_tools() finished\e[0m";
     /usr/bin/logger 'install_gvm_tools finished' -t 'gce-2024-06-29';
 }
@@ -1598,8 +1597,8 @@ remove_vagrant_user() {
     if test -f "/etc/VAGRANT_ENV"; then
         echo -e "\e[1;32m...locking vagrant users password\e[0m";
         passwd --lock vagrant > /dev/null 2>&1;
-        echo -e "\e[1;32m...deleting vagrant user\e[0m";
-        userdel vagrant;
+        #echo -e "\e[1;32m...deleting vagrant user\e[0m";
+        #userdel vagrant;
         echo -e "\e[1;32m...deleting /etc/VAGRANT_ENV file\e[0m";
         rm /etc/VAGRANT_ENV > /dev/null 2>&1;
     else
@@ -1759,11 +1758,11 @@ main() {
     echo -e "\e[1;32mInstallation complete - will reboot in 10 seconds\e[0m";
     echo -e "\e[1;32mPrimary Server Install main() finished\e[0m";
     echo -e;
-    echo -e "\e[1;32m****************************************************************************************************\e[0m";
+    echo -e "\e[1;32m*******************************************************************************************************\e[0m";
     echo -e "\e[1;36mInitial credential for this Greenbone Community Edition server:";
     cat /var/lib/gvm/adminuser;
-    echo -e "\e[1;32mPlease change the initial password, but do NOT delete user admin, as it is also the feedowner\e[0m"; 
-    echo -e "\e[1;32m****************************************************************************************************\e[0m";
+    echo -e "\e[1;32mPlease change the initial password, but do NOT delete user $GVM_ADMINUSER, as it is also the feedowner\e[0m"; 
+    echo -e "\e[1;32m*******************************************************************************************************\e[0m";
     echo -e;
     sync; sleep 10; systemctl reboot;
 }
