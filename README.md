@@ -34,7 +34,7 @@ Name | URL | Version
 ---|---|---
 gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.14.0
 ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.7.1
-openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.11.1
+openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.12.1
 GVM Daemon | https://github.com/greenbone/gvmd/ | 24.0.0
 GSA Daemon | https://github.com/greenbone/gsad/ | 24.0.0
 GSA | https://github.com/greenbone/gsa/ | 24.0.1
