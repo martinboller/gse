@@ -47,13 +47,19 @@ install_prerequisites() {
     /usr/bin/logger '..Tools for Development' -t 'gce-2024-06-29';
     echo -e "\e[1;36m...installing required development tools\e[0m";
     apt-get -qq -y install openssh-client gpgsm dpkg xmlstarlet libbsd-dev libjson-glib-dev libpaho-mqtt-dev gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
-        libgcrypt20-dev redis-server libunistring-dev libxml2-dev > /dev/null 2>&1;
+        libgcrypt20-dev libunistring-dev libxml2-dev > /dev/null 2>&1;
     # Install pre-requisites for gsad
     /usr/bin/logger '..Prerequisites for Greenbone Security Assistant' -t 'gce-2024-06-29';
     echo -e "\e[1;36m...prerequisites for Greenbone Security Assistant\e[0m";
     apt-get -qq -y install libmicrohttpd-dev clang cmake > /dev/null 2>&1;
     apt-get -qq -y install python3 python3-pip python3-setuptools python3-psutil python3-gnupg python3-venv python3-wheel > /dev/null 2>&1;
 
+    if [ $VALKEY_INSTALL == "Yes" ]
+        then
+            echo -e "\e[1;36m...Installing Valkey v$VALKEY later\e[0m";
+        else
+            apt-get -qq -y install redis-server libhiredis-dev > /dev/null 2>&1;
+        fi
 
     # Other pre-requisites for GSE
     echo -e "\e[1;36m...other prerequisites for Greenbone Community Edition\e[0m";
@@ -71,13 +77,13 @@ install_prerequisites() {
             # Other pre-requisites for GSE - Bullseye / Debian 11
             /usr/bin/logger '....Other prerequisites for Greenbone Community Edition on Debian 12' -t 'gce-2024-06-29';
             echo -e "\e[1;36m...installing prerequisites for Greenbone Community Edition\e[0m";
-            apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
+            apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libgnutls28-dev libgpgme-dev \
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
                     python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy cmdtest npm > /dev/null 2>&1;
             echo -e "\e[1;36m...installing yarn\e[0m";
-            apt-get -qq -y install gcc pkg-config libssh-4 libssh-dev libgnutls28-dev libglib2.0-dev libjson-glib-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev libgcrypt20-dev redis-server libbsd-dev libcurl4-gnutls-dev > /dev/null 2>&1;
+            apt-get -qq -y install libhiredis-dev gcc pkg-config libssh-4 libssh-dev libgnutls28-dev libglib2.0-dev libjson-glib-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev libgcrypt20-dev libbsd-dev libcurl4-gnutls-dev > /dev/null 2>&1;
             apt-get -qq -y install libcjson-dev pnscan > /dev/null 2>&1;
         else
             /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'gce-2024-06-29';
@@ -154,6 +160,14 @@ prepare_nix() {
     /usr/sbin/useradd --system --create-home --home-dir /opt/gvm/ -c "gvm User" --groups sudo --shell /bin/bash gvm > /dev/null 2>&1;
     mkdir /opt/gvm > /dev/null 2>&1;
     chown gvm:gvm /opt/gvm;
+    # create user for valkey if required
+
+    if [ $VALKEY_INSTALL == "Yes" ]
+        then
+            echo -e "\e[1;36m...creating valkey user\e[0m";
+            /usr/sbin/useradd --system -c "Valkey User" --shell /bin/bash valkey > /dev/null 2>&1;
+        fi
+
     # Update the PATH environment variable
     cat << __EOF__ > /etc/profile.d/gvm.sh
 # Add GVM library path to /etc/ld.so.conf.d
@@ -243,9 +257,12 @@ prepare_source() {
     wget -O pg-gvm.tar.gz https://github.com/greenbone/pg-gvm/archive/refs/tags/v$POSTGREGVM.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..notus-scanner' -t 'gce-2024-06-29';
     wget -O notus.tar.gz https://github.com/greenbone/notus-scanner/archive/refs/tags/v$NOTUS.tar.gz > /dev/null 2>&1;
-   /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2024-06-29';
+    /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2024-06-29';
     wget -O greenbone-feed-sync.tar.gz https://github.com/greenbone/greenbone-feed-sync/archive/refs/tags/v$FEEDSYNC.tar.gz > /dev/null 2>&1;
-
+    # valkey to replace redis
+    /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2024-11-25';
+    wget -O valkey.tar.gz https://github.com/valkey-io/valkey/archive/refs/tags/$VALKEY.tar.gz > /dev/null 2>&1;
+    
     # open and extract the tarballs
     echo -e "\e[1;36m...open and extract tarballs\e[0m";
     /usr/bin/logger '..open and extract the tarballs' -t 'gce-2024-06-29';
@@ -267,6 +284,8 @@ prepare_source() {
     mv /opt/gvm/src/greenbone/pg-gvm-$POSTGREGVM /opt/gvm/src/greenbone/pg-gvm > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/notus-scanner-$NOTUS /opt/gvm/src/greenbone/notus > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/greenbone-feed-sync-$FEEDSYNC /opt/gvm/src/greenbone/greenbone-feed-sync > /dev/null 2>&1;
+    mv /opt/gvm/src/greenbone/valkey-$VALKEY /opt/gvm/src/greenbone/valkey > /dev/null 2>&1;
+
     sync;
     echo -e "\e[1;36m...configuring permissions\e[0m";
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
@@ -391,6 +410,25 @@ install_python_ical() {
     # Installing from python repo
     su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install icalendar';
     /usr/bin/logger 'install_python_ical finished' -t 'gce-2024-06-29';
+}
+
+install_valkey() {
+    /usr/bin/logger 'install_valkey' -t 'gce-2024-06-29';
+    echo -e "\e[1;32minstall_valkey() $VALKEY\e[0m";
+    apt -qq -y install libsystemd-dev > /dev/null 2>&1; 
+    cd /opt/gvm/src/greenbone > /dev/null 2>&1;
+    # make valkey
+    cd valkey > /dev/null 2>&1;
+    /usr/bin/logger '..make install valkey' -t 'gce-2024-11-25';
+    echo -e "\e[1;36m...make install valkey $VALKEY\e[0m";
+    make install USE_SYSTEMD=yes > /dev/null 2>&1;
+    # Create valkey user
+    echo -e "\e[1;36m...creating valkey user\e[0m";
+    /usr/sbin/useradd --system -c "Valkey User" --shell /bin/bash valkey > /dev/null 2>&1;
+    mkdir /etc/valkey/;
+    sync;
+    echo -e "\e[1;32minstall_valkey() finished\e[0m";
+    /usr/bin/logger 'install_valkey finished' -t 'gce-2024-06-29';
 }
 
 install_openvas_smb() {
@@ -1057,10 +1095,17 @@ start_services() {
     # Load new/changed systemd-unitfiles
     echo -e "\e[1;36m...reload new and changed systemd unit files\e[0m";
     systemctl daemon-reload > /dev/null 2>&1;
-    # Restart Redis with new config
-    echo -e "\e[1;36m...restarting redis service\e[0m";
-    systemctl restart redis > /dev/null 2>&1;
-    # Enable GSE units
+    # Redis or Valkey
+    if [ "$VALKEY_INSTALL" == "Yes" ]; then
+         # Restart valkey with new config
+        echo -e "\e[1;36m...restarting valkey service\e[0m";
+        systemctl restart valkey.service > /dev/null 2>&1;
+    else
+        # Restart Redis with new config
+        echo -e "\e[1;36m...restarting redis service\e[0m";
+        systemctl restart redis.service > /dev/null 2>&1;
+    fi
+       # Enable GSE units
     echo -e "\e[1;36m...enabling notus-scanner service\e[0m";
     systemctl enable notus-scanner.service > /dev/null 2>&1;
     echo -e "\e[1;36m...enabling ospd-openvas service\e[0m";
@@ -1217,6 +1262,173 @@ __EOF__
     sync;
     echo -e "\e[1;32mconfigure_redis() finished\e[0m";
     /usr/bin/logger 'configure_redis finished' -t 'gce-2024-06-29';
+}
+
+configure_valkey() {
+    /usr/bin/logger 'configure_valkey' -t 'gce-2024-06-29';
+    echo -e "\e[1;32mconfigure_valkey()\e[0m";
+    echo -e "\e[1;36m...creating tmpfiles.d configuration for valkey\e[0m";
+    cat << __EOF__ > /etc/tmpfiles.d/valkey.conf
+d /run/redis 0755 valkey valkey
+__EOF__
+    # start systemd-tmpfiles to create directories
+    echo -e "\e[1;36m...starting systemd-tmpfiles to create directories\e[0m";
+    systemd-tmpfiles --create > /dev/null 2>&1;
+    usermod -aG valkey gvm;
+    mkdir /var/lib/redis/ > /dev/null 2>&1;
+    chown -R valkey /var/lib/redis/ > /dev/null 2>&1;
+    echo -e "\e[1;36m...creating valkey configuration for Greenbone Community Edition\e[0m";
+    cat << __EOF__  > /etc/valkey/valkey.conf
+bind 127.0.0.1 -::1
+port 0
+tcp-backlog 511
+unixsocket /run/redis/redis.sock
+# unixsocketgroup wheel
+unixsocketperm 766
+timeout 0
+tcp-keepalive 300
+daemonize yes
+pidfile /run/valkey/valkey.pid
+
+# Specify the server verbosity level.
+# This can be one of:
+# debug (a lot of information, useful for development/testing)
+# verbose (many rarely useful info, but not a mess like the debug level)
+# notice (moderately verbose, what you want in production probably)
+# warning (only very important / critical messages are logged)
+# nothing (nothing is logged)
+loglevel notice
+logfile ""
+syslog-enabled no
+
+# Specify the syslog identity.
+# syslog-ident valkey
+databases 4096
+always-show-logo no
+hide-user-data-from-log yes
+set-proc-title yes
+proc-title-template "{title} {listen-addr} {server-mode}"
+locale-collate ""
+
+# Valkey is largely compatible with Redis OSS, apart from a few cases where
+# Valkey identifies itself itself as "Valkey" rather than "Redis". Extended
+# Redis OSS compatibility mode makes Valkey pretend to be Redis. Enable this
+# only if you have problems with tools or clients. This is a temporary
+# configuration added in Valkey 8.0 and is scheduled to have no effect in Valkey
+# 9.0 and be completely removed in Valkey 10.0.
+#
+# extended-redis-compatibility no
+stop-writes-on-bgsave-error yes
+rdbcompression yes
+rdbchecksum yes
+dbfilename dump.rdb
+rdb-del-sync-files no
+dir /var/lib/redis/
+replica-serve-stale-data yes
+replica-read-only yes
+repl-diskless-sync yes
+repl-diskless-sync-max-replicas 0
+repl-diskless-load disabled
+dual-channel-replication-enabled no
+repl-disable-tcp-nodelay no
+replica-priority 100
+acllog-max-len 128
+
+lazyfree-lazy-eviction yes
+lazyfree-lazy-expire yes
+lazyfree-lazy-server-del yes
+replica-lazy-flush yes
+lazyfree-lazy-user-del yes
+lazyfree-lazy-user-flush yes
+
+oom-score-adj no
+oom-score-adj-values 0 200 800
+disable-thp yes
+
+appendonly no
+appendfilename "appendonly.aof"
+appenddirname "appendonlydir"
+# appendfsync always
+appendfsync everysec
+# appendfsync no
+no-appendfsync-on-rewrite no
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+aof-load-truncated yes
+aof-use-rdb-preamble yes
+aof-timestamp-enabled no
+
+slowlog-log-slower-than 10000
+slowlog-max-len 128
+
+latency-monitor-threshold 0
+
+############################### ADVANCED CONFIG ###############################
+hash-max-listpack-entries 512
+hash-max-listpack-value 64
+list-max-listpack-size -2
+list-compress-depth 0
+set-max-intset-entries 512
+set-max-listpack-entries 128
+set-max-listpack-value 64
+zset-max-listpack-entries 128
+zset-max-listpack-value 64
+hll-sparse-max-bytes 3000
+stream-node-max-bytes 4096
+stream-node-max-entries 100
+activerehashing yes
+client-output-buffer-limit normal 0 0 0
+client-output-buffer-limit replica 256mb 64mb 60
+client-output-buffer-limit pubsub 32mb 8mb 60
+hz 10
+dynamic-hz yes
+aof-rewrite-incremental-fsync yes
+rdb-save-incremental-fsync yes
+
+########################### ACTIVE DEFRAGMENTATION #######################
+jemalloc-bg-thread yes
+__EOF__
+
+    cat << __EOF__  > /lib/systemd/system/valkey.service
+[Unit]
+Description=Valkey persistent key-value database
+After=network.target
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+EnvironmentFile=-/etc/default/valkey
+ExecStart=/usr/local/bin/valkey-server /etc/valkey/valkey.conf --daemonize no --supervised systemd $OPTIONS
+Type=notify
+User=valkey
+Group=valkey
+RuntimeDirectory=valkey
+RuntimeDirectoryMode=0755
+
+[Install]
+WantedBy=multi-user.target
+__EOF__
+
+    # Redis requirements - overcommit memory and TCP backlog setting > 511
+    echo -e "\e[1;36m...configuring sysctl for Greenbone Community Edition, valkey\e[0m";
+    sysctl -w vm.overcommit_memory=$vm_overcommit_memory > /dev/null 2>&1;
+    sysctl -w net.core.somaxconn=$net_core_somaxconn > /dev/null 2>&1;
+    echo "vm.overcommit_memory=$vm_overcommit_memory" >> /etc/sysctl.d/60-gse-redis.conf;
+    echo "net.core.somaxconn=$net_core_somaxconn" >> /etc/sysctl.d/60-gse-redis.conf;
+    # Disable THP
+    echo never > /sys/kernel/mm/transparent_hugepage/enabled;
+    cat << __EOF__  > /etc/default/grub.d/99-transparent-huge-page.cfg
+# Turns off Transparent Huge Page functionality as required by valkey
+GRUB_CMDLINE_LINUX_DEFAULT="transparent_hugepage=$transparent_hugepage"
+__EOF__
+    echo -e "\e[1;36m...updating grub\e[0m";
+    update-grub > /dev/null 2>&1;
+    sync;
+    systemctl daemon-reload > /dev/null 2>&1;
+    systemctl enable valkey.service > /dev/null 2>&1;
+    systemctl start valkey.service > /dev/null 2>&1;
+    echo -e "\e[1;32mconfigure_valkey() finished\e[0m";
+    /usr/bin/logger 'configure_valkey finished' -t 'gce-2024-06-29';
 }
 
 prepare_db_maintenance() {
@@ -1724,7 +1936,14 @@ main() {
     # Configuration of installed components
     prepare_postgresql;
     tune_postgresql;
-    configure_redis;
+    # valkey or redis
+    if [ $VALKEY_INSTALL == "Yes" ]
+        then
+            install_valkey;
+            configure_valkey;
+        else
+            configure_redis;
+        fi
     configure_gvm;
     configure_openvas;
     configure_gsa;
