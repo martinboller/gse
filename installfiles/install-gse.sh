@@ -1286,38 +1286,20 @@ unixsocket /run/redis/redis.sock
 # unixsocketgroup wheel
 unixsocketperm 766
 timeout 0
-tcp-keepalive 300
+tcp-keepalive 0
 daemonize yes
 pidfile /run/valkey/valkey.pid
-
-# Specify the server verbosity level.
-# This can be one of:
-# debug (a lot of information, useful for development/testing)
-# verbose (many rarely useful info, but not a mess like the debug level)
-# notice (moderately verbose, what you want in production probably)
-# warning (only very important / critical messages are logged)
-# nothing (nothing is logged)
 loglevel notice
 logfile ""
-syslog-enabled no
-
+syslog-enabled yes
 # Specify the syslog identity.
-# syslog-ident valkey
+syslog-ident valkey
 databases 4096
 always-show-logo no
 hide-user-data-from-log yes
 set-proc-title yes
 proc-title-template "{title} {listen-addr} {server-mode}"
 locale-collate ""
-
-# Valkey is largely compatible with Redis OSS, apart from a few cases where
-# Valkey identifies itself itself as "Valkey" rather than "Redis". Extended
-# Redis OSS compatibility mode makes Valkey pretend to be Redis. Enable this
-# only if you have problems with tools or clients. This is a temporary
-# configuration added in Valkey 8.0 and is scheduled to have no effect in Valkey
-# 9.0 and be completely removed in Valkey 10.0.
-#
-# extended-redis-compatibility no
 stop-writes-on-bgsave-error yes
 rdbcompression yes
 rdbchecksum yes
@@ -1333,36 +1315,28 @@ dual-channel-replication-enabled no
 repl-disable-tcp-nodelay no
 replica-priority 100
 acllog-max-len 128
-
 lazyfree-lazy-eviction yes
 lazyfree-lazy-expire yes
 lazyfree-lazy-server-del yes
 replica-lazy-flush yes
 lazyfree-lazy-user-del yes
 lazyfree-lazy-user-flush yes
-
 oom-score-adj no
 oom-score-adj-values 0 200 800
 disable-thp yes
-
 appendonly no
 appendfilename "appendonly.aof"
 appenddirname "appendonlydir"
-# appendfsync always
 appendfsync everysec
-# appendfsync no
 no-appendfsync-on-rewrite no
 auto-aof-rewrite-percentage 100
 auto-aof-rewrite-min-size 64mb
 aof-load-truncated yes
 aof-use-rdb-preamble yes
 aof-timestamp-enabled no
-
 slowlog-log-slower-than 10000
 slowlog-max-len 128
-
 latency-monitor-threshold 0
-
 ############################### ADVANCED CONFIG ###############################
 hash-max-listpack-entries 512
 hash-max-listpack-value 64
@@ -1384,8 +1358,6 @@ hz 10
 dynamic-hz yes
 aof-rewrite-incremental-fsync yes
 rdb-save-incremental-fsync yes
-
-########################### ACTIVE DEFRAGMENTATION #######################
 jemalloc-bg-thread yes
 __EOF__
 
