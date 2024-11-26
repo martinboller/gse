@@ -130,6 +130,14 @@ prepare_nix() {
     /usr/sbin/useradd --system --create-home --home-dir /opt/gvm/ -c "gvm User" --shell /bin/bash gvm > /dev/null 2>&1;
     mkdir /opt/gvm > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
+
+    # create user for valkey if required
+    if [ $VALKEY_INSTALL == "Yes" ]
+        then
+            echo -e "\e[1;36m...creating valkey user\e[0m";
+            /usr/sbin/useradd --system -c "Valkey User" --shell /bin/bash valkey > /dev/null 2>&1;
+        fi
+
     # Update the PATH environment variable
     echo "PATH=\$PATH:/opt/gvm/bin:/opt/gvm/sbin:/opt/gvm/gvmpy/bin" > /etc/profile.d/gvm.sh;
     # Add GVM library path to /etc/ld.so.conf.d
@@ -239,12 +247,17 @@ install_poetry() {
 install_valkey() {
     /usr/bin/logger 'install_valkey' -t 'gce-2024-06-29';
     echo -e "\e[1;32minstall_valkey() $VALKEY\e[0m";
+    apt -qq -y install libsystemd-dev > /dev/null 2>&1; 
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # make valkey
     cd valkey > /dev/null 2>&1;
     /usr/bin/logger '..make install valkey' -t 'gce-2024-11-25';
     echo -e "\e[1;36m...make install valkey $VALKEY\e[0m";
-    make install > /dev/null 2>&1;
+    make install USE_SYSTEMD=yes > /dev/null 2>&1;
+    # Create valkey user
+    echo -e "\e[1;36m...creating valkey user\e[0m";
+    /usr/sbin/useradd --system -c "Valkey User" --shell /bin/bash valkey > /dev/null 2>&1;
+    mkdir /etc/valkey/;
     sync;
     echo -e "\e[1;32minstall_valkey() finished\e[0m";
     /usr/bin/logger 'install_valkey finished' -t 'gce-2024-06-29';
@@ -691,6 +704,7 @@ __EOF__
     echo -e "\e[1;32mconfigure_greenbone_updates() finished\e[0m";
     /usr/bin/logger 'configure_greenbone_updates finished' -t 'gce-2024-06-29';
 }   
+
 
 configure_valkey() {
     /usr/bin/logger 'configure_valkey' -t 'gce-2024-06-29';
