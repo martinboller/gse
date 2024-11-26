@@ -71,6 +71,10 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ## Latest changes
 
+### 2024-11-26 - valkey configuration and openvas-scanner
+- Minor config changes for valkey.conf
+- openvas-scanner v23.13.1
+
 ### 2024-11-22 - valkey instead of redis
 - Configure VALKEY_INSTALL="Yes" in .env and valkey will replace redis.
 
