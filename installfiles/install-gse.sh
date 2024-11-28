@@ -54,13 +54,6 @@ install_prerequisites() {
     apt-get -qq -y install libmicrohttpd-dev clang cmake > /dev/null 2>&1;
     apt-get -qq -y install python3 python3-pip python3-setuptools python3-psutil python3-gnupg python3-venv python3-wheel > /dev/null 2>&1;
 
-    if [ $VALKEY_INSTALL == "Yes" ]
-        then
-            echo -e "\e[1;36m...Installing Valkey v$VALKEY later\e[0m";
-        else
-            apt-get -qq -y install redis-server libhiredis-dev > /dev/null 2>&1;
-        fi
-
     # Other pre-requisites for GSE
     echo -e "\e[1;36m...other prerequisites for Greenbone Community Edition\e[0m";
 
@@ -421,11 +414,13 @@ install_valkey() {
     cd valkey > /dev/null 2>&1;
     /usr/bin/logger '..make install valkey' -t 'gce-2024-11-25';
     echo -e "\e[1;36m...make install valkey $VALKEY\e[0m";
-    make install USE_SYSTEMD=yes > /dev/null 2>&1;
+    make install USE_SYSTEMD=yes distclean > /dev/null 2>&1;
     # Create valkey user
     echo -e "\e[1;36m...creating valkey user\e[0m";
     /usr/sbin/useradd --system -c "Valkey User" --shell /bin/bash valkey > /dev/null 2>&1;
-    mkdir /etc/valkey/;
+    mkdir /etc/valkey/ > /dev/null 2>&1;
+    mkdir /run/valkey/ > /dev/null 2>&1;
+    chown -R valkey:valkey /run/valkey > /dev/null 2>&1;
     sync;
     echo -e "\e[1;32minstall_valkey() finished\e[0m";
     /usr/bin/logger 'install_valkey finished' -t 'gce-2024-06-29';
@@ -1096,7 +1091,7 @@ start_services() {
     echo -e "\e[1;36m...reload new and changed systemd unit files\e[0m";
     systemctl daemon-reload > /dev/null 2>&1;
     # Redis or Valkey
-    if [ "$VALKEY_INSTALL" == "Yes" ]; then
+    if [ $VALKEY_INSTALL == "Yes" ]; then
          # Restart valkey with new config
         echo -e "\e[1;36m...restarting valkey service\e[0m";
         systemctl restart valkey.service > /dev/null 2>&1;
@@ -1136,6 +1131,28 @@ start_services() {
     # Check status of critical services
     # gvmd.service
     echo -e
+    echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
+    echo -e "\e[1;32mChecking valkey/redis......\e[0m";
+    if [ $VALKEY_INSTALL == "Yes" ]
+        then
+            if systemctl is-active --quiet valkey.service;
+            then
+                echo -e "\e[1;32mvalkey.service started successfully";
+                /usr/bin/logger 'valkey.service started successfully' -t 'gce-2024-06-29';
+            else
+                echo -e "\e[1;31mvalkey.service FAILED!\e[0m";
+                /usr/bin/logger 'valkey.service FAILED' -t 'gce-2024-06-29';
+            fi
+        else
+            if systemctl is-active --quiet redis-server.service;
+            then
+                echo -e "\e[1;32mredis-server.service started successfully";
+                /usr/bin/logger 'redis-server.service started successfully' -t 'gce-2024-06-29';
+            else
+                echo -e "\e[1;31mredis-server.service FAILED!\e[0m";
+                /usr/bin/logger 'redis-server.service FAILED' -t 'gce-2024-06-29';
+            fi
+        fi
     echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
     echo -e "\e[1;32mChecking core daemons for GSE......\e[0m";
     if systemctl is-active --quiet gvmd.service;
@@ -1269,20 +1286,20 @@ configure_valkey() {
     echo -e "\e[1;32mconfigure_valkey()\e[0m";
     echo -e "\e[1;36m...creating tmpfiles.d configuration for valkey\e[0m";
     cat << __EOF__ > /etc/tmpfiles.d/valkey.conf
-d /run/redis 0755 valkey valkey
+d /run/valkey 0755 valkey valkey
 __EOF__
     # start systemd-tmpfiles to create directories
     echo -e "\e[1;36m...starting systemd-tmpfiles to create directories\e[0m";
     systemd-tmpfiles --create > /dev/null 2>&1;
     usermod -aG valkey gvm;
-    mkdir /var/lib/redis/ > /dev/null 2>&1;
-    chown -R valkey /var/lib/redis/ > /dev/null 2>&1;
+    mkdir /var/lib/valkey/ > /dev/null 2>&1;
+    chown -R valkey:valkey /var/lib/valkey/ > /dev/null 2>&1;
     echo -e "\e[1;36m...creating valkey configuration for Greenbone Community Edition\e[0m";
     cat << __EOF__  > /etc/valkey/valkey.conf
 bind 127.0.0.1 -::1
 port 0
 tcp-backlog 511
-unixsocket /run/redis/redis.sock
+unixsocket /run/valkey/valkey.sock
 # unixsocketgroup wheel
 unixsocketperm 766
 timeout 0
@@ -1305,7 +1322,7 @@ rdbcompression yes
 rdbchecksum yes
 dbfilename dump.rdb
 rdb-del-sync-files no
-dir /var/lib/redis/
+dir /var/lib/valkey/
 replica-serve-stale-data yes
 replica-read-only yes
 repl-diskless-sync yes
@@ -1361,6 +1378,10 @@ rdb-save-incremental-fsync yes
 jemalloc-bg-thread yes
 __EOF__
 
+# using valkey so change openvas.conf to use correct socket
+echo -e "\e[1;36m...changind openvas to use valkey.sock\e[0m";
+sed -ie 's+/run/redis/redis.sock+/run/valkey/valkey.sock'+g /etc/openvas/openvas.conf;
+
     cat << __EOF__  > /lib/systemd/system/valkey.service
 [Unit]
 Description=Valkey persistent key-value database
@@ -1370,7 +1391,7 @@ Wants=network-online.target
 
 [Service]
 EnvironmentFile=-/etc/default/valkey
-ExecStart=/usr/local/bin/valkey-server /etc/valkey/valkey.conf --daemonize no --supervised systemd $OPTIONS
+ExecStart=/usr/local/bin/valkey-server /etc/valkey/valkey.conf --daemonize yes --supervised systemd $OPTIONS
 Type=notify
 User=valkey
 Group=valkey
@@ -1548,6 +1569,7 @@ update_openvas_feed () {
     echo -e "\e[1;36m...updating NVT information\e[0m";
     # Clean up redis, then update all VT information
     redis-cli -s /run/redis/redis.sock FLUSHALL > /dev/null 2>&1;
+    valkey-cli -s /run/valkey/valkey.sock FLUSHALL > /dev/null 2>&1;
     su gvm -c '/opt/gvm/sbin/openvas --update-vt-info' > /dev/null 2>&1;
     echo -e "\e[1;32mupdate_openvas_feed() finished\e[0m";
     /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gse';
@@ -1908,17 +1930,22 @@ main() {
     # Configuration of installed components
     prepare_postgresql;
     tune_postgresql;
-    # valkey or redis
-    if [ $VALKEY_INSTALL == "Yes" ]
-        then
-            install_valkey;
-            configure_valkey;
-        else
-            configure_redis;
-        fi
     configure_gvm;
     configure_openvas;
     configure_gsa;
+    
+    # valkey or redis
+    if [ $VALKEY_INSTALL == "Yes" ]
+        then
+            echo -e "\e[1;36m...Installing Valkey v$VALKEY\e[0m";
+            install_valkey;
+            configure_valkey;
+        else 
+            echo -e "\e[1;36m...Installing redis\e[0m";
+            apt-get -qq -y install redis-server > /dev/null 2>&1;
+            configure_redis;
+        fi
+    
     ## Some PGP stuff
     prepare_gpg;
     ## DB Maintenance

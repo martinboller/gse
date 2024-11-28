@@ -34,15 +34,15 @@ Name | URL | Version
 ---|---|---
 gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.14.0
 ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.7.1
-openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.12.1
+openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.13.1
 GVM Daemon | https://github.com/greenbone/gvmd/ | 24.0.0
 GSA Daemon | https://github.com/greenbone/gsad/ | 24.0.0
 GSA | https://github.com/greenbone/gsa/ | 24.0.1
 openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.6
-python-gvm | https://github.com/greenbone/python-gvm/ | 24.8.0
+python-gvm | https://github.com/greenbone/python-gvm/ | 24.11.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 24.8.0
 pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.5
-notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.4
+notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.5
 greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 24.9.0 
 Node.js for Debian 11 | https://deb.nodesource.com/ | 20.x
 Node.js for Debian 12 | Debian Repo | 18.x
@@ -53,7 +53,7 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 [API Reference for Greenbone GMP 22.5](https://docs.greenbone.net/API/GMP/gmp-22.5.html)
 
-### Install on Debian 11 or 12 directly (not needed when using Vagrant)
+### Install on Debian 12 directly (not needed when using Vagrant)
 
 1. Modify the .env file to match your environment (especially if you need to send mail), however you may want to personalize it even further.
 
@@ -70,6 +70,11 @@ Node.js for Debian 12 | Debian Repo | 18.x
 ----
 
 ## Latest changes
+
+## 2024-11-28 - valkey now default, notus-scanner, python-gvm
+- Valkey now default instead of Redis in .env
+- notus-scanner v22.6.5
+- python-gvm v14.11.0
 
 ### 2024-11-26 - valkey configuration and openvas-scanner
 - Minor config changes for valkey.conf
