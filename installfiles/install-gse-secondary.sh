@@ -490,9 +490,9 @@ install_notus() {
     su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install paho-mqtt==$PAHOMQTT --use-pep517"
     echo -e "\e[1;36m...Install notus scanner Python pip module (notus-scanner) \e[0m";
     # From Python PyPi
-    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner==$NOTUS" > /dev/null 2>&1; 
+    #su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner==$NOTUS" > /dev/null 2>&1; 
     # From downloaded source
-    #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1; 
+    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1; 
     sync;
     echo -e "\e[1;32minstall_notus() finished\e[0m";
     /usr/bin/logger 'install_notus finished' -t 'ce-2024-11-28';
