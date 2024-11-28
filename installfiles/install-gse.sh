@@ -220,6 +220,9 @@ prepare_source() {
     echo -e "\e[1;35mnotus-scanner \t\t $NOTUS"
     echo -e "\e[1;35mfeed-sync \t\t $FEEDSYNC"
     echo -e "\e[1;35m----------------------------------\e[0m";
+    echo -e "\e[1;35mvalkey-server \t\t $VALKEY"
+    echo -e "\e[1;35m----------------------------------"
+
     echo -e "\e[1;36m...preparing directories\e[0m";
     mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
@@ -456,7 +459,7 @@ install_ospd_openvas() {
     echo -e "\e[1;32minstall_ospd_openvas()\e[0m";
     echo -e "\e[1;36m...installing ospd-openvas\e[0m";
     # Install from repo
-    echo -e "\e[1;36m...installing ospd-openvas workaround\e[0m";
+    echo -e "\e[1;36m...installing ospd-openvas\e[0m";
     su gvm -c "source ~/gvmpy/bin/activate;python3 -m pip install ospd-openvas==$OSPDOPENVAS --use-pep517" > /dev/null 2>&1;
     #cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     #cd ospd-openvas > /dev/null 2>&1;
@@ -1094,7 +1097,7 @@ start_services() {
     if [ $VALKEY_INSTALL == "Yes" ]; then
          # Restart valkey with new config
         echo -e "\e[1;36m...restarting valkey service\e[0m";
-        systemctl restart valkey.service > /dev/null 2>&1;
+        systemctl restart valkey-server.service > /dev/null 2>&1;
     else
         # Restart Redis with new config
         echo -e "\e[1;36m...restarting redis service\e[0m";
@@ -1135,13 +1138,13 @@ start_services() {
     echo -e "\e[1;32mChecking valkey/redis......\e[0m";
     if [ $VALKEY_INSTALL == "Yes" ]
         then
-            if systemctl is-active --quiet valkey.service;
+            if systemctl is-active --quiet valkey-server.service;
             then
-                echo -e "\e[1;32mvalkey.service started successfully";
-                /usr/bin/logger 'valkey.service started successfully' -t 'gce-2024-06-29';
+                echo -e "\e[1;32mvalkey-server.service started successfully";
+                /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2024-06-29';
             else
-                echo -e "\e[1;31mvalkey.service FAILED!\e[0m";
-                /usr/bin/logger 'valkey.service FAILED' -t 'gce-2024-06-29';
+                echo -e "\e[1;31mvalkey-server.service FAILED!\e[0m";
+                /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2024-06-29';
             fi
         else
             if systemctl is-active --quiet redis-server.service;
@@ -1215,7 +1218,7 @@ __EOF__
     usermod -aG redis gvm;
     echo -e "\e[1;36m...creating redis configuration for Greenbone Community Edition\e[0m";
     cat << __EOF__  > /etc/redis/redis.conf
-daemonize yes
+daemonize no
 pidfile /run/redis/redis-server.pid
 port 0
 tcp-backlog 511
@@ -1382,7 +1385,7 @@ __EOF__
 echo -e "\e[1;36m...changind openvas to use valkey.sock\e[0m";
 sed -ie 's+/run/redis/redis.sock+/run/valkey/valkey.sock'+g /etc/openvas/openvas.conf;
 
-    cat << __EOF__  > /lib/systemd/system/valkey.service
+    cat << __EOF__  > /lib/systemd/system/valkey-server.service
 [Unit]
 Description=Valkey persistent key-value database
 After=network.target
@@ -1391,7 +1394,7 @@ Wants=network-online.target
 
 [Service]
 EnvironmentFile=-/etc/default/valkey
-ExecStart=/usr/local/bin/valkey-server /etc/valkey/valkey.conf --daemonize yes --supervised systemd $OPTIONS
+ExecStart=/usr/local/bin/valkey-server /etc/valkey/valkey.conf --daemonize no --supervised systemd $OPTIONS
 Type=notify
 User=valkey
 Group=valkey
@@ -1402,7 +1405,7 @@ RuntimeDirectoryMode=0755
 WantedBy=multi-user.target
 __EOF__
 
-    # Redis requirements - overcommit memory and TCP backlog setting > 511
+    # Original Redis requirements - overcommit memory and TCP backlog setting > 511
     echo -e "\e[1;36m...configuring sysctl for Greenbone Community Edition, valkey\e[0m";
     sysctl -w vm.overcommit_memory=$vm_overcommit_memory > /dev/null 2>&1;
     sysctl -w net.core.somaxconn=$net_core_somaxconn > /dev/null 2>&1;
@@ -1418,8 +1421,8 @@ __EOF__
     update-grub > /dev/null 2>&1;
     sync;
     systemctl daemon-reload > /dev/null 2>&1;
-    systemctl enable valkey.service > /dev/null 2>&1;
-    systemctl start valkey.service > /dev/null 2>&1;
+    systemctl enable valkey-server.service > /dev/null 2>&1;
+    systemctl start valkey-server.service > /dev/null 2>&1;
     echo -e "\e[1;32mconfigure_valkey() finished\e[0m";
     /usr/bin/logger 'configure_valkey finished' -t 'gce-2024-06-29';
 }

@@ -50,7 +50,7 @@ install_prerequisites() {
             /usr/bin/logger '..install_prerequisites_debian_12_bookworm' -t 'ce-2024-11-28';
             echo -e "\e[1;36m...installing prequisites Debian 12 Bookworm\e[0m";
             # Install pre-requisites for gvmd on Bookworm (debian 12)
-            apt-get -qq -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc doxygen;        
+            apt-get -qq -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc doxygen > /dev/null 2>&1;      
             echo -e "\e[1;36m...other prerequisites for Greenbone Community Edition\e[0m";
             # Other pre-requisites for GSE - Bookworm / Debian 12
             /usr/bin/logger '....Other prerequisites for Greenbone Community Edition on Debian 12' -t 'ce-2024-11-28';
@@ -173,7 +173,8 @@ prepare_source() {
     echo -e "\e[1;35mgvm-tools \t\t $GVMTOOLS"
     echo -e "\e[1;35mnotus-scanner \t $NOTUS"
     echo -e "\e[1;35mfeed-sync \t\t $FEEDSYNC"
-
+    echo -e "\e[1;35m----------------------------------"
+    echo -e "\e[1;35mvalkey-server \t\t $VALKEY"
     echo -e "\e[1;35m----------------------------------\e[0m";
 
     mkdir -p /opt/gvm/src/greenbone > /dev/null 2>&1;
@@ -727,7 +728,7 @@ unixsocket /run/valkey/valkey.sock
 unixsocketperm 766
 timeout 0
 tcp-keepalive 0
-daemonize yes
+daemonize no
 pidfile /run/valkey/valkey.pid
 loglevel notice
 logfile ""
@@ -805,7 +806,7 @@ __EOF__
 echo -e "\e[1;36m...changind openvas to use valkey.sock\e[0m";
 sed -ie 's+/run/redis/redis.sock+/run/valkey/valkey.sock'+g /etc/openvas/openvas.conf;
 
-    cat << __EOF__  > /lib/systemd/system/valkey.service
+    cat << __EOF__  > /lib/systemd/system/valkey-server.service
 [Unit]
 Description=Valkey persistent key-value database
 After=network.target
@@ -814,7 +815,7 @@ Wants=network-online.target
 
 [Service]
 EnvironmentFile=-/etc/default/valkey
-ExecStart=/usr/local/bin/valkey-server /etc/valkey/valkey.conf --daemonize yes --supervised systemd $OPTIONS
+ExecStart=/usr/local/bin/valkey-server /etc/valkey/valkey.conf --daemonize no --supervised systemd $OPTIONS
 Type=notify
 User=valkey
 Group=valkey
@@ -825,7 +826,7 @@ RuntimeDirectoryMode=0755
 WantedBy=multi-user.target
 __EOF__
 
-    # Redis requirements - overcommit memory and TCP backlog setting > 511
+    # Original Redis requirements - overcommit memory and TCP backlog setting > 511
     echo -e "\e[1;36m...configuring sysctl for Greenbone Community Edition, valkey\e[0m";
     sysctl -w vm.overcommit_memory=$vm_overcommit_memory > /dev/null 2>&1;
     sysctl -w net.core.somaxconn=$net_core_somaxconn > /dev/null 2>&1;
@@ -841,8 +842,8 @@ __EOF__
     update-grub > /dev/null 2>&1;
     sync;
     systemctl daemon-reload > /dev/null 2>&1;
-    systemctl enable valkey.service > /dev/null 2>&1;
-    systemctl start valkey.service > /dev/null 2>&1;
+    systemctl enable valkey-server.service > /dev/null 2>&1;
+    systemctl start valkey-server.service > /dev/null 2>&1;
     echo -e "\e[1;32mconfigure_valkey() finished\e[0m";
     /usr/bin/logger 'configure_valkey finished' -t 'ce-2024-11-28';
 }
@@ -857,7 +858,7 @@ start_services() {
     if [ "$VALKEY_INSTALL" == "Yes" ]; then
          # Restart valkey with new config
         echo -e "\e[1;36m...restarting valkey service\e[0m";
-        systemctl restart valkey.service > /dev/null 2>&1;
+        systemctl restart valkey-server.service > /dev/null 2>&1;
     else
         # Restart Redis with new config
         echo -e "\e[1;36m...restarting redis service\e[0m";
@@ -887,13 +888,13 @@ start_services() {
     echo -e "\e[1;32mChecking valkey/redis......\e[0m";
     if [ $VALKEY_INSTALL == "Yes" ]
         then
-            if systemctl is-active --quiet valkey.service;
+            if systemctl is-active --quiet valkey-server.service;
             then
-                echo -e "\e[1;32mvalkey.service started successfully";
-                /usr/bin/logger 'valkey.service started successfully' -t 'gce-2024-06-29';
+                echo -e "\e[1;32mvalkey-server.service started successfully";
+                /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2024-06-29';
             else
-                echo -e "\e[1;31mvalkey.service FAILED!\e[0m";
-                /usr/bin/logger 'valkey.service FAILED' -t 'gce-2024-06-29';
+                echo -e "\e[1;31mvalkey-server.service FAILED!\e[0m";
+                /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2024-06-29';
             fi
         else    
             if systemctl is-active --quiet redis-server.service;
