@@ -45,7 +45,6 @@ pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.5
 notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.5
 greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 24.9.0 
 valkey | https://github.com/valkey-io/valkey | 8.0.1
-Node.js for Debian 11 | https://deb.nodesource.com/ | 20.x
 Node.js for Debian 12 | Debian Repo | 18.x
 
 ----
@@ -71,6 +70,10 @@ Node.js for Debian 12 | Debian Repo | 18.x
 ----
 
 ## Latest changes
+
+## 2024-11-29 - No longer testing on Debian 11
+- Decided to not waste time on testing on Debian 11 anymore
+- Added ping test of valkey-server to setup scripts
 
 ## 2024-11-28 - valkey now default, notus-scanner, python-gvm
 - Valkey now default instead of Redis in .env

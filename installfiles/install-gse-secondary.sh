@@ -488,7 +488,7 @@ install_notus() {
     cd notus/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
     echo -e "\e[1;36m...Install paho mqtt pypi package version 1.6.1\e[0m";
-    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install paho-mqtt==$PAHOMQTT --use-pep517"
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install paho-mqtt==$PAHOMQTT --use-pep517" > /dev/null 2>&1;
     echo -e "\e[1;36m...Install notus scanner Python pip module (notus-scanner) \e[0m";
     # From Python PyPi
     #su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install notus-scanner==$NOTUS" > /dev/null 2>&1; 
@@ -1225,6 +1225,34 @@ __EOF__
     /usr/bin/logger 'create_wrapper finished' -t 'ce-2024-11-28';
 }
 
+check_valkey() {
+    /usr/bin/logger 'check_valkey' -t 'gce-2024-04-14';
+    echo -e "\e[1;32mcheck_valkey()\e[0m";
+    # Check status of service valkey-server.service
+    echo -e
+    echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
+    echo -e "\e[1;32mChecking valkey-server.service......\e[0m";
+    if systemctl is-active --quiet valkey-server.service;
+    then
+        echo -e "\e[1;32mvalkey-server.service started successfully";
+        /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2024-04-14';
+        export VALKEY_REPLY=$(valkey-cli -s /run/valkey/valkey.sock PING);
+	#echo $VALKEY_REPLY;
+	if [ $VALKEY_REPLY == "PONG" ]
+        then
+            echo -e "\e[1;32mvalkey responding successfully with \e[1;35m$VALKEY_REPLY\e[1;32m on socket \e[1;35m$VALKEY_SOCKET\e[0m";
+            /usr/bin/logger "valkey responding successfully with $VALKEY_REPLY on socket $VALKEY_SOCKET" -t 'gce-2024-04-14';
+        else
+            echo -e "\e[1;32mvalkey not responding on socket $VALKEY_SOCKET";
+            /usr/bin/logger "valkey not responding on socket $VALKEY_SOCKET" -t 'gce-2024-04-14';
+        fi
+    else
+        echo -e "\e[1;31mvalkey-server.service FAILED\e[0m";
+        /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2024-04-14';
+    fi
+    /usr/bin/logger 'check_valkey finished' -t 'gce-2024-04-14';
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -1302,6 +1330,7 @@ main() {
     update_feed_data;
     #update_openvas_feed;
     start_services;
+    check_valkey;
     create_scan_user;
     clean_env;
     remove_vagrant_nic;
