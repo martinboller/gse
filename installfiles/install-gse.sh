@@ -655,7 +655,8 @@ install_gvm_tools() {
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     echo -e "\e[1;36m...installing GVM-tools\e[0m";
     # From Python PyPi Repo
-    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install gvm-tools==$GVMTOOLS" > /dev/null 2>&1;
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install ." > /dev/null 2>&1;
+#    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install gvm-tools==$GVMTOOLS" > /dev/null 2>&1;
     # From downloaded sources
     #su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
 #    /usr/poetry/bin/poetry install > /dev/null 2>&1;
@@ -1550,6 +1551,7 @@ create_gvm_python_script() {
     rm -rf /root/gvm-cli-scripts/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/scripts/ > /dev/null 2>&1;
     chmod 755 /opt/gvm/scripts/*.py;
+    chmod 755 /opt/gvm/scripts/*.sh;
     sync;
     echo -e "\e[1;32mcreate_gvm_python_script() finished\e[0m";
     /usr/bin/logger 'create_gvm_python_script finished' -t 'gce-2024-06-29';

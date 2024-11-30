@@ -460,12 +460,13 @@ update_feed_data() {
 install_gvm_tools() {
     /usr/bin/logger 'install_gvm_tools' -t 'ce-2024-11-28';
     echo -e "\e[1;32minstall_gvm_tools() \e[0m";
- #   cd /opt/gvm/src/greenbone > /dev/null 2>&1;
+    cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # Install gvm-tools
- #   cd gvm-tools/ > /dev/null 2>&1;
- #   chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
+    cd gvm-tools/ > /dev/null 2>&1;
+    chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     echo -e "\e[1;36m...installing GVM-tools\e[0m";
-    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install gvm-tools' > /dev/null 2>&1; 
+    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1; 
+#    su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install gvm-tools' > /dev/null 2>&1; 
  #   /usr/poetry/bin/poetry install > /dev/null 2>&1;
     echo -e "\e[1;32minstall_gvm_tools() finished\e[0m";
     /usr/bin/logger 'install_gvm_tools finished' -t 'ce-2024-11-28';
