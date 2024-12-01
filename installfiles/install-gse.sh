@@ -5,10 +5,9 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Instruction:  Run this script as root on a fully updated                  #
-#               Debian 11 (Bullseye) or Debian 12 (Bookworm)                #
+#               Debian 12 (Bookworm)                                        #
 #                                                                           #
 #############################################################################
-
 
 install_prerequisites() {
     /usr/bin/logger 'install_prerequisites' -t 'gce-2024-06-29';
@@ -1593,7 +1592,7 @@ configure_nginx() {
     /usr/bin/logger 'configure_nginx()' -t 'gce-2024-06-29';
     echo -e "\e[1;32mconfigure_nginx()\e[0m";
     echo -e "\e[1;36m...configuring diffie hellman parameters file\e[0m";
-    openssl dhparam -out /etc/nginx/dhparam.pem 2048 > /dev/null 2>&1;
+    openssl dhparam -out /etc/nginx/dhparam.pem 2048 > /dev/null 2>&1&
     # TLS
     echo -e "\e[1;36m...configuring site\e[0m";
     cat << __EOF__ > /etc/nginx/sites-available/default;
@@ -1970,11 +1969,11 @@ main() {
     # valkey or redis
     if [ $VALKEY_INSTALL == "Yes" ]
         then
-            echo -e "\e[1;36m...Installing Valkey v$VALKEY\e[0m";
+            echo -e "\e[1;32Valkey v$VALKEY replacing Redis\e[0m";
             install_valkey;
             configure_valkey;
         else 
-            echo -e "\e[1;36m...Installing redis\e[0m";
+            echo -e "\e[1;32mRedis despite new license, consider valkey\e[0m";
             apt-get -qq -y install redis-server > /dev/null 2>&1;
             configure_redis;
         fi

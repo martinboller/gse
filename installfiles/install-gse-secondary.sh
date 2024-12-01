@@ -5,7 +5,7 @@
 # Author:       Martin Boller                                               #
 #                                                                           #
 # Instruction:  Run this script as root on a fully updated                  #
-#               Debian 11 (Bullseye) or Debian 12 (Bookworm)                #
+#               Debian 12 (Bookworm)                                        #
 #                                                                           #
 #############################################################################
 
@@ -941,7 +941,7 @@ __EOF__
     systemd-tmpfiles --create > /dev/null 2>&1;
     echo -e "\e[1;36m...creating redis configuration for Greenbone Community Edition\e[0m";
     cat << __EOF__  > /etc/redis/redis.conf
-daemonize yes
+daemonize no
 pidfile /run/redis/redis-server.pid
 port 0
 tcp-backlog 511
@@ -1313,11 +1313,11 @@ main() {
    # valkey or redis
     if [ $VALKEY_INSTALL == "Yes" ]
         then
-            echo -e "\e[1;36m...Installing Valkey v$VALKEY\e[0m";
+            echo -e "\e[1;32Valkey v$VALKEY replacing Redis\e[0m";
             install_valkey;
             configure_valkey;
         else 
-            echo -e "\e[1;36m...Installing redis\e[0m";
+            echo -e "\e[1;32mRedis despite new license, consider valkey\e[0m";
             apt-get -qq -y install redis-server > /dev/null 2>&1;
             configure_redis;
         fi
