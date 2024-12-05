@@ -77,7 +77,7 @@ Node.js for Debian 12 | Debian Repo | 18.x
 - GSA Daemon | https://github.com/greenbone/gsad/ | 24.1.0
 - GSA | https://github.com/greenbone/gsa/ | 24.1.0
 - python-gvm | https://github.com/greenbone/python-gvm/ | 24.12.0
-- gvm-tools | https://github.com/greenbone/gvm-tools/ | 24.12.0
+- gvm-tools | https://github.com/greenbone/gvm-tools/ | 24.12.1
 
 ## 2024-11-29 - No longer testing on Debian 11
 - Decided to not waste time on testing on Debian 11 anymore
