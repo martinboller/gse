@@ -906,6 +906,8 @@ __EOF__
 --osp-vt-update=/run/ospd/ospd-openvas.sock
 --scanner-connection-retry=5
 __EOF__
+    # Bad config of log file in later builds
+    sed -ie s+file=-+file=/var/log/gvm/gvmd.log+g /etc/gvm/gvmd_log.conf
     sync;
     echo -e "\e[1;32mconfigure_gvm() finished\e[0m";
     /usr/bin/logger 'configure_gvm() finished' -t 'gce-2024-06-29';
