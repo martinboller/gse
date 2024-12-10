@@ -452,7 +452,7 @@ update_feed_data() {
     ## This relies on the configure_greenbone_updates script
     echo -e "\e[1;36m...updating feed data\e[0m";
     echo -e "\e[1;36m...this could take a while\e[0m";
-    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type nvt --config /etc/ospd/greenbone-feed-sync.toml > /dev/null 2>&1;
+    /opt/gvm/gvmpy/bin/greenbone-feed-sync --type $feedtypescanner --config /etc/ospd/greenbone-feed-sync.toml > /dev/null 2>&1;
     echo -e "\e[1;32mupdate_feed_data() finished\e[0m";
     /usr/bin/logger 'update_feed_data finished' -t 'ce-2024-11-28';
 }
@@ -1254,6 +1254,38 @@ check_valkey() {
     /usr/bin/logger 'check_valkey finished' -t 'gce-2024-04-14';
 }
 
+run_once() {
+    /usr/bin/logger 'run_once' -t 'gce-2024-04-14';
+    echo -e "\e[1;32mrun_once()\e[0m";
+
+    mkdir -p /etc/local/runonce.d/ran
+    cat << __EOF__  > /usr/local/bin/runonce.sh
+#!/bin/bash
+for file in /etc/local/runonce.d/*
+do
+    if [ ! -f "$file" ]
+    then
+        continue
+    fi
+    "$file"
+    mv "$file" "/etc/local/runonce.d/ran/$file.$(date +%Y%m%dT%H%M%S)"
+    logger -t runonce -p local3.info "$file"
+done
+__EOF__
+
+    chmod 755 /usr/local/bin/runonce.sh
+
+    cat << __EOF__  > /etc/local/runonce.d/scan_update.sh
+#!/bin/bash
+/opt/gvm/gvmpy/bin/greenbone-feed-sync --type $feedtypescanner --config /etc/gvm/greenbone-feed-sync.toml > /dev/null 2>&1;
+__EOF__
+
+    chmod 755 /etc/local/runonce.d/scan_update.sh
+
+    /usr/bin/logger 'run_once finished' -t 'gce-2024-04-14';
+    echo -e "\e[1;32mrun_once() finished\e[0m";
+}
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -1328,7 +1360,8 @@ main() {
     prestage_scan_data;
     configure_greenbone_updates;
     configure_permissions;
-    update_feed_data;
+    #update_feed_data;
+    run_once;
     #update_openvas_feed;
     start_services;
     check_valkey;
