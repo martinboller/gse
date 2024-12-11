@@ -954,6 +954,8 @@ __EOF__
 --http-only 
 --timeout=2880
 __EOF__
+    # Bad config of log file in later builds
+    sed -ie s+file=-+file=/var/log/gvm/gsad.log+g /etc/gvm/gsad_log.conf
     sync;
     touch /var/log/gvm/gsad.log > /dev/null 2>&1;
     chown -R gvm:gvm /var/log/gvm/ > /dev/null 2>&1;
