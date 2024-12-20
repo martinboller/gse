@@ -71,9 +71,9 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ## Latest changes
 
-## 2024-12-20 - openvas-scanner update  
-- openvas-scanner v23.14.0
-
+## 2024-12-20 - openvas-scanner update
+- ~~ openvas-scanner v23.14.0 ~~
+- Going back to 23.13.2 as 23.14.0 errors out with missing krb5.h file
 
 ## 2024-12-05 - Multiple updates from Greenbone  
 - gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.15.0
