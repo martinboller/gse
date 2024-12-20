@@ -34,7 +34,7 @@ Name | URL | Version
 ---|---|---
 gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.15.0
 ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.7.1
-openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.13.2
+openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.14.0
 GVM Daemon | https://github.com/greenbone/gvmd/ | 24.1.2
 GSA Daemon | https://github.com/greenbone/gsad/ | 24.1.0
 GSA | https://github.com/greenbone/gsa/ | 24.1.0
@@ -70,6 +70,10 @@ Node.js for Debian 12 | Debian Repo | 18.x
 ----
 
 ## Latest changes
+
+## 2024-12-20 - openvas-scanner update  
+- openvas-scanner v23.14.0
+
 
 ## 2024-12-05 - Multiple updates from Greenbone  
 - gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.15.0
