@@ -11,6 +11,19 @@ Vagrant.configure("2") do |config|
     cfg.vm.provision "reload"
     cfg.vm.provision :shell, path: "installfiles/install-gse.sh"
 
+    cfg.vm.provider "libvirt" do |lv, override|
+      lv.graphics_type = "vnc"
+      lv.video_type = "vga"
+      lv.input :type => "tablet", :bus => "usb"
+      lv.video_vram = 4096
+      lv.memory = 10240
+      lv.cpus = 4
+      lv.cpu_mode = "host-passthrough"
+      # Which storage pool path to use. Default to /var/lib/libvirt/images or ~/.local/share/libvirt/images depending on if you are running a system or user QEMU/KVM session.
+      lv.storage_pool_name = 'pool-1'
+      override.vm.synced_folder './', '/vagrant', type: 'rsync'
+    end
+
     cfg.vm.provider "vmware_fusion" do |v, override|
       v.vmx["displayname"] = "manticore"
       v.memory = 5120
@@ -47,6 +60,19 @@ Vagrant.configure("2") do |config|
     cfg.vm.provision "reload"
     cfg.vm.provision :shell, path: "installfiles/install-gse-secondary.sh"
 
+    cfg.vm.provider "libvirt" do |lv, override|
+      lv.graphics_type = "vnc"
+      lv.video_type = "vga"
+      lv.input :type => "tablet", :bus => "usb"
+      lv.video_vram = 4096
+      lv.memory = 4096
+      lv.cpus = 4
+      lv.cpu_mode = "host-passthrough"
+      #libvirt.storage_pool_path = '/media/storage_nvme/system_session_vm_pool'
+      lv.storage_pool_name = 'pool-1'
+      override.vm.synced_folder './', '/vagrant', type: 'rsync'
+    end
+
     cfg.vm.provider "vmware_fusion" do |v, override|
       v.vmx["displayname"] = "aboleth"
       v.memory = 2048
@@ -79,6 +105,26 @@ Vagrant.configure("2") do |config|
   #   cfg.vm.network "public_network", type: "dhcp", bridge: 'enp1s0', mac: "0020911E0009"
   #   cfg.vm.provision :file, source: './installfiles', destination: "/tmp/installfiles"
   #   cfg.vm.provision :shell, path: "bootstrap.sh"
+
+  # cfg.vm.provider "libvirt" do |lv, override|
+  #   lv.graphics_type = "vnc"
+  #   lv.video_type = "vga"
+  #   lv.input :type => "tablet", :bus => "usb"
+  #   lv.video_vram = 32768
+  #   lv.memory = 10240
+  #   lv.cpus = 4
+  #   # This is required for Vagrant to properly configure the network interfaces.
+  #   # See https://github.com/clong/DetectionLab/wiki/LibVirt-Support for more information
+  #   #lv.management_network_name = "VagrantMgmt"
+  #   #lv.management_network_address = "172.31.0.0/24"
+  #   #lv.management_network_mode = "none"
+  #   lv.cpu_mode = "host-passthrough"
+  #   # Which storage pool path to use. Default to /var/lib/libvirt/images or ~/.local/share/libvirt/images depending on if you are running a system or user QEMU/KVM session.
+  #   #libvirt.storage_pool_path = '/media/storage_nvme/system_session_vm_pool'
+  #   lv.storage_pool_name = 'pool-1'
+  #   #override.vm.box = "generic/ubuntu2004"
+  #   override.vm.synced_folder './', '/vagrant', type: 'rsync'
+  # end
 
   #cfg.vm.provider "vmware_fusion" do |v, override|
   #  v.vmx["displayname"] = "nessie"

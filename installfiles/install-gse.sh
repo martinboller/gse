@@ -73,7 +73,7 @@ install_prerequisites() {
                 bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
                 sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
                 python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-                    python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy cmdtest npm > /dev/null 2>&1;
+                krb5-multidev python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy cmdtest npm > /dev/null 2>&1;
             echo -e "\e[1;36m...installing yarn\e[0m";
             apt-get -qq -y install libhiredis-dev gcc pkg-config libssh-4 libssh-dev libgnutls28-dev libglib2.0-dev libjson-glib-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev libgcrypt20-dev libbsd-dev libcurl4-gnutls-dev > /dev/null 2>&1;
             apt-get -qq -y install libcjson-dev pnscan > /dev/null 2>&1;

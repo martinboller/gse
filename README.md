@@ -32,19 +32,19 @@ Note: Due to the ugly hack made removing the Vagrant NIC uses (it gave me a lot 
 Versions used:
 Name | URL | Version
 ---|---|---
-gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.15.0
+gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.15.2
 ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.7.1
-openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.14.0
-GVM Daemon | https://github.com/greenbone/gvmd/ | 24.1.2
-GSA Daemon | https://github.com/greenbone/gsad/ | 24.1.0
-GSA | https://github.com/greenbone/gsa/ | 24.1.0
+openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.15.3
+GVM Daemon | https://github.com/greenbone/gvmd/ | 24.2.0
+GSA Daemon | https://github.com/greenbone/gsad/ | 24.1.1
+GSA | https://github.com/greenbone/gsa/ | 24.2.0
 openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.6
-python-gvm | https://github.com/greenbone/python-gvm/ | 24.12.0
-gvm-tools | https://github.com/greenbone/gvm-tools/ | 24.12.1
+python-gvm | https://github.com/greenbone/python-gvm/ | 25.1.0
+gvm-tools | https://github.com/greenbone/gvm-tools/ | 25.1.0
 pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.6
 notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.5
 greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 24.9.0 
-valkey | https://github.com/valkey-io/valkey | 8.0.1
+valkey | https://github.com/valkey-io/valkey | 8.0.2
 Node.js for Debian 12 | Debian Repo | 18.x
 
 ----

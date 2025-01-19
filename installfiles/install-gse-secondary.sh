@@ -62,7 +62,7 @@ install_prerequisites() {
                 python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
             apt-get install -qq -y libhiredis-dev gcc pkg-config libssh-4 libssh-dev libgnutls28-dev libcjson-dev\
                 libglib2.0-dev libjson-glib-dev libpcap-dev libgpgme-dev bison libksba-dev \
-                libsnmp-dev libgcrypt20-dev redis-server libbsd-dev libcurl4-gnutls-dev pnscan > /dev/null 2>&1;
+                krb5-multidev libsnmp-dev libgcrypt20-dev redis-server libbsd-dev libcurl4-gnutls-dev pnscan > /dev/null 2>&1;
      
         else
             /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'ce-2024-11-28';
