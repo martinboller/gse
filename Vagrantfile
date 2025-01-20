@@ -4,7 +4,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "manticore" do |cfg|
     cfg.vm.box = "generic/debian12"
     cfg.vm.hostname = "manticore"
-    cfg.vm.network "public_network", dev: 'br0', mac: "0020911E0007"
+    cfg.vm.network "public_network", dev: 'br0', bridge: 'br0', mode: 'bridge', type: 'bridge', mac: "0020911E0007"
     cfg.vm.provision :file, source: './installfiles', destination: "/tmp/installfiles"
     cfg.vm.provision :file, source: './installfiles/.env', destination: "/tmp/installfiles/.env"
     cfg.vm.provision :shell, path: "bootstrap.sh"
@@ -53,7 +53,7 @@ Vagrant.configure("2") do |config|
   config.vm.define "aboleth" do |cfg|
     cfg.vm.box = "generic/debian12"
     cfg.vm.hostname = "aboleth"
-    cfg.vm.network "public_network", dev: 'br0', mac: "0020911E0008"
+    cfg.vm.network "public_network", dev: 'br0', bridge: 'br0', mode: 'bridge', type: 'bridge', mac: "0020911E0008"
     cfg.vm.provision :file, source: './installfiles', destination: "/tmp/installfiles"
     cfg.vm.provision :file, source: './installfiles/.env', destination: "/tmp/installfiles/.env"
     cfg.vm.provision :shell, path: "bootstrap.sh"
