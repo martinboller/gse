@@ -746,7 +746,8 @@ tune_postgresql() {
 configure_openvas() {
     /usr/bin/logger 'configure_openvas' -t 'gce-2024-06-29';
     echo -e "\e[1;32mconfigure_openvas() \e[0m";
-    mkdir /var/lib/notus/;
+    mkdir -p /var/lib/notus/products;
+    mkdir -p /var/lib/notus/advisories;
     chown -R gvm:gvm /var/lib/notus/;
     # Create openvas.conf file
     echo -e "\e[1;36m...create OpenVAS configuration file\e[0m";
@@ -2007,7 +2008,7 @@ main() {
     # valkey or redis
     if [ $VALKEY_INSTALL == "Yes" ]
         then
-            echo -e "\e[1;32mValkey v$VALKEY replacing Redis\e[0m";
+            echo -e "\e[1;32mVValkey v$VALKEY replacing Redis\e[0m";
             install_valkey;
             configure_valkey;
         else 

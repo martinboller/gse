@@ -525,6 +525,8 @@ prepare_gpg() {
 configure_openvas() {
     /usr/bin/logger 'configure_openvas' -t 'ce-2024-11-28';
     echo -e "\e[1;32mconfigure_openvas() \e[0m";
+    mkdir -p /var/lib/notus/products;
+    mkdir -p /var/lib/notus/advisories;
     # Create openvas configuration file
     echo -e "\e[1;36m...create OpenVAS configuration file\e[0m";
     cat << __EOF__ > /etc/openvas/openvas.conf
