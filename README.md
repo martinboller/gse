@@ -41,7 +41,7 @@ GSA | https://github.com/greenbone/gsa/ | 24.2.0
 openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.6
 python-gvm | https://github.com/greenbone/python-gvm/ | 25.1.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 25.1.0
-pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.6
+pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.7
 notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.5
 greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 24.9.0 
 valkey | https://github.com/valkey-io/valkey | 8.0.2
