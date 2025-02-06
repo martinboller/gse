@@ -44,7 +44,7 @@ python-gvm | https://github.com/greenbone/python-gvm/ | 26.0.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 25.1.1
 pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.7
 notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.6.5
-greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 24.9.0 
+greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 25.0.0 
 valkey | https://github.com/valkey-io/valkey | 8.0.2
 Node.js for Debian 12 | Debian Repo | 18.x
 
