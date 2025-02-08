@@ -1,4 +1,4 @@
-# Greenbone Vulnerability Manager 22.4.x Community Edition Installation script
+# Greenbone Vulnerability Manager 24.10 Community Edition Installation script
 
 ### Bash script automating the installation of Greenbone Vulnerability Manager Community Version on Debian 12 (Bookworm) or Debian 11 (Bullseye)
 
@@ -71,6 +71,9 @@ Node.js for Debian 12 | Debian Repo | 18.x
 ----
 
 ## Latest changes
+
+## 2025-02-08 - GCE updated from 22.04 to 24.10
+-- See table for latest modules
 
 ## 2024-12-20 - openvas-scanner update
 - ~~ openvas-scanner v23.14.0 ~~
