@@ -2026,15 +2026,15 @@ main() {
     #browserlist_update;
     # Prestage only works on the specific Vagrant lab where a scan-data tar-ball is copied to the Host. 
     # Update scan-data only from greenbone when used everywhere else.
-    #prestage_scan_data;
+    prestage_scan_data;
     configure_feed_validation;
     configure_greenbone_updates;
     configure_permissions;
     #update_feed_data;
     #run_once;
-    #update_openvas_feed;
     start_services;
     check_valkey;
+    update_openvas_feed;
     configure_feed_owner;
     configure_maxrows;
     get_scanner_status;
