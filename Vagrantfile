@@ -16,11 +16,11 @@ Vagrant.configure("2") do |config|
       lv.video_type = "vga"
       lv.input :type => "tablet", :bus => "usb"
       lv.video_vram = 4096
-      lv.memory = 10240
-      lv.cpus = 4
+      lv.memory = 16384
+      lv.cpus = 8
       lv.cpu_mode = "host-passthrough"
       # Which storage pool path to use. Default to /var/lib/libvirt/images or ~/.local/share/libvirt/images depending on if you are running a system or user QEMU/KVM session.
-      lv.storage_pool_name = 'pool-1'
+      lv.storage_pool_name = 'default'
       override.vm.synced_folder './', '/vagrant', type: 'rsync'
     end
 
