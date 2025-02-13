@@ -736,6 +736,7 @@ tune_postgresql() {
     su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_parallel_workers_per_gather = \"$pg_max_parallel_workers_per_gather\"'" > /dev/null 2>&1;
     su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_parallel_workers = \"$pg_max_parallel_workers\"'" > /dev/null 2>&1;
     su postgres -c "psql gvmd -c 'ALTER SYSTEM SET max_parallel_maintenance_workers = \"$pg_max_parallel_maintenance_workers\"'" > /dev/null 2>&1;
+    su postgres -c "psql gvmd -c 'ALTER SYSTEM SET jit = \"$pg_jit\"'" > /dev/null 2>&1;
     echo -e "\e[1;36m...Restarting PostgreSql";
     systemctl restart postgresql.service;
 
