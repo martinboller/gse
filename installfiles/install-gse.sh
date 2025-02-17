@@ -501,9 +501,9 @@ install_openvas() {
     /usr/bin/logger 'install_openvas finished' -t 'gce-2024-06-29';
 }
 
-install_gvm() {
-    /usr/bin/logger 'install_gvm()' -t 'gce-2024-06-29';
-    echo -e "\e[1;32minstall_gvm()\e[0m";
+install_gvmd() {
+    /usr/bin/logger 'install_gvmd()' -t 'gce-2024-06-29';
+    echo -e "\e[1;32minstall_gvmd()\e[0m";
     cd /opt/gvm/src/greenbone;
     # Build Manager
     cd gvmd/ > /dev/null 2>&1;
@@ -520,8 +520,8 @@ install_gvm() {
     echo -e "\e[1;36m...make install Greenbone Vulnerability Manager (GVM)\e[0m";
     make install > /dev/null 2>&1;
     sync;
-    echo -e "\e[1;32minstall_gvm() finished\e[0m";
-    /usr/bin/logger 'install_gvm() finished' -t 'gce-2024-06-29';
+    echo -e "\e[1;32minstall_gvmd() finished\e[0m";
+    /usr/bin/logger 'install_gvmd() finished' -t 'gce-2024-06-29';
 }
 
 install_nmap() {
@@ -1984,7 +1984,7 @@ main() {
     #install_openvas_from_github;
     install_openvas;
     install_ospd_openvas;
-    install_gvm;
+    install_gvmd;
     install_pggvm;
     install_gsa_web;
     install_gsad;
@@ -2009,7 +2009,7 @@ main() {
     # valkey or redis
     if [ $VALKEY_INSTALL == "Yes" ]
         then
-            echo -e "\e[1;32mVValkey v$VALKEY replacing Redis\e[0m";
+            echo -e "\e[1;32mValkey v$VALKEY replacing Redis\e[0m";
             install_valkey;
             configure_valkey;
         else 
@@ -2031,11 +2031,11 @@ main() {
     configure_feed_validation;
     configure_greenbone_updates;
     configure_permissions;
-    #update_feed_data;
+    update_feed_data;
     #run_once;
     start_services;
     check_valkey;
-    update_openvas_feed;
+    #update_openvas_feed;
     configure_feed_owner;
     configure_maxrows;
     get_scanner_status;

@@ -1362,9 +1362,9 @@ main() {
     prestage_scan_data;
     configure_greenbone_updates;
     configure_permissions;
-    #update_feed_data;
+    update_feed_data;
     run_once;
-    #update_openvas_feed;
+    update_openvas_feed;
     start_services;
     check_valkey;
     create_scan_user;
