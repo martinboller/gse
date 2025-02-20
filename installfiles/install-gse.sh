@@ -86,7 +86,7 @@ install_prerequisites() {
     /usr/bin/logger '..install prerequisites finished' -t 'gce-2024-06-29';
     echo -e "\e[1;36m...install prerequisites finished\e[0m";
      
-     # Speed up installation without texlive (but then PDF reports wont work)
+    # Speed up installation without texlive (but then PDF reports wont work)
     if [ "$TEXLIVE_INSTALL" == "Yes" ]; then
     # Required for PDF report generation
        /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gce-2024-06-29';
@@ -98,7 +98,7 @@ install_prerequisites() {
     else
         echo -e "\e[1;32mNot installing texlive, you won't be able to create PDF-reports\e[0m";
     fi
-   
+
     # Install other preferences and clean up APT
     /usr/bin/logger '....Install some preferences on Debian and clean up apt' -t 'gce-2024-06-29';
     echo -e "\e[1;36m...installing some preferences on Debian\e[0m";
@@ -1915,6 +1915,41 @@ __EOF__
     echo -e "\e[1;32mrun_once() finished\e[0m";
 }
 
+install_poetry() {
+    /usr/bin/logger 'install_poetry' -t 'gce-2024-04-14';
+    echo -e "\e[1;32minstall_poetry\e[0m";
+    if [ $POETRY_INSTALL == "Yes" ];
+    then
+        /usr/bin/logger 'install_poetry' -t 'gce-2024-04-14';
+        echo -e "\e[1;32minstalling python3-poetry\e[0m";
+        apt-get -y -qq install python3-poetry > /dev/null 2>&1;
+        /usr/bin/logger 'installing poetry requirements' -t 'gce-2024-04-14';
+        echo -e "\e[1;32minstalling poetry requirements\e[0m";
+        cat << __EOF__  > /opt/gvm/scripts/requirements.txt
+autohooks>=22.8.0
+autohooks-plugin-ruff>=23.6.1
+autohooks-plugin-black>=22.8.1
+pontos>=22.8.1
+sphinx>=5.3.0
+coverage>=7.2
+rope>=1.9.0
+furo>=2023.3.27
+sphinx-autobuild>=2021.3.14
+myst-parser>=2.0.0
+__EOF__
+        sync
+        chown -R gvm:gvm /opt/gvm/scripts/;
+        su - gvm;
+        source /opt/gvm/gvmpy/bin/activate > /dev/null 2>&1;
+        pip3 install -r /opt/gvm/scripts/requirements.txt > /dev/null 2>&1;
+        deactivate  > /dev/null 2>&1;
+    else
+        /usr/bin/logger 'Not installing python3-poetry check .env file' -t 'gce-2024-04-14';
+        echo -e "\e[1;32mNot installing python3-poetry check .env file if this is in error\e[0m";
+    fi
+    /usr/bin/logger 'install_poetry finished' -t 'gce-2024-04-14';
+    echo -e "\e[1;32minstall_poetry finished\e[0m";
+}
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -2024,6 +2059,7 @@ main() {
     prepare_db_maintenance;
     ## Add a simple GVM script as example
     create_gvm_python_script;
+    install_poetry;
     #browserlist_update;
     # Prestage only works on the specific Vagrant lab where a scan-data tar-ball is copied to the Host. 
     # Update scan-data only from greenbone when used everywhere else.
