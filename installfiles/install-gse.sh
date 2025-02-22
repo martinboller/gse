@@ -2092,7 +2092,7 @@ main() {
     echo -e "\e[1;32mPlease change the initial password, but do NOT delete user $GVM_ADMINUSER, as it is also the feedowner\e[0m"; 
     echo -e "\e[1;32m*******************************************************************************************************\e[0m";
     echo -e;
-    sync; sleep 10; systemctl reboot;
+    #sync; sleep 10; systemctl reboot;
 }
 
 main;
