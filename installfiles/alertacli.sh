@@ -177,7 +177,7 @@ configure_rootca_trust()  {
     openssl s_client -showcerts -connect $FORM_NODE.$CLUSTER_DNS_DOMAIN:443 2>/dev/null </dev/null |  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >> /opt/alerta/lib/python3.11/site-packages/certifi/cacert.pem
 
     mkdir /usr/local/share/ca-certificates/$CLUSTER_NAME/
-    openssl s_client -showcerts -connect $FORM_NODE.$CLUSTER_DNS_DOMAIN:443 2>/dev/null </dev/null |  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >> /usr/local/share/ca-certificates/$CLUSTER_NAME/$$CLUSTER_NAME-root-ca.crt
+    openssl s_client -showcerts -connect $FORM_NODE.$CLUSTER_DNS_DOMAIN:443 2>/dev/null </dev/null |  sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' >> /usr/local/share/ca-certificates/$CLUSTER_NAME/$CLUSTER_NAME-root-ca.crt
     update-ca-certificates > /dev/null 2>&1;
     /usr/bin/logger 'configure_rootca_trust() finished' -t "$CLUSTER_NAME";
     echo -e "\e[36m- configure_rootca_trust() finished\e[0m"
@@ -202,10 +202,9 @@ main() {
     echo -e "\e[1;36m---------------------------------------------------------------------------------------------------------------------\e[0m"
 
     install_alerta;
+    configure_rootca_trust;
     configure_alerta_heartbeat;
 
-    read -p "Create or reuse Alerta API Keys, then Press enter to continue " dummyVar;
-    echo -e "\n"
     read -p "Enter Alerta API key for alerta heartbeats: " alerta_api_key;
     echo -e "\e[0m"
     configure_alerta_apikey;

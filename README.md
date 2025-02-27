@@ -34,7 +34,7 @@ Versions used:
 Name | URL | Version
 ---|---|---
 gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.18.0
-ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.8.0
+ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.8.1
 openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.15.4
 GVM Daemon | https://github.com/greenbone/gvmd/ | 25.1.1
 GSA Daemon | https://github.com/greenbone/gsad/ | 24.2.2
