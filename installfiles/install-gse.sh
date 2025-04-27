@@ -9,8 +9,9 @@
 #                                                                           #
 #############################################################################
 
+
 install_prerequisites() {
-    /usr/bin/logger 'install_prerequisites' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_prerequisites' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_prerequisites()\e[0m";
     echo -e "\e[1;32m--------------------------------------------\e[0m";
     echo -e "\e[1;36m...installing prerequisite packages\e[0m";
@@ -22,74 +23,179 @@ install_prerequisites() {
     VER=$VERSION_ID
     CODENAME=$VERSION_CODENAME
     DISTRIBUTION=$VERSION_CODENAME
-    /usr/bin/logger "Operating System $OS Version $VER Codename $CODENAME" -t 'gce-2024-06-29';
+    /usr/bin/logger "Operating System $OS Version $VER Codename $CODENAME" -t 'gce-2025-04-26';
     export DISTRIBUTION="$(lsb_release -s -c)"
     echo -e "\e[1;36m...Operating System $OS Version $VER Codename $CODENAME\e[0m";
     # Install prerequisites
     # Some APT gymnastics to ensure it is all cleaned up
     apt-get -qq update > /dev/null 2>&1;
-    #apt-get -qq -y install --fix-broken > /dev/null 2>&1;
-    #apt-get -qq -y install --fix-missing > /dev/null 2>&1;
     # Install some basic tools on a Debian net install
     echo -e "\e[1;36m...install tools not available if installed from Debian net-install\e[0m";
-    /usr/bin/logger '..install some basic tools not available if installed from Debian net install' -t 'gce-2024-06-29';
-    echo -e "\e[1;36m...fix-policy for apt\e[0m";
-    #apt-get -qq -y install --fix-policy > /dev/null 2>&1;
+    /usr/bin/logger '..install some basic tools not available if installed from Debian net install' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...installing required packages\e[0m";
-    apt-get -qq -y install adduser wget whois build-essential devscripts git unzip zip apt-transport-https ca-certificates \
-        curl gnupg2 software-properties-common dnsutils dirmngr --install-recommends  > /dev/null 2>&1;
-
-    # For development (unit tests)
-    #apt-get -qq -y install libcgreen1 > /dev/null 2>&1;
-    # Install pre-requisites for 
-    # libunistring is a new requirement from oct-13 updates
-    /usr/bin/logger '..Tools for Development' -t 'gce-2024-06-29';
-    echo -e "\e[1;36m...installing required development tools\e[0m";
-    apt-get -qq -y install openssh-client gpgsm dpkg xmlstarlet libbsd-dev libjson-glib-dev libpaho-mqtt-dev gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
-        libgcrypt20-dev libunistring-dev libxml2-dev > /dev/null 2>&1;
-    # Install pre-requisites for gsad
-    /usr/bin/logger '..Prerequisites for Greenbone Security Assistant' -t 'gce-2024-06-29';
-    echo -e "\e[1;36m...prerequisites for Greenbone Security Assistant\e[0m";
-    apt-get -qq -y install libmicrohttpd-dev clang cmake > /dev/null 2>&1;
-    apt-get -qq -y install python3 python3-pip python3-setuptools python3-psutil python3-gnupg python3-venv python3-wheel > /dev/null 2>&1;
+    apt-get -qq -y install \
+        adduser \
+        wget \
+        whois \
+        build-essential \
+        devscripts \
+        git \
+        unzip \
+        zip \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        gnupg2 \
+        software-properties-common \
+        dnsutils \
+        dirmngr \
+        --install-recommends > /dev/null 2>&1;
 
     # Other pre-requisites for GSE
     echo -e "\e[1;36m...other prerequisites for Greenbone Community Edition\e[0m";
 
     if [ $VER -eq "12" ] 
         then
-            /usr/bin/logger '..install prerequisites Debian 12 Bookworm' -t 'gce-2024-06-29';
+            /usr/bin/logger '..install prerequisites Debian 12 Bookworm' -t 'gce-2025-04-26';
             echo -e "\e[1;36m...install prerequisites Debian 12 Bookworm\e[0m";
-            # Going with default debian 12 package (node 18.x)
-            # Install pre-requisites for gvmd on bookworm (debian 12)
-            apt update > /dev/null 2>&1;
-            apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev postgresql-contrib postgresql postgresql-server-dev-all \
-                postgresql-server-dev-15 pkg-config libical-dev xsltproc > /dev/null 2>&1;        
-            # Removed doxygen for now
-            # Other pre-requisites for GSE - Bullseye / Debian 11
-            /usr/bin/logger '....Other prerequisites for Greenbone Community Edition on Debian 12' -t 'gce-2024-06-29';
-            echo -e "\e[1;36m...installing prerequisites for Greenbone Community Edition\e[0m";
-            apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libgnutls28-dev libgpgme-dev \
-                bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz nodejs rpm nsis \
-                sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
-                python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-                krb5-multidev python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy cmdtest npm > /dev/null 2>&1;
-            echo -e "\e[1;36m...installing yarn\e[0m";
-            apt-get -qq -y install libhiredis-dev gcc pkg-config libssh-4 libssh-dev libgnutls28-dev libglib2.0-dev libjson-glib-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev libgcrypt20-dev libbsd-dev libcurl4-gnutls-dev > /dev/null 2>&1;
-            apt-get -qq -y install libcjson-dev pnscan > /dev/null 2>&1;
+            # Development tools
+            /usr/bin/logger '..Tools for Development' -t 'gce-2025-04-26';
+            echo -e "\e[1;36m...installing required development tools\e[0m";
+            apt-get -y install \
+                openssh-client \
+                gpgsm \
+                dpkg \
+                xmlstarlet \
+                libbsd-dev \
+                libjson-glib-dev \
+                libpaho-mqtt-dev \
+                gcc \
+                cmake \
+                pkg-config \
+                libssh-gcrypt-dev \
+                libgnutls28-dev \
+                libglib2.0-dev \
+                libpcap-dev \
+                libgpgme-dev \
+                bison \
+                libksba-dev \
+                libsnmp-dev \
+                libgcrypt20-dev \
+                libunistring-dev \
+                libxml2-dev > /dev/null 2>&1;
+
+            # Python stuff
+            apt-get -y install \
+                python3 \
+                python3-pip \
+                python3-setuptools \
+                python3-psutil \
+                python3-gnupg \
+                python3-venv \
+                python3-wheel \
+                python-wheel-common > /dev/null 2>&1;
+                python3 -m pip install --upgrade pip > /dev/null 2>&1;
+
+            # Prerequisites for gvm-libs
+            apt-get -y install \
+                libcjson-dev \
+                libcurl4-gnutls-dev \
+                libgcrypt-dev \
+                libglib2.0-dev \
+                libgnutls28-dev \
+                libgpgme-dev \
+                libhiredis-dev \
+                libnet1-dev \
+                libpaho-mqtt-dev \
+                libpcap-dev \
+                libssh-dev \
+                libxml2-dev \
+                pkg-config \
+                uuid-dev > /dev/null 2>&1;
+
+            # Prerequisites for ospd-openvas
+            apt-get -y install \
+                python3-defusedxml \
+                python3-deprecated \
+                python3-lxml \
+                python3-packaging \
+                python3-paho-mqtt \
+                python3-psutil \
+                python3-gnupg \
+                redis > /dev/null 2>&1;
+
+            # Prerequisites for openvas
+            apt-get -y install \
+                pkg-config \
+                libssh-gcrypt-dev \
+                libgnutls28-dev \
+                libglib2.0-dev \
+                libjson-glib-dev \
+                libpcap-dev \
+                libgpgme-dev \
+                bison \
+                libksba-dev \
+                libsnmp-dev \
+                libgcrypt20-dev \
+                redis-server \
+                libbsd-dev \
+                libcurl4-gnutls-dev \
+                krb5-multidev > /dev/null 2>&1;
+
+            # Prerequisites for Greenbone Vulnerability Manager Daemon
+            apt-get -y install \
+                gnutls-bin \
+                libcjson-dev \
+                libglib2.0-dev \
+                libgnutls28-dev \
+                libgpgme-dev \
+                libical-dev \
+                libpq-dev \
+                pkg-config \
+                postgresql-server-dev-all \
+                postgresql-contrib \
+                postgresql \
+                postgresql-server-dev-15 \
+                xsltproc > /dev/null 2>&1;
+
+            # Prerequisites for Greenbone Security Assistant Daemon
+            apt-get -y install \
+                libmicrohttpd-dev \
+                libxml2-dev \
+                zlib1g-dev > /dev/null 2>&1;
+            # Gersemi - cmake formatting
+            sudo apt-get -y install \
+                pipx > /dev/null 2>&1;
+            pipx install gersemi > /dev/null 2>&1;
+            pipx ensurepath > /dev/null 2>&1;
+
+            # Prerequisites for Greenbode Security Assistant
+            curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash -  > /dev/null 2>&1;
+            sudo apt update && sudo apt -y install nodejs > /dev/null 2>&1;
+
+            # Prerequisites for Openvas-SMB
+            apt-get -y install \
+                pkg-config \
+                gcc-mingw-w64 \
+                libgnutls28-dev \
+                perl-base \
+                heimdal-dev \
+                libpopt-dev \
+                libglib2.0-dev \
+                libunistring-dev > /dev/null 2>&1;
         else
-            /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'gce-2024-06-29';
+            /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'gce-2025-04-26';
             echo -e "\e[1;36m...Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION\e[0m";
             exit;
         fi
     
-    /usr/bin/logger '..install prerequisites finished' -t 'gce-2024-06-29';
+    /usr/bin/logger '..install prerequisites finished' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...install prerequisites finished\e[0m";
      
     # Speed up installation without texlive (but then PDF reports wont work)
     if [ "$TEXLIVE_INSTALL" == "Yes" ]; then
     # Required for PDF report generation
-       /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gce-2024-06-29';
+       /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gce-2025-04-26';
         echo -e "\e[1;36m...installing texlive required for PDF report generation\e[0m";
         echo -e "\e[1;36m...please be patient, this could take quite a while depending on your system\e[0m";
         apt-get -qq -y install texlive-latex-extra --no-install-recommends > /dev/null 2>&1;
@@ -100,7 +206,7 @@ install_prerequisites() {
     fi
 
     # Install other preferences and clean up APT
-    /usr/bin/logger '....Install some preferences on Debian and clean up apt' -t 'gce-2024-06-29';
+    /usr/bin/logger '....Install some preferences on Debian and clean up apt' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...installing some preferences on Debian\e[0m";
     apt-get -qq -y install bash-completion haveged > /dev/null 2>&1;
     # Install SUDO
@@ -113,10 +219,7 @@ install_prerequisites() {
     #apt-get -qq -y autoremove --purge > /dev/null 2>&1;
     #apt-get -qq -y autoclean > /dev/null 2>&1;
     #apt-get -qq -y clean > /dev/null 2>&1;
-    # Python pip packages
-    echo -e "\e[1;36m...installing python and python-pip\e[0m";
-    apt-get -qq -y install python3-pip python-wheel-common > /dev/null 2>&1;
-    python3 -m pip install --upgrade pip > /dev/null 2>&1;
+
     # Prepare directories for scan feed data
     echo -e "\e[1;36m...preparing directories for scan feed data\e[0m";
     mkdir -p /var/lib/gvm/private/CA > /dev/null 2>&1;
@@ -128,20 +231,22 @@ install_prerequisites() {
     chown -R gvm:gvm /var/log/gvm/ > /dev/null 2>&1;
     timedatectl set-timezone UTC  > /dev/null 2>&1;
     echo -e "\e[1;32minstall_prerequisites() finished\e[0m";
-    /usr/bin/logger 'install_prerequisites finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_prerequisites finished' -t 'gce-2025-04-26';
 }
 
+
 clean_env() {
-    /usr/bin/logger 'clean_env()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'clean_env()' -t 'gce-2025-04-26';
     echo -e "\e[1;32mclean_env()\e[0m";
     ## Deleting file with variables environment variables from env
     rm $ENV_DIR/.env > /dev/null 2>&1;
-    /usr/bin/logger 'clean_env() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'clean_env() finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32mclean_env() finished\e[0m";
 }
 
+
 prepare_nix() {
-    /usr/bin/logger 'prepare_nix()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prepare_nix()' -t 'gce-2025-04-26';
     echo -e "\e[1;32mprepare_nix()\e[0m";
     echo -e "\e[1;32mCreating Users, configuring sudoers, and setting locale\e[0m";
     # set desired locale
@@ -195,11 +300,12 @@ __EOF__
     echo -e "\e[1;36m...starting systemd-tmpfiles to create directories\e[0m";
     systemd-tmpfiles --create > /dev/null 2>&1;
     echo -e "\e[1;32mprepare_nix() finished\e[0m";
-    /usr/bin/logger 'prepare_nix() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prepare_nix() finished' -t 'gce-2025-04-26';
 }
 
+
 prepare_source() {    
-    /usr/bin/logger 'prepare_source' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prepare_source' -t 'gce-2025-04-26';
     echo -e "\e[1;32mprepare_source()\e[0m";
     echo -e "\e[1;32mPreparing GSE Source files\e[0m";
     echo -e "\e[1;36m...Installing as specified in the env file\e[0m";
@@ -227,45 +333,45 @@ prepare_source() {
     chown -R gvm:gvm /opt/gvm/src/greenbone > /dev/null 2>&1;
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     #Get all packages (the python elements can be installed w/o, but downloaded and used for install anyway)
-    /usr/bin/logger '..gvm libraries' -t 'gce-2024-06-29';
+    /usr/bin/logger '..gvm libraries' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...downloading released packages for Greenbone Community Edition\e[0m";
-    /usr/bin/logger '..gvm-libs' -t 'gce-2024-06-29';
+    /usr/bin/logger '..gvm-libs' -t 'gce-2025-04-26';
     wget -O gvm-libs.tar.gz https://github.com/greenbone/gvm-libs/archive/refs/tags/v$GVMLIBS.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..ospd-openvas' -t 'gce-2024-06-29';
+    /usr/bin/logger '..ospd-openvas' -t 'gce-2025-04-26';
     wget -O ospd-openvas.tar.gz https://github.com/greenbone/ospd-openvas/archive/refs/tags/v$OSPDOPENVAS.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..openvas-scanner' -t 'gce-2024-06-29';
+    /usr/bin/logger '..openvas-scanner' -t 'gce-2025-04-26';
     wget -O openvas.tar.gz https://github.com/greenbone/openvas-scanner/archive/refs/tags/v$OPENVAS.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..gvm daemon' -t 'gce-2024-06-29';
+    /usr/bin/logger '..gvm daemon' -t 'gce-2025-04-26';
     wget -O gvmd.tar.gz https://github.com/greenbone/gvmd/archive/refs/tags/v$GVMD.tar.gz > /dev/null 2>&1;
     # Note: gvmd 22.5.2 and 22.5.3 spawns a huge number of instances and exhaust system resources 
-    /usr/bin/logger '..gsa daemon (gsad)' -t 'gce-2024-06-29';
+    /usr/bin/logger '..gsa daemon (gsad)' -t 'gce-2025-04-26';
     wget -O gsad.tar.gz https://github.com/greenbone/gsad/archive/refs/tags/v$GSAD.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..gsa webserver' -t 'gce-2024-06-29';
+    /usr/bin/logger '..gsa webserver' -t 'gce-2025-04-26';
     wget -O gsa.tar.gz https://github.com/greenbone/gsa/archive/refs/tags/v$GSA.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..openvas-smb' -t 'gce-2024-06-29';
+    /usr/bin/logger '..openvas-smb' -t 'gce-2025-04-26';
     wget -O openvas-smb.tar.gz https://github.com/greenbone/openvas-smb/archive/refs/tags/v$OPENVASSMB.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..python-gvm' -t 'gce-2024-06-29';
+    /usr/bin/logger '..python-gvm' -t 'gce-2025-04-26';
     wget -O pythongvm.tar.gz https://github.com/greenbone/python-gvm/archive/refs/tags/v$PYTHONGVM.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..gvm-tools' -t 'gce-2024-06-29';
+    /usr/bin/logger '..gvm-tools' -t 'gce-2025-04-26';
     wget -O gvm-tools.tar.gz https://github.com/greenbone/gvm-tools/archive/refs/tags/v$GVMTOOLS.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..pg-gvm' -t 'gce-2024-06-29';
+    /usr/bin/logger '..pg-gvm' -t 'gce-2025-04-26';
     wget -O pg-gvm.tar.gz https://github.com/greenbone/pg-gvm/archive/refs/tags/v$POSTGREGVM.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..notus-scanner' -t 'gce-2024-06-29';
+    /usr/bin/logger '..notus-scanner' -t 'gce-2025-04-26';
     wget -O notus.tar.gz https://github.com/greenbone/notus-scanner/archive/refs/tags/v$NOTUS.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2024-06-29';
+    /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2025-04-26';
     wget -O greenbone-feed-sync.tar.gz https://github.com/greenbone/greenbone-feed-sync/archive/refs/tags/v$FEEDSYNC.tar.gz > /dev/null 2>&1;
     # valkey to replace redis
-    /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2024-11-25';
+    /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2025-04-26';
     wget -O valkey.tar.gz https://github.com/valkey-io/valkey/archive/refs/tags/$VALKEY.tar.gz > /dev/null 2>&1;
     
     # open and extract the tarballs
     echo -e "\e[1;36m...open and extract tarballs\e[0m";
-    /usr/bin/logger '..open and extract the tarballs' -t 'gce-2024-06-29';
+    /usr/bin/logger '..open and extract the tarballs' -t 'gce-2025-04-26';
     find *.gz | xargs -n1 tar zxvfp > /dev/null 2>&1;
     sync;
 
     # Naming of directories w/o version
-    /usr/bin/logger '..rename directories' -t 'gce-2024-06-29';    
+    /usr/bin/logger '..rename directories' -t 'gce-2025-04-26';    
     echo -e "\e[1;36m...renaming package directories\e[0m";
     mv /opt/gvm/src/greenbone/gvm-libs-$GVMLIBS /opt/gvm/src/greenbone/gvm-libs > /dev/null 2>&1;
     mv /opt/gvm/src/greenbone/ospd-openvas-$OSPDOPENVAS /opt/gvm/src/greenbone/ospd-openvas > /dev/null 2>&1;
@@ -285,43 +391,35 @@ prepare_source() {
     echo -e "\e[1;36m...configuring permissions\e[0m";
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     echo -e "\e[1;32mprepare_source() finished\e[0m";
-    /usr/bin/logger 'prepare_source finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prepare_source finished' -t 'gce-2025-04-26';
 }
 
+
 install_libxml2() {
-    /usr/bin/logger 'install_libxml2' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_libxml2' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_libxml2()\e[0m";
     cd /opt/gvm/src;
-    /usr/bin/logger '..git clone libxml2' -t 'gce-2024-06-29';
+    /usr/bin/logger '..git clone libxml2' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...git clone libxml2()\e[0m";
     git clone https://gitlab.gnome.org/GNOME/libxml2
     cd libxml2;
-    /usr/bin/logger '..autogen libxml2' -t 'gce-2024-06-29';
+    /usr/bin/logger '..autogen libxml2' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...autogen libxml2()\e[0m";
     ./autogen.sh
-    # /usr/bin/logger '..make libxml2' -t 'gce-2024-06-29';
+    # /usr/bin/logger '..make libxml2' -t 'gce-2025-04-26';
     # echo -e "\e[1;36m...make libxml2()\e[0m";
     # make;
-    /usr/bin/logger '..make install libxml2' -t 'gce-2024-06-29';
+    /usr/bin/logger '..make install libxml2' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...make install libxml2()\e[0m";
     make install;
-    /usr/bin/logger '..ldconfig libxml2' -t 'gce-2024-06-29';
+    /usr/bin/logger '..ldconfig libxml2' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...ldconfig libxml2()\e[0m";
     ldconfig;
 }
 
-install_poetry() {
-    /usr/bin/logger 'install_poetry' -t 'gce-2024-06-29';
-    echo -e "\e[1;32minstall_poetry()\e[0m";
-    export POETRY_HOME=/usr/poetry;
-    # https://python-poetry.org/docs/
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 - > /dev/null 2>&1;
-    echo -e "\e[1;32minstall_poetry() finished\e[0m";
-    /usr/bin/logger 'install_poetry finished' -t 'gce-2024-06-29';
-}
 
 install_pggvm() {
-    /usr/bin/logger 'install_pggvm' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_pggvm' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_pggvm()\e[0m";
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd pg-gvm/ > /dev/null 2>&1;
@@ -329,21 +427,22 @@ install_pggvm() {
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     echo -e "\e[1;36m...cmake pg-gvm PostgreSQL server extension\e[0m";
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
-    #/usr/bin/logger '..make pg-gvm PostgreSQL server extension' -t 'gce-2024-06-29';
+    #/usr/bin/logger '..make pg-gvm PostgreSQL server extension' -t 'gce-2025-04-26';
     #echo -e "\e[1;36m...make pg-gvm PostgreSQL server extension\e[0m";
     #make > /dev/null 2>&1;
-    #/usr/bin/logger '..make pg-gvm libraries Documentation' -t 'gce-2024-06-29';
+    #/usr/bin/logger '..make pg-gvm libraries Documentation' -t 'gce-2025-04-26';
     #make doc-full;
-    /usr/bin/logger '..make install pg-gvm PostgreSQL server extension' -t 'gce-2024-06-29';
+    /usr/bin/logger '..make install pg-gvm PostgreSQL server extension' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...make install pg-gvm PostgreSQL server extension\e[0m";
     make install > /dev/null 2>&1;
     sync;
     echo -e "\e[1;32minstall_pggvm() finished\e[0m";
-    /usr/bin/logger 'install_pggvm finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_pggvm finished' -t 'gce-2025-04-26';
 }
 
+
 install_notus() {
-    /usr/bin/logger 'install_notus' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_notus' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_notus()\e[0m";
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd notus/ > /dev/null 2>&1;
@@ -357,36 +456,38 @@ install_notus() {
     su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1; 
     sync;
     echo -e "\e[1;32minstall_notus() finished\e[0m";
-    /usr/bin/logger 'install_notus finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_notus finished' -t 'gce-2025-04-26';
 }
 
+
 install_gvm_libs() {
-    /usr/bin/logger 'install_gvmlibs' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_gvmlibs' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_gvmlibs()\e[0m";
     cd /opt/gvm/src/greenbone/ > /dev/null 2>&1;
     cd gvm-libs/ > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
-    /usr/bin/logger '..cmake Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-2024-06-29';
+    /usr/bin/logger '..cmake Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...cmake Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
-    # /usr/bin/logger '..make Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-2024-06-29';
+    # /usr/bin/logger '..make Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-2025-04-26';
     # echo -e "\e[1;36m...make Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
     # make > /dev/null 2>&1;
-    #/usr/bin/logger '..make gvm libraries Documentation' -t 'gce-2024-06-29';
+    #/usr/bin/logger '..make gvm libraries Documentation' -t 'gce-2025-04-26';
     #make doc-full;
-    /usr/bin/logger '..make install Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-2024-06-29';
+    /usr/bin/logger '..make install Greenbone Vulnerability Manager libraries (gvm-libs)' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...make install gvm libraries\e[0m";
     make install > /dev/null 2>&1;
     sync;
     echo -e "\e[1;36m...load Greenbone Vulnerability Manager libraries (gvm-libs)\e[0m";
     ldconfig > /dev/null 2>&1;
     echo -e "\e[1;32minstall_gvmlibs() finished\e[0m";
-    /usr/bin/logger 'install_gvmlibs finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_gvmlibs finished' -t 'gce-2025-04-26';
 }
 
+
 install_python_gvm() {
-    /usr/bin/logger 'install_python_gvm' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_python_gvm' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_python_gvm()\e[0m";
     # Installing from repo
     echo -e "\e[1;36m...installing python-gvm\e[0m";
@@ -396,25 +497,27 @@ install_python_gvm() {
     su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
     #/usr/poetry/bin/poetry install;
     echo -e "\e[1;32minstall_python_gvm() finished\e[0m";
-    /usr/bin/logger 'install_python_gvm finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_python_gvm finished' -t 'gce-2025-04-26';
 }
 
+
 install_python_ical() {
-    /usr/bin/logger 'install_python_ical()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_python_ical()' -t 'gce-2025-04-26';
     # Required/useful for python-gvm (GMP) create_schedule
     # Installing from python repo
     su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install icalendar';
-    /usr/bin/logger 'install_python_ical finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_python_ical finished' -t 'gce-2025-04-26';
 }
 
+
 install_valkey() {
-    /usr/bin/logger 'install_valkey' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_valkey' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_valkey() $VALKEY\e[0m";
     apt -qq -y install libsystemd-dev > /dev/null 2>&1; 
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # make valkey
     cd valkey > /dev/null 2>&1;
-    /usr/bin/logger '..make install valkey' -t 'gce-2024-11-25';
+    /usr/bin/logger '..make install valkey' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...make install valkey $VALKEY\e[0m";
     make install USE_SYSTEMD=yes distclean > /dev/null 2>&1;
     # Create valkey user
@@ -425,36 +528,38 @@ install_valkey() {
     chown -R valkey:valkey /run/valkey > /dev/null 2>&1;
     sync;
     echo -e "\e[1;32minstall_valkey() finished\e[0m";
-    /usr/bin/logger 'install_valkey finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_valkey finished' -t 'gce-2025-04-26';
 }
 
+
 install_openvas_smb() {
-    /usr/bin/logger 'install_openvas_smb' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_openvas_smb' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_openvas_smb()\e[0m";
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     #config and build openvas-smb
     cd openvas-smb > /dev/null 2>&1;
     echo -e "\e[1;36m...cmake OpenVAS SMB\e[0m";
-    /usr/bin/logger '..cmake OpenVAS SMB' -t 'gce-2024-06-29';
+    /usr/bin/logger '..cmake OpenVAS SMB' -t 'gce-2025-04-26';
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
-    # /usr/bin/logger '..make OpenVAS SMB' -t 'gce-2024-06-29';
+    # /usr/bin/logger '..make OpenVAS SMB' -t 'gce-2025-04-26';
     # echo -e "\e[1;36m...make OpenVAS SMB\e[0m";
     # make > /dev/null 2>&1;                
-    #/usr/bin/logger '..make Openvas SMB Documentation' -t 'gce-2024-06-29';
+    #/usr/bin/logger '..make Openvas SMB Documentation' -t 'gce-2025-04-26';
     #make doc-full;
-    /usr/bin/logger '..make install OpenVAS SMB' -t 'gce-2024-06-29';
+    /usr/bin/logger '..make install OpenVAS SMB' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...make install OpenVAS SMB\e[0m";
     make install > /dev/null 2>&1;
     sync;
     echo -e "\e[1;36m...load OpenVAS SMB libraries\e[0m";
     ldconfig > /dev/null 2>&1;
     echo -e "\e[1;32minstall_openvas_smb() finished\e[0m";
-    /usr/bin/logger 'install_openvas_smb finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_openvas_smb finished' -t 'gce-2025-04-26';
 }
 
+
 install_ospd_openvas() {
-    /usr/bin/logger 'install_ospd_openvas' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_ospd_openvas' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_ospd_openvas()\e[0m";
     echo -e "\e[1;36m...installing ospd-openvas\e[0m";
     # Install from repo
@@ -467,74 +572,78 @@ install_ospd_openvas() {
     # For use when testing (just comment uncomment poetry install in "main" and here)
     #/usr/poetry/bin/poetry install;
     echo -e "\e[1;32minstall_ospd_openvas() finished\e[0m";
-    /usr/bin/logger 'install_ospd_openvas finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_ospd_openvas finished' -t 'gce-2025-04-26';
 }
 
+
 install_openvas() {
-    /usr/bin/logger 'install_openvas()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_openvas()' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_openvas()\e[0m";
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # Configure and build scanner
     cd openvas > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
-    /usr/bin/logger '..cmake OpenVAS Scanner' -t 'gce-2024-06-29';
+    /usr/bin/logger '..cmake OpenVAS Scanner' -t 'gce-2025-04-26';
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     echo -e "\e[1;36m...cmake OpenVAS Scanner\e[0m";
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
-    #/usr/bin/logger '..make OpenVAS Scanner' -t 'gce-2024-06-29';
-    #/usr/bin/logger '..make Openvas Scanner Documentation' -t 'gce-2024-06-29';
+    #/usr/bin/logger '..make OpenVAS Scanner' -t 'gce-2025-04-26';
+    #/usr/bin/logger '..make Openvas Scanner Documentation' -t 'gce-2025-04-26';
     #make doc-full;
     # echo -e "\e[1;36m...make OpenVAS Scanner\e[0m";
     # # make it
     # make > /dev/null 2>&1;
     # build more developer-oriented documentation
     #make doc-full > /dev/null 2>&1; 
-    /usr/bin/logger '..make install OpenVAS Scanner' -t 'gce-2024-06-29';
+    /usr/bin/logger '..make install OpenVAS Scanner' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...make install openvas scanner\e[0m";
     make install > /dev/null 2>&1;
-    /usr/bin/logger '..Rebuild make cache, OpenVAS Scanner' -t 'gce-2024-06-29';
+    /usr/bin/logger '..Rebuild make cache, OpenVAS Scanner' -t 'gce-2025-04-26';
     make rebuild_cache > /dev/null 2>&1;
     sync;
     echo -e "\e[1;36m...load OpenVAS Scanner libraries\e[0m";
     ldconfig > /dev/null 2>&1;
     echo -e "\e[1;32minstall_openvas() finished\e[0m";
-    /usr/bin/logger 'install_openvas finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_openvas finished' -t 'gce-2025-04-26';
 }
 
+
 install_gvmd() {
-    /usr/bin/logger 'install_gvmd()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_gvmd()' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_gvmd()\e[0m";
     cd /opt/gvm/src/greenbone;
     # Build Manager
     cd gvmd/ > /dev/null 2>&1;
-    /usr/bin/logger '..cmake GVM Daemon' -t 'gce-2024-06-29';
+    /usr/bin/logger '..cmake GVM Daemon' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...cmake Greenbone Vulnerability Manager (GVM)\e[0m";
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
-    # /usr/bin/logger '..make GVM Daemon' -t 'gce-2024-06-29';
+    # /usr/bin/logger '..make GVM Daemon' -t 'gce-2025-04-26';
     # echo -e "\e[1;36m...make Greenbone Vulnerability Manager (GVM)\e[0m";
     # make > /dev/null 2>&1;
-    #/usr/bin/logger '..make documentation for GVM Daemon' -t 'gce-2024-06-29';
+    #/usr/bin/logger '..make documentation for GVM Daemon' -t 'gce-2025-04-26';
     #make doc-full;
-    /usr/bin/logger '..make install GVM Daemon' -t 'gce-2024-06-29';
+    /usr/bin/logger '..make install GVM Daemon' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...make install Greenbone Vulnerability Manager (GVM)\e[0m";
     make install > /dev/null 2>&1;
     sync;
     echo -e "\e[1;32minstall_gvmd() finished\e[0m";
-    /usr/bin/logger 'install_gvmd() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_gvmd() finished' -t 'gce-2025-04-26';
 }
 
+
 install_nmap() {
-    /usr/bin/logger 'install_nmap' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_nmap' -t 'gce-2025-04-26';
     cd /opt/gvm/src/greenbone;
     # Install NMAP
     apt-get -qq -y install nmap --fix-missing > /dev/null 2>&1;
     sync;
-    /usr/bin/logger 'install_nmap finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_nmap finished' -t 'gce-2025-04-26';
 }
 
+
 install_greenbone_feed_sync() {
-    /usr/bin/logger 'install_greenbone_feed_sync()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_greenbone_feed_sync()' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_greenbone_feed_sync() \e[0m";
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # install from source
@@ -542,20 +651,21 @@ install_greenbone_feed_sync() {
     cd greenbone-feed-sync > /dev/null 2>&1;
     su gvm -c 'source ~/gvmpy/bin/activate; python3 -m pip install .' > /dev/null 2>&1;
     #su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install greenbone-feed-sync==$FEEDSYNC" > /dev/null 2>&1;
-    /usr/bin/logger 'install_greenbone_feed_sync() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_greenbone_feed_sync() finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_greenbone_feed_sync() finished\e[0m";
 }
 
+
 prestage_scan_data() {
-    /usr/bin/logger 'prestage_scan_data' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prestage_scan_data' -t 'gce-2025-04-26';
     echo -e "\e[1;32mprestage_scan_data() \e[0m";
     # copy scan data to prestage ~1.5 Gib required otherwise
     # change this to copy from cloned repo
     cd /root/ > /dev/null 2>&1;
-    /usr/bin/logger '..opening and extracting TAR Ball' -t 'gce-2024-06-29';
+    /usr/bin/logger '..opening and extracting TAR Ball' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...opening and extracting TAR ball with prestaged feed data\e[0m";
     tar -xzf scandata.tar.gz > /dev/null 2>&1; 
-    /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gce-2024-06-29';
+    /usr/bin/logger '..copy feed data to /gvm/lib/gvm and openvas' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...copying feed data to correct locations\e[0m";
     /usr/bin/rsync -aAXv /root/GVM/openvas/ /var/lib/openvas/ > /dev/null 2>&1;
     #/bin/cp -r /root/GVM/openvas/* /var/lib/openvas/ > /dev/null 2>&1;
@@ -566,47 +676,50 @@ prestage_scan_data() {
     echo -e "\e[1;36m...Cleaning Up\e[0m";
     rm -rf /root/tmp/;
     echo -e "\e[1;32mprestage_scan_data() finished\e[0m";
-    /usr/bin/logger 'prestage_scan_data finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prestage_scan_data finished' -t 'gce-2025-04-26';
 }
 
+
 update_feed_data() {
-    /usr/bin/logger 'update_feed_data' -t 'gce-2024-06-29';
+    /usr/bin/logger 'update_feed_data' -t 'gce-2025-04-26';
     echo -e "\e[1;32mupdate_feed_data() \e[0m";
     ## This relies on the configure_greenbone_updates script
     echo -e "\e[1;36m...updating feed data\e[0m";
     echo -e "\e[1;36m...This may take a few minutes, please wait...\e[0m";
     /opt/gvm/gvmpy/bin/greenbone-feed-sync --type $feedtype --config /etc/gvm/greenbone-feed-sync.toml > /dev/null 2>&1;
     echo -e "\e[1;32mupdate_feed_data() finished\e[0m";
-    /usr/bin/logger 'update_feed_data finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'update_feed_data finished' -t 'gce-2025-04-26';
 }
 
+
 install_gsad() {
-    /usr/bin/logger 'install_gsad' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_gsad' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_gsad() \e[0m";
     ## Install GSA Daemon
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm > /dev/null 2>&1;
     # GSAD Install
     cd gsad/ > /dev/null 2>&1;
-    /usr/bin/logger '..cmake Greenbone Security Assistant Daemon (GSAD)' -t 'gce-2024-06-29';
+    /usr/bin/logger '..cmake Greenbone Security Assistant Daemon (GSAD)' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...cmake Greenbone Security Assistant Daemon (GSAD)\e[0m";
     export PKG_CONFIG_PATH=/opt/gvm/lib/pkgconfig:$PKG_CONFIG_PATH;
     cmake -DCMAKE_INSTALL_PREFIX=/opt/gvm . > /dev/null 2>&1;
-    # /usr/bin/logger '..make GSA Daemon' -t 'gce-2024-06-29';
+    # /usr/bin/logger '..make GSA Daemon' -t 'gce-2025-04-26';
     # echo -e "\e[1;36m...make Greenbone Security Assistant Daemon (GSAD)\e[0m";
     # make > /dev/null 2>&1; # build the libraries
-    #/usr/bin/logger '..make documentation for GSA Daemon' -t 'gce-2024-06-29';
+    #/usr/bin/logger '..make documentation for GSA Daemon' -t 'gce-2025-04-26';
     #make doc-full;       # build more developer-oriented documentation
-    /usr/bin/logger '..make install GSA Daemon' -t 'gce-2024-06-29';
+    /usr/bin/logger '..make install GSA Daemon' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...make install Greenbone Security Assistant Daemon (GSAD)\e[0m";
     make install > /dev/null 2>&1;        # install the build
     sync;
     echo -e "\e[1;32minstall_gsad() finished\e[0m";
-    /usr/bin/logger 'install_gsad finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_gsad finished' -t 'gce-2025-04-26';
 }
 
+
 install_gsa_web() {
-    /usr/bin/logger 'install_gsa_web()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_gsa_web()' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_gsa_web() \e[0m";
     ## Install GSA
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
@@ -616,7 +729,7 @@ install_gsa_web() {
     npm add -D terser > /dev/null 2>&1;
     # GSA Install
     cd gsa/ > /dev/null 2>&1;
-    /usr/bin/logger '..Build GSA Web Server' -t 'gce-2024-06-29';
+    /usr/bin/logger '..Build GSA Web Server' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...Build Web Server GSA\e[0m";
     echo -e "\e[1;36m...Running npm install\e[0m";
     npm install > /dev/null 2>&1;
@@ -627,26 +740,28 @@ install_gsa_web() {
     mkdir -p /opt/gvm/share/gvm/gsad/web/ > /dev/null 2>&1;
     cp -r build/* /opt/gvm/share/gvm/gsad/web/ > /dev/null 2>&1;
     echo -e "\e[1;32minstall_gsa_web() finished\e[0m";
-    /usr/bin/logger 'install_gsa_web() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_gsa_web() finished' -t 'gce-2025-04-26';
 }
 
+
 browserlist_update(){
-    /usr/bin/logger 'browserlist_update()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'browserlist_update()' -t 'gce-2025-04-26';
     echo -e "\e[1;32mbrowserlist_updat() \e[0m";
     cat << __EOF__ > /etc/cron.weekly/browserlistupdate
 #!/bin/bash
 npx browserslist@latest --update-db
-/usr/bin/logger 'browserlist_update' -t 'gce-2024-06-29';
+/usr/bin/logger 'browserlist_update' -t 'gce-2025-04-26';
 exit 0
 __EOF__
     sync;
     chmod 744 /etc/cron.weekly/browserlistupdate > /dev/null 2>&1;
     echo -e "\e[1;32mbrowserlist_update() finished\e[0m";
-    /usr/bin/logger 'browserlist_update() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'browserlist_update() finished' -t 'gce-2025-04-26';
 }
 
+
 install_gvm_tools() {
-    /usr/bin/logger 'install_gvm_tools' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_gvm_tools' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_gvm_tools() \e[0m";
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # Install gvm-tools
@@ -663,28 +778,31 @@ install_gvm_tools() {
     export PY_VERSION="$(ls /opt/gvm/gvmpy/lib/)"
     sed -ie 's/DEFAULT_READ_TIMEOUT = 60/DEFAULT_TIMEOUT = 600/' /opt/gvm/gvmpy/lib/$PY_VERSION/site-packages/gvm/connections/_connection.py
     echo -e "\e[1;32minstall_gvm_tools() finished\e[0m";
-    /usr/bin/logger 'install_gvm_tools finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_gvm_tools finished' -t 'gce-2025-04-26';
 }
 
+
 install_impacket() {
-    /usr/bin/logger 'install_impacket' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_impacket' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_impacket() \e[0m";
     # Install impacket
     su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install impacket==$IMPACKET" > /dev/null 2>&1;
     echo -e "\e[1;32minstall_impacket() finished\e[0m";
-    /usr/bin/logger 'install_impacket finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_impacket finished' -t 'gce-2025-04-26';
 }
 
+
 prepare_gvmpy() {
-    /usr/bin/logger 'prepare_gvmpy' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prepare_gvmpy' -t 'gce-2025-04-26';
     echo -e "\e[1;32mprepare_gvmpy() \e[0m";
     su gvm -c 'cd ~; python3 -m pip install --upgrade pip; python3 -m pip install --user virtualenv; python3 -m venv gvmpy' > /dev/null 2>&1;
-    /usr/bin/logger 'prepare_gvmpy finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prepare_gvmpy finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32mprepare_gvmpy() finished\e[0m";
 }
 
+
 prepare_postgresql() {
-    /usr/bin/logger 'prepare_postgresql' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prepare_postgresql' -t 'gce-2025-04-26';
     echo -e "\e[1;32mprepare_postgresql() \e[0m";
     systemctl start postgresql.service;
     echo -e "\e[1;36m...create postgres user gvm";
@@ -710,11 +828,12 @@ jit = off
 __EOF__
 
     echo -e "\e[1;32mprepare_postgresql() finished\e[0m";
-    /usr/bin/logger 'prepare_postgresql finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prepare_postgresql finished' -t 'gce-2025-04-26';
 }
 
+
 tune_postgresql() {
-    /usr/bin/logger 'tune_postgresql()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'tune_postgresql()' -t 'gce-2025-04-26';
     echo -e "\e[1;32mtune_postgresql()\e[0m";
 
     echo -e "\e[1;36m...Setting optimized postgres values";
@@ -740,12 +859,13 @@ tune_postgresql() {
     echo -e "\e[1;36m...Restarting PostgreSql";
     systemctl restart postgresql.service;
 
-    /usr/bin/logger 'tune_postgresql() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'tune_postgresql() finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32mtune_postgresql() finished\e[0m";
 }
 
+
 configure_openvas() {
-    /usr/bin/logger 'configure_openvas' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_openvas' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_openvas() \e[0m";
     mkdir -p /var/lib/notus/products;
     mkdir -p /var/lib/notus/advisories;
@@ -862,11 +982,12 @@ max_queued_scans = 0
 __EOF__
     sync;
     echo -e "\e[1;32mconfigure_openvas() finished\e[0m";
-    /usr/bin/logger 'configure_openvas finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_openvas finished' -t 'gce-2025-04-26';
 }
 
+
 configure_gvm() {
-    /usr/bin/logger 'configure_gvm' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_gvm' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_gvm() \e[0m";
     # Create certificates
     echo -e "\e[1;36m...create certificates\e[0m";
@@ -912,11 +1033,12 @@ __EOF__
     sed -ie s+file=-+file=/var/log/gvm/gvmd.log+g /etc/gvm/gvmd_log.conf
     sync;
     echo -e "\e[1;32mconfigure_gvm() finished\e[0m";
-    /usr/bin/logger 'configure_gvm() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_gvm() finished' -t 'gce-2025-04-26';
 }
 
+
 configure_gsa() {
-    /usr/bin/logger 'configure_gsa' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_gsa' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_gsa() \e[0m";
     # Configure GSA daemon
     echo -e "\e[1;36m...create GSAD service\e[0m";
@@ -962,12 +1084,13 @@ __EOF__
     touch /var/log/gvm/gsad.log > /dev/null 2>&1;
     chown -R gvm:gvm /var/log/gvm/ > /dev/null 2>&1;
     echo -e "\e[1;32mconfigure_gsa() finished\e[0m";
-    /usr/bin/logger 'configure_gsa finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_gsa finished' -t 'gce-2025-04-26';
 }
+
 
 create_wrapper() {
     echo -e "\e[1;32mcreate_wrapper()\e[0m";
-    /usr/bin/logger 'create_wrapper' -t 'gce-2024-06-29';
+    /usr/bin/logger 'create_wrapper' -t 'gce-2025-04-26';
     cat << __EOF__ > /usr/bin/wrapper
 #!/usr/bin/env python3
 
@@ -1011,11 +1134,12 @@ __EOF__
     sync;
     chmod 755 /usr/bin/wrapper > /dev/null 2>&1;
     echo -e "\e[1;32mcreate_wrapper() finished\e[0m";
-    /usr/bin/logger 'create_wrapper finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'create_wrapper finished' -t 'gce-2025-04-26';
 }
 
+
 configure_feed_owner() {
-    /usr/bin/logger 'configure_feed_owner' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_feed_owner' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_feed_owner() \e[0m";
     echo "User $GVM_ADMINUSER for GVM $HOSTNAME " >> /var/lib/gvm/adminuser;
     echo -e "\e[1;36m...configuring feed owner\e[0m";
@@ -1026,17 +1150,18 @@ configure_feed_owner() {
         awk -F " " {'print $2'} /var/lib/gvm/feedowner > /var/lib/gvm/uuid;
         # Ensure UUID is available in user gvm context
         su gvm -c 'cat /var/lib/gvm/uuid | xargs /opt/gvm/sbin/gvmd --modify-setting 78eceaec-3385-11ea-b237-28d24461215b --value $1'
-        /usr/bin/logger 'configure_feed_owner User creation success' -t 'gce-2024-06-29';
+        /usr/bin/logger 'configure_feed_owner User creation success' -t 'gce-2025-04-26';
     else
         echo "User admin for GVM $HOSTNAME could NOT be created - FAIL!" >> /var/lib/gvm/adminuser;
-        /usr/bin/logger 'configure_feed_owner User creation FAILED!' -t 'gce-2024-06-29';
+        /usr/bin/logger 'configure_feed_owner User creation FAILED!' -t 'gce-2025-04-26';
     fi
     echo -e "\e[1;32mconfigure_feed_owner() finished\e[0m";
-    /usr/bin/logger 'configure_feed_owner finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_feed_owner finished' -t 'gce-2025-04-26';
 }
 
+
 configure_greenbone_updates() {
-    /usr/bin/logger 'configure_greenbone_updates' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_greenbone_updates' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_greenbone_updates() \e[0m";
     # Configure daily GVM updates timer and service using the new grenbone-update-sync python code
     # Timer
@@ -1090,11 +1215,12 @@ __EOF__
     fi
     sync;
     echo -e "\e[1;32mconfigure_greenbone_updates() finished\e[0m";
-    /usr/bin/logger 'configure_greenbone_updates finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_greenbone_updates finished' -t 'gce-2025-04-26';
 }   
 
+
 start_services() {
-    /usr/bin/logger 'start_services' -t 'gce-2024-06-29';
+    /usr/bin/logger 'start_services' -t 'gce-2025-04-26';
     echo -e "\e[1;32mstart_services()\e[0m";
     # Load new/changed systemd-unitfiles
     echo -e "\e[1;36m...reload new and changed systemd unit files\e[0m";
@@ -1147,19 +1273,19 @@ start_services() {
             if systemctl is-active --quiet valkey-server.service;
             then
                 echo -e "\e[1;32mvalkey-server.service started successfully";
-                /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2024-06-29';
+                /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2025-04-26';
             else
                 echo -e "\e[1;31mvalkey-server.service FAILED!\e[0m";
-                /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2024-06-29';
+                /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2025-04-26';
             fi
         else
             if systemctl is-active --quiet redis-server.service;
             then
                 echo -e "\e[1;32mredis-server.service started successfully";
-                /usr/bin/logger 'redis-server.service started successfully' -t 'gce-2024-06-29';
+                /usr/bin/logger 'redis-server.service started successfully' -t 'gce-2025-04-26';
             else
                 echo -e "\e[1;31mredis-server.service FAILED!\e[0m";
-                /usr/bin/logger 'redis-server.service FAILED' -t 'gce-2024-06-29';
+                /usr/bin/logger 'redis-server.service FAILED' -t 'gce-2025-04-26';
             fi
         fi
     echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
@@ -1167,52 +1293,53 @@ start_services() {
     if systemctl is-active --quiet gvmd.service;
     then
         echo -e "\e[1;32mgvmd.service started successfully";
-        /usr/bin/logger 'gvmd.service started successfully' -t 'gce-2024-06-29';
+        /usr/bin/logger 'gvmd.service started successfully' -t 'gce-2025-04-26';
     else
         echo -e "\e[1;31mgvmd.service FAILED!\e[0m";
-        /usr/bin/logger 'gvmd.service FAILED' -t 'gce-2024-06-29';
+        /usr/bin/logger 'gvmd.service FAILED' -t 'gce-2025-04-26';
     fi
     # gsad.service
     if systemctl is-active --quiet gsad.service;
     then
         echo -e "\e[1;32mgsad.service started successfully";
-        /usr/bin/logger 'gsad.service started successfully' -t 'gce-2024-06-29';
+        /usr/bin/logger 'gsad.service started successfully' -t 'gce-2025-04-26';
     else
         echo -e "\e[1;31mgsad.service FAILED!\e[0m";
-        /usr/bin/logger "gsad.service FAILED!" -t 'gce-2024-06-29';
+        /usr/bin/logger "gsad.service FAILED!" -t 'gce-2025-04-26';
     fi
     # ospd-openvas.service
     if systemctl is-active --quiet ospd-openvas.service;
     then
         echo -e "\e[1;32mospd-openvas.service started successfully\e[0m";
-        /usr/bin/logger 'ospd-openvas.service started successfully' -t 'gce-2024-06-29';
+        /usr/bin/logger 'ospd-openvas.service started successfully' -t 'gce-2025-04-26';
     else
         echo -e "\e[1;31mospd-openvas.service FAILED!";
-        /usr/bin/logger 'ospd-openvas.service FAILED!\e[0m' -t 'gce-2024-06-29';
+        /usr/bin/logger 'ospd-openvas.service FAILED!\e[0m' -t 'gce-2025-04-26';
     fi
     # notus-secanner.service
     if systemctl is-active --quiet notus-scanner.service;
     then
         echo -e "\e[1;32mnotus-scanner.service started successfully\e[0m";
-        /usr/bin/logger 'notus-scanner.service started successfully' -t 'gce-2024-06-29';
+        /usr/bin/logger 'notus-scanner.service started successfully' -t 'gce-2025-04-26';
     else
         echo -e "\e[1;31mnotus-scanner.service FAILED!";
-        /usr/bin/logger 'notus-scanner.service FAILED!\e[0m' -t 'gce-2024-06-29';
+        /usr/bin/logger 'notus-scanner.service FAILED!\e[0m' -t 'gce-2025-04-26';
     fi
     if systemctl is-active --quiet gce-update.timer;
     then
         echo -e "\e[1;32mgce-update.timer started successfully\e[0m"
-        /usr/bin/logger 'gce-update.timer started successfully' -t 'gce-2024-06-29';
+        /usr/bin/logger 'gce-update.timer started successfully' -t 'gce-2025-04-26';
     else
         echo -e "\e[1;31mgce-update.timer FAILED! Updates will not be automated\e[0m";
-        /usr/bin/logger 'gce-update.timer FAILED! Updates will not be automated' -t 'gce-2024-06-29';
+        /usr/bin/logger 'gce-update.timer FAILED! Updates will not be automated' -t 'gce-2025-04-26';
     fi
     echo -e "\e[1;32mstart_services() finished\e[0m";
-    /usr/bin/logger 'start_services finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'start_services finished' -t 'gce-2025-04-26';
 }
 
+
 configure_redis() {
-    /usr/bin/logger 'configure_redis' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_redis' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_redis()\e[0m";
     echo -e "\e[1;36m...creating tmpfiles.d configuration for redis\e[0m";
     cat << __EOF__ > /etc/tmpfiles.d/redis.conf
@@ -1287,11 +1414,12 @@ __EOF__
     update-grub > /dev/null 2>&1;
     sync;
     echo -e "\e[1;32mconfigure_redis() finished\e[0m";
-    /usr/bin/logger 'configure_redis finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_redis finished' -t 'gce-2025-04-26';
 }
 
+
 configure_valkey() {
-    /usr/bin/logger 'configure_valkey' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_valkey' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_valkey()\e[0m";
     echo -e "\e[1;36m...creating tmpfiles.d configuration for valkey\e[0m";
     cat << __EOF__ > /etc/tmpfiles.d/valkey.conf
@@ -1430,12 +1558,13 @@ __EOF__
     systemctl enable valkey-server.service > /dev/null 2>&1;
     systemctl start valkey-server.service > /dev/null 2>&1;
     echo -e "\e[1;32mconfigure_valkey() finished\e[0m";
-    /usr/bin/logger 'configure_valkey finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_valkey finished' -t 'gce-2025-04-26';
 }
+
 
 prepare_db_maintenance() {
     echo -e "\e[1;32mprepare_db_maintenance()\e[0m";
-    /usr/bin/logger 'prepare_db_maintenance()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prepare_db_maintenance()' -t 'gce-2025-04-26';
     ## Weekly maintenance
     cat << __EOF__ > /etc/cron.weekly/gvmd-maintenance
 su gvm -c '/opt/gvm/sbin/gvmd --optimize=analyze';
@@ -1458,17 +1587,18 @@ __EOF__
     chmod 755 /etc/cron.daily/gvmd-maintenance
     sync;
     echo -e "\e[1;32mprepare_db_maintenance() finished\e[0m";
-    /usr/bin/logger 'prepare_db_maintenance() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prepare_db_maintenance() finished' -t 'gce-2025-04-26';
 }
 
+
 prepare_gpg() {
-    /usr/bin/logger 'prepare_gpg' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prepare_gpg' -t 'gce-2025-04-26';
     echo -e "\e[1;32mprepare_gpg()\e[0m";
     echo -e "\e[1;36m...Downloading and importing Greenbone Community Signing Key (PGP)\e[0m";
-    /usr/bin/logger '..Downloading and importing Greenbone Community Signing Key (PGP)' -t 'gce-2024-06-29';
+    /usr/bin/logger '..Downloading and importing Greenbone Community Signing Key (PGP)' -t 'gce-2025-04-26';
     curl -f -L https://www.greenbone.net/GBCommunitySigningKey.asc -o /tmp/GBCommunitySigningKey.asc > /dev/null 2>&1;
     echo -e "\e[1;36m...Fully trust Greenbone Community Signing Key (PGP)\e[0m";
-    /usr/bin/logger '..Fully trust Greenbone Community Signing Key (PGP)' -t 'gce-2024-06-29';
+    /usr/bin/logger '..Fully trust Greenbone Community Signing Key (PGP)' -t 'gce-2025-04-26';
     echo "8AE4BE429B60A59B311C2E739823FAA60ED1E580:6:" > /tmp/ownertrust.txt;
     sync; sleep 1;
     mkdir -p $GNUPGHOME > /dev/null 2>&1;
@@ -1478,12 +1608,13 @@ prepare_gpg() {
     sudo cp -r $GNUPGHOME/* $OPENVAS_GNUPG_HOME/ > /dev/null 2>&1;
     sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME > /dev/null 2>&1;
     gpg -q --import-ownertrust < /tmp/ownertrust.txt;
-    /usr/bin/logger 'prepare_gpg finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'prepare_gpg finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32mprepare_gpg() finished\e[0m";
 }
 
+
 configure_feed_validation() {
-    /usr/bin/logger 'configure_feed_validation()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_feed_validation()' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_feed_validation()\e[0m";
     mkdir -p $GNUPGHOME
     gpg --import /tmp/GBCommunitySigningKey.asc
@@ -1493,14 +1624,15 @@ configure_feed_validation() {
     sudo chown -R gvm:gvm $OPENVAS_GNUPG_HOME
     # change to check signatures
     sed -ie 's/nasl_no_signature_check = yes/nasl_no_signature_check = no/' /etc/openvas/openvas.conf;
-    /usr/bin/logger 'configure_feed_validation() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_feed_validation() finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_feed_validation() finished\e[0m";
 }
 
+
 configure_permissions() {
-    /usr/bin/logger 'configure_permissions' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_permissions' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_permissions()\e[0m";
-    /usr/bin/logger '..Setting correct ownership of files for user gvm' -t 'gce-2024-06-29';
+    /usr/bin/logger '..Setting correct ownership of files for user gvm' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...configuring permissions for Greenbone Community Edition\e[0m";
     # Once more to ensure that GVM owns all files in /opt/gvm
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
@@ -1523,11 +1655,12 @@ configure_permissions() {
     # NOTUS Feed
     chown -R gvm:gvm /var/lib/notus > /dev/null 2>&1;
     echo -e "\e[1;32mconfigure_permissions() finished\e[0m";
-    /usr/bin/logger 'configure_permissions finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_permissions finished' -t 'gce-2025-04-26';
 }
 
+
 get_scanner_status() {
-    /usr/bin/logger 'get_scanner_status()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'get_scanner_status()' -t 'gce-2025-04-26';
     echo -e "\e[1;32mget_scanner_status()\e[0m";
     # Check status of Default scanners (Openvas and CVE).
     # These always have the well-known UUIDs used below. Additional scanners will have a random UUID
@@ -1539,13 +1672,14 @@ get_scanner_status() {
     echo -e "\e[1;33m ... Local $(su gvm -c '/opt/gvm/sbin/gvmd --verify-scanner 6acd0832-df90-11e4-b9d5-28d24461215b')\e[0m";
     echo -e "\e[1;32m-----------------------------------------------------------------\e[0m";
     # Write status to syslog too
-    /usr/bin/logger ''Default OpenVAS $(su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73")'' -t 'gce-2024-06-29';    
-    /usr/bin/logger ''Default CVE $(su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner 6acd0832-df90-11e4-b9d5-28d24461215b")'' -t 'gce-2024-06-29';
+    /usr/bin/logger ''Default OpenVAS $(su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner 08b69003-5fc2-4037-a479-93b440211c73")'' -t 'gce-2025-04-26';    
+    /usr/bin/logger ''Default CVE $(su gvm -c "/opt/gvm/sbin/gvmd --verify-scanner 6acd0832-df90-11e4-b9d5-28d24461215b")'' -t 'gce-2025-04-26';
     echo -e "\e[1;32mget_scanner_status() finished\e[0m";
 }
 
+
 create_gvm_python_script() {
-    /usr/bin/logger 'create_gvm_python_script' -t 'gce-2024-06-29';
+    /usr/bin/logger 'create_gvm_python_script' -t 'gce-2025-04-26';
     echo -e "\e[1;32mcreate_gvm_python_script()\e[0m";
     echo -e "\e[1;36m...copying scripts and xml files\e[0m";
     git clone https://github.com/martinboller/greenbone-gmp-scripts.git /opt/gvm/scripts/ > /dev/null 2>&1;
@@ -1559,19 +1693,21 @@ create_gvm_python_script() {
     chmod 755 /opt/gvm/scripts/*.sh;
     sync;
     echo -e "\e[1;32mcreate_gvm_python_script() finished\e[0m";
-    /usr/bin/logger 'create_gvm_python_script finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'create_gvm_python_script finished' -t 'gce-2025-04-26';
 }
 
+
 configure_cmake() {
-    /usr/bin/logger 'configure_cmake' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_cmake' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_cmake()\e[0m";
     # Temporary workaround until CMAKE recognizes Postgresql 13
     echo -e "\e[1;36m...configuring cmake to recognize Postgresql v13\e[0m";
     sed -ie '1 s/^/set(PostgreSQL_ADDITIONAL_VERSIONS "13")\n/' /usr/share/cmake-3.18/Modules/FindPostgreSQL.cmake > /dev/null 2>&1;
     # Temporary workaround until CMAKE recognizes Postgresql 13
     echo -e "\e[1;32mconfigure_cmake() finished\e[0m";
-   /usr/bin/logger 'configure_cmake finished' -t 'gce-2024-06-29';
+   /usr/bin/logger 'configure_cmake finished' -t 'gce-2025-04-26';
 }
+
 
 update_openvas_feed () {
     /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'gse';
@@ -1585,17 +1721,19 @@ update_openvas_feed () {
     /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'gse';
 }
 
+
 install_nginx() {
-    /usr/bin/logger 'install_nginx()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_nginx()' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_nginx()\e[0m";
     echo -e "\e[1;36m...installing nginx and apache2 utils\e[0m";
     apt-get -qq -y install nginx apache2-utils > /dev/null 2>&1;
     echo -e "\e[1;32minstall_nginx() finished\e[0m";
-    /usr/bin/logger 'install_nginx() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_nginx() finished' -t 'gce-2025-04-26';
 }
 
+
 configure_nginx() {
-    /usr/bin/logger 'configure_nginx()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_nginx()' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_nginx()\e[0m";
     echo -e "\e[1;36m...configuring diffie hellman parameters file\e[0m";
     openssl dhparam -out /etc/nginx/dhparam.pem 2048 > /dev/null 2>&1&
@@ -1649,12 +1787,13 @@ server {
   }
 __EOF__
     echo -e "\e[1;32mconfigure_nginx() finished\e[0m";
-    /usr/bin/logger 'configure_nginx() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_nginx() finished' -t 'gce-2025-04-26';
 }
+
 
 nginx_certificates() {
     ## Use this if you want to create a request to send to corporate PKI for the web interface, also change the NGINX config to use that
-    /usr/bin/logger 'nginx_certificates()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'nginx_certificates()' -t 'gce-2025-04-26';
     echo -e "\e[1;32mnginx_certificates()\e[0m";
     ## NGINX stuff
     ## Required information for NGINX certificates
@@ -1688,9 +1827,10 @@ __EOF__
     echo -e "\e[1;36m...generate self-signed certificate\e[0m";
     openssl x509 -in /etc/nginx/certs/$HOSTNAME.csr -out /etc/nginx/certs/$HOSTNAME.crt -req -signkey /etc/nginx/certs/$HOSTNAME.key -days 365 > /dev/null 2>&1;
     chmod 600 /etc/nginx/certs/$HOSTNAME.key
-    /usr/bin/logger 'nginx_certificates() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'nginx_certificates() finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32mnginx_certificates() finished\e[0m";
 }
+
 
 install_openvas_from_github() {
     cd /opt/gvm/src/greenbone/
@@ -1699,22 +1839,24 @@ install_openvas_from_github() {
     mv ./openvas-scanner ./openvas;
 }
 
+
 install_exim() {
     ## Installs Exim4 to allow for sending GCE alerts over e-mail
-    /usr/bin/logger 'install_exim()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_exim()' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_exim()\e[0m";
     # remove postfix if installed
     apt-get -qq -y update > /dev/null 2>&1;
     apt-get -qq -y purge postfix* > /dev/null 2>&1;
     apt-get -qq -y update > /dev/null 2>&1;
     apt-get -qq -y install exim4 > /dev/null 2>&1;
-    /usr/bin/logger 'install_exim() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'install_exim() finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_exim() finished\e[0m";    
 }
 
+
 configure_exim() {
     ## Configures Exim4 from the env variables specified
-    /usr/bin/logger 'configure_exim()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_exim()' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_exim()\e[0m";
     echo -e "\e[32mconfigure_exim()\e[0m";
     echo -e "\e[36m-Configure exim4.conf.conf\e[0m";
@@ -1751,20 +1893,21 @@ root: $MAIL_ADDRESS
 __EOF__
     # Time to reconfigure exim4
     dpkg-reconfigure -fnoninteractive exim4-config > /dev/null 2>&1;
-    /usr/bin/logger 'configure_exim() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_exim() finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_exim() finished\e[0m";    
 }
 
+
 toggle_vagrant_nic() {
-    /usr/bin/logger 'toggle_vagrant_nic()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'toggle_vagrant_nic()' -t 'gce-2025-04-26';
     echo -e "\e[1;32mtoggle_vagrant_nic()\e[0m";
     echo -e "\e[1;32mcheck if started by Vagrant\e[0m";
 
     if test -f "/etc/VAGRANT_ENV"; then
-        /usr/bin/logger 'ifdown eth0' -t 'gce-2024-06-29';
+        /usr/bin/logger 'ifdown eth0' -t 'gce-2025-04-26';
         echo -e "\e[1;32mStarted by Vagrant ifdown eth0\e[0m";
         ifdown eth0 > /dev/null 2>&1;
-        /usr/bin/logger 'ifup eth0' -t 'gce-2024-06-29';
+        /usr/bin/logger 'ifup eth0' -t 'gce-2025-04-26';
         echo -e "\e[1;32mStarted by Vagrant, ifup eth0\e[0m";
         ifup eth0 > /dev/null 2>&1;
     else
@@ -1772,16 +1915,17 @@ toggle_vagrant_nic() {
     fi
     
     echo -e "\e[1;32mtoggle_vagrant_nic() finished\e[0m";
-    /usr/bin/logger 'toggle_vagrant_nic() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'toggle_vagrant_nic() finished' -t 'gce-2025-04-26';
 }
 
+
 remove_vagrant_nic() {
-    /usr/bin/logger 'remove_vagrant_nic()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'remove_vagrant_nic()' -t 'gce-2025-04-26';
     echo -e "\e[1;32mremove_vagrant_nic()\e[0m";
     echo -e "\e[1;32mcheck if started by Vagrant\e[0m";
 
     if test -f "/etc/VAGRANT_ENV"; then
-        /usr/bin/logger 'Remove Vagrant eth0' -t 'gce-2024-06-29';
+        /usr/bin/logger 'Remove Vagrant eth0' -t 'gce-2025-04-26';
         echo -e "\e[1;32mStarted by Vagrant remove Vagrant NIC\e[0m";
         cat << __EOF__ > /etc/network/interfaces;
 # This file describes the network interfaces available on your system
@@ -1801,12 +1945,13 @@ __EOF__
     else
         echo -e "\e[1;32mNot running Vagrant, nothing to do\e[0m";
     fi
-    /usr/bin/logger 'remove_vagrant_nic() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'remove_vagrant_nic() finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32mremove_vagrant_nic() finished\e[0m";
 }
 
+
 remove_vagrant_user() {
-    /usr/bin/logger 'remove_vagrant_user()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'remove_vagrant_user()' -t 'gce-2025-04-26';
     echo -e "\e[1;32mremove_vagrant_user()\e[0m";
     echo -e "\e[1;32mcheck if started by Vagrant\e[0m";
 
@@ -1820,24 +1965,26 @@ remove_vagrant_user() {
     else
         echo -e "\e[1;32mNot running Vagrant, nothing to do\e[0m";
     fi
-    /usr/bin/logger 'remove_vagrant_user() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'remove_vagrant_user() finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32mremove_vagrant_user() finished\e[0m";
 }
 
+
 configure_maxrows() {
-    /usr/bin/logger 'configure_maxrows()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_maxrows()' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_maxrows()\e[0m";
     
     # The default value for "Max Rows Per Page" is 1000. 0 indicates no limit.
     echo -e "\e[1;32m...Configuring Maximum rows returned to unlimited\e[0m";
     su gvm -c '/opt/gvm/sbin/gvmd --modify-setting 76374a7a-0569-11e6-b6da-28d24461215b --value 0'
 
-    /usr/bin/logger 'configure_maxrows() finished' -t 'gce-2024-06-29';
+    /usr/bin/logger 'configure_maxrows() finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32mconfigure_maxrows() finished\e[0m";
 }
 
+
 send_mail() {
-    /usr/bin/logger 'send_mail()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'send_mail()' -t 'gce-2025-04-26';
     echo -e "\e[1;32msend_mail()\e[0m";
 
     echo -e "\e[1;32m...configuring Recipient and sender mail-addresses\e[0m";
@@ -1849,12 +1996,13 @@ __EOF__
     echo -e "\e[1;32m...Sending mail\e[0m";
     (echo "To: $MAIL_ADDRESS"; echo "Reply-To: $MAIL_ADDRESS"; echo "Subject: Installed Greenbone Vulnerability Manager on $(hostname -f)"; echo ""; echo -e "Server: $(hostname -f) \n Running: \n OSPD-OpenVAS=$OSPDOPENVAS \n OpenVAS=$OPENVAS \n GVM-Daemon=$GVMD \n GSA-Daemon=$GSA \n GSA=$GSA \n OpenVAS-SMB=$OPENVASSMB \n Python-GVM=$PYTHONGVM \n GVM-Tools=$GVMTOOLS \n pg-gvm=$POSTGREGVM \n Notus-scanner=$NOTUS \n greenbone-feed-sync=$FEEDSYNC \n on $PRETTY_NAME") | sendmail $RCPT_TO
 
-    /usr/bin/logger 'send_mail()' -t 'gce-2024-06-29';
+    /usr/bin/logger 'send_mail()' -t 'gce-2025-04-26';
     echo -e "\e[1;32msend_mail()\e[0m";
 }
 
+
 check_valkey() {
-    /usr/bin/logger 'check_valkey' -t 'gce-2024-04-14';
+    /usr/bin/logger 'check_valkey' -t 'gce-2025-04-26';
     echo -e "\e[1;32mcheck_valkey()\e[0m";
     # Check status of service valkey-server.service
     echo -e
@@ -1863,28 +2011,29 @@ check_valkey() {
     if systemctl is-active --quiet valkey-server.service;
     then
         echo -e "\e[1;32mvalkey-server.service started successfully";
-        /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2024-04-14';
+        /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2025-04-26';
         export VALKEY_REPLY=$(valkey-cli -s /run/valkey/valkey.sock PING);
 	#echo $VALKEY_REPLY;
 	if [ $VALKEY_REPLY == "PONG" ]
         then
             echo -e "\e[1;32mvalkey responding successfully with \e[1;35m$VALKEY_REPLY\e[1;32m on socket \e[1;35m$VALKEY_SOCKET\e[0m";
-            /usr/bin/logger "valkey responding successfully with $VALKEY_REPLY on socket $VALKEY_SOCKET" -t 'gce-2024-04-14';
+            /usr/bin/logger "valkey responding successfully with $VALKEY_REPLY on socket $VALKEY_SOCKET" -t 'gce-2025-04-26';
         else
             echo -e "\e[1;32mvalkey not responding on socket $VALKEY_SOCKET";
-            /usr/bin/logger "valkey not responding on socket $VALKEY_SOCKET" -t 'gce-2024-04-14';
+            /usr/bin/logger "valkey not responding on socket $VALKEY_SOCKET" -t 'gce-2025-04-26';
         fi
     else
         echo -e "\e[1;31mvalkey-server.service FAILED\e[0m";
-        /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2024-04-14';
+        /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2025-04-26';
     fi
-    /usr/bin/logger 'check_valkey finished' -t 'gce-2024-04-14';
+    /usr/bin/logger 'check_valkey finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32mcheck_valkey() finished\e[0m";
 
 }
 
+
 run_once() {
-    /usr/bin/logger 'run_once' -t 'gce-2024-04-14';
+    /usr/bin/logger 'run_once' -t 'gce-2025-04-26';
     echo -e "\e[1;32mrun_once()\e[0m";
 
     mkdir -p /etc/local/runonce.d/ran
@@ -1911,19 +2060,21 @@ __EOF__
 
     chmod 755 /etc/local/runonce.d/scan_update.sh
 
-    /usr/bin/logger 'run_once finished' -t 'gce-2024-04-14';
+    /usr/bin/logger 'run_once finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32mrun_once() finished\e[0m";
 }
 
+
 install_poetry() {
-    /usr/bin/logger 'install_poetry' -t 'gce-2024-04-14';
+    /usr/bin/logger 'install_poetry' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_poetry\e[0m";
+    
     if [ $POETRY_INSTALL == "Yes" ];
     then
-        /usr/bin/logger 'install_poetry' -t 'gce-2024-04-14';
+        /usr/bin/logger 'install_poetry' -t 'gce-2025-04-26';
         echo -e "\e[1;32minstalling python3-poetry\e[0m";
         apt-get -y -qq install python3-poetry > /dev/null 2>&1;
-        /usr/bin/logger 'installing poetry requirements' -t 'gce-2024-04-14';
+        /usr/bin/logger 'installing poetry requirements' -t 'gce-2025-04-26';
         echo -e "\e[1;32minstalling poetry requirements\e[0m";
         cat << __EOF__  > /opt/gvm/scripts/requirements.txt
 autohooks>=22.8.0
@@ -1944,12 +2095,15 @@ __EOF__
         pip3 install -r /opt/gvm/scripts/requirements.txt > /dev/null 2>&1;
         deactivate  > /dev/null 2>&1;
     else
-        /usr/bin/logger 'Not installing python3-poetry check .env file' -t 'gce-2024-04-14';
+        /usr/bin/logger 'Not installing python3-poetry check .env file' -t 'gce-2025-04-26';
         echo -e "\e[1;32mNot installing python3-poetry check .env file if this is in error\e[0m";
     fi
-    /usr/bin/logger 'install_poetry finished' -t 'gce-2024-04-14';
+    
+    /usr/bin/logger 'install_poetry finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_poetry finished\e[0m";
 }
+
+
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
@@ -1963,14 +2117,14 @@ main() {
     # Shared variables
     export SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
     # Check if started by Vagrant
-    /usr/bin/logger 'Vagrant Environment Check for file' -t 'gce-2024-06-29';
+    /usr/bin/logger 'Vagrant Environment Check for file' -t 'gce-2025-04-26';
     echo -e "\e[1;32mcheck if started by Vagrant\e[0m";
     if test -f "/etc/VAGRANT_ENV"; then
-        /usr/bin/logger 'Use .env file in HOME' -t 'gce-2024-06-29';
+        /usr/bin/logger 'Use .env file in HOME' -t 'gce-2025-04-26';
         echo -e "\e[1;32mUse .env file in home\e[0m";
         export ENV_DIR=$HOME;
     else
-        /usr/bin/logger 'Use .env file SCRIPT_DIR' -t 'gce-2024-06-29';
+        /usr/bin/logger 'Use .env file SCRIPT_DIR' -t 'gce-2025-04-26';
         echo -e "\e[1;32mUse .env file in SCRIPT_DIR\e[0m";
         export ENV_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
     fi
@@ -2081,7 +2235,7 @@ main() {
     if [ "$INSTALL_MAIL_SERVER" == "Yes" ]; then
         send_mail;
     fi
-    /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gce-2024-06-29';
+    /usr/bin/logger 'Installation complete - Give it a few minutes to complete ingestion of feed data into Postgres/Redis, then reboot' -t 'gce-2025-04-26';
     echo -e;
     echo -e "\e[1;32mInstallation complete - will reboot in 10 seconds\e[0m";
     echo -e "\e[1;32mPrimary Server Install main() finished\e[0m";

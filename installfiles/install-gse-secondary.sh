@@ -9,6 +9,7 @@
 #                                                                           #
 #############################################################################
 
+
 install_prerequisites() {
     /usr/bin/logger 'install_prerequisites' -t 'ce-2024-11-28';
     echo -e "\e[1;32minstall_prerequisites()\e[0m";
@@ -34,48 +35,107 @@ install_prerequisites() {
     # Set locale
     locale-gen > /dev/null 2>&1;
     update-locale > /dev/null 2>&1;
-    # For development
-    #apt-get -qq -y install libcgreen1 > /dev/null 2>&1;
-    # Install pre-requisites for openvas
-    /usr/bin/logger '..Tools for Development' -t 'ce-2024-11-28';
-    echo -e "\e[1;36m...installing required development tools\e[0m";
-    apt-get -qq -y install openssh-client gpgsm dpkg xmlstarlet libbsd-dev libjson-glib-dev gcc pkg-config libssh-gcrypt-dev libgnutls28-dev libglib2.0-dev libpcap-dev libgpgme-dev bison libksba-dev libsnmp-dev \
-        libgcrypt20-dev libunistring-dev libxml2-dev > /dev/null 2>&1;    # Install pre-requisites for gsad
-    /usr/bin/logger '..Prerequisites for notus-scanner' -t 'ce-2024-11-28';
-    apt-get -qq -y install libpaho-mqtt-dev python3 python3-pip python3-setuptools python3-psutil python3-gnupg python3-venv > /dev/null 2>&1;
     
     # Other pre-requisites for GSE
-    if [ $VER -eq "12" ]
+       if [ $VER -eq "12" ] 
         then
-            /usr/bin/logger '..install_prerequisites_debian_12_bookworm' -t 'ce-2024-11-28';
-            echo -e "\e[1;36m...installing prequisites Debian 12 Bookworm\e[0m";
-            # Install pre-requisites for gvmd on Bookworm (debian 12)
-            apt-get -qq -y install gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc doxygen > /dev/null 2>&1;      
-            echo -e "\e[1;36m...other prerequisites for Greenbone Community Edition\e[0m";
-            # Other pre-requisites for GSE - Bookworm / Debian 12
-            /usr/bin/logger '....Other prerequisites for Greenbone Community Edition on Debian 12' -t 'ce-2024-11-28';
-            apt-get -qq -y install doxygen mosquitto gcc cmake libnet1-dev libglib2.0-dev libgnutls28-dev libpq-dev pkg-config libical-dev xsltproc > /dev/null 2>&1;       
-            apt-get -qq -y install software-properties-common libgpgme11-dev uuid-dev libhiredis-dev libgnutls28-dev libgpgme-dev \
-                bison libksba-dev libsnmp-dev libgcrypt20-dev gnutls-bin nmap xmltoman gcc-mingw-w64 graphviz rpm nsis \
-                sshpass socat gettext python3-polib libldap2-dev libradcli-dev libpq-dev perl-base heimdal-dev libpopt-dev \
-                python3-psutil fakeroot gnupg socat snmp smbclient rsync python3-paramiko python3-lxml \
-                python3-defusedxml python3-pip python3-psutil virtualenv python3-impacket python3-scapy > /dev/null 2>&1;
-            apt-get install -qq -y libhiredis-dev gcc pkg-config libssh-4 libssh-dev libgnutls28-dev libcjson-dev\
-                libglib2.0-dev libjson-glib-dev libpcap-dev libgpgme-dev bison libksba-dev \
-                krb5-multidev libsnmp-dev libgcrypt20-dev redis-server libbsd-dev libcurl4-gnutls-dev pnscan > /dev/null 2>&1;
-     
+            /usr/bin/logger '..install prerequisites Debian 12 Bookworm' -t 'gce-2025-04-26';
+            echo -e "\e[1;36m...install prerequisites Debian 12 Bookworm\e[0m";
+            # Development tools
+            /usr/bin/logger '..Tools for Development' -t 'gce-2025-04-26';
+            echo -e "\e[1;36m...installing required development tools\e[0m";
+            apt-get -y install \
+                openssh-client \
+                gpgsm \
+                dpkg \
+                xmlstarlet \
+                libbsd-dev \
+                libjson-glib-dev \
+                libpaho-mqtt-dev \
+                gcc \
+                cmake \
+                pkg-config \
+                libssh-gcrypt-dev \
+                libgnutls28-dev \
+                libglib2.0-dev \
+                libpcap-dev \
+                libgpgme-dev \
+                bison \
+                libksba-dev \
+                libsnmp-dev \
+                libgcrypt20-dev \
+                libunistring-dev \
+                libxml2-dev > /dev/null 2>&1;
+            # Python stuff
+            apt-get -y install \
+                python3 \
+                python3-pip \
+                python3-setuptools \
+                python3-psutil \
+                python3-gnupg \
+                python3-venv \
+                python3-wheel \
+                python-wheel-common > /dev/null 2>&1;
+                python3 -m pip install --upgrade pip > /dev/null 2>&1;
+
+            # Prerequisites for gvm-libs
+            apt-get -y install \
+                libcjson-dev \
+                libcurl4-gnutls-dev \
+                libgcrypt-dev \
+                libglib2.0-dev \
+                libgnutls28-dev \
+                libgpgme-dev \
+                libhiredis-dev \
+                libnet1-dev \
+                libpaho-mqtt-dev \
+                libpcap-dev \
+                libssh-dev \
+                libxml2-dev \
+                pkg-config \
+                uuid-dev
+
+            # Prerequisites for ospd-openvas
+            apt-get -y install \
+                python3-defusedxml \
+                python3-deprecated \
+                python3-lxml \
+                python3-packaging \
+                python3-paho-mqtt \
+                python3-psutil \
+                python3-gnupg \
+                redis
+
+            # Prerequisites for openvas
+            apt-get -y install \
+                pkg-config \
+                libssh-gcrypt-dev \
+                libgnutls28-dev \
+                libglib2.0-dev \
+                libjson-glib-dev \
+                libpcap-dev \
+                libgpgme-dev \
+                bison \
+                libksba-dev \
+                libsnmp-dev \
+                libgcrypt20-dev \
+                redis-server \
+                libbsd-dev \
+                libcurl4-gnutls-dev \
+                krb5-multidev
+
         else
-            /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'ce-2024-11-28';
+            /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'gce-2025-04-26';
             echo -e "\e[1;36m...Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION\e[0m";
             exit;
         fi
     
-    /usr/bin/logger '..install prerequisites finished' -t 'ce-2024-11-28';
+    /usr/bin/logger '..install prerequisites finished' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...install prerequisites finished\e[0m";
 
     # Install other preferences and cleanup APT
     echo -e "\e[1;36m...installing preferred tools and clean up apt\e[0m";
-    /usr/bin/logger '....Install preferences on Debian' -t 'ce-2024-11-28';
+    /usr/bin/logger '....Install preferences on Debian' -t 'gce-2025-04-26';
     apt-get -qq -y install bash-completion > /dev/null 2>&1;
     # Install SUDO
     apt-get -qq -y install sudo > /dev/null 2>&1;
@@ -102,6 +162,7 @@ install_prerequisites() {
     /usr/bin/logger 'install_prerequisites finished' -t 'ce-2024-11-28';
 }
 
+
 clean_env() {
     /usr/bin/logger 'clean_env()' -t 'ce-2024-11-28';
     echo -e "\e[1;32mclean_env()\e[0m";
@@ -110,6 +171,7 @@ clean_env() {
     /usr/bin/logger 'clean_env() finished' -t 'ce-2024-11-28';
     echo -e "\e[1;32mclean_env() finished\e[0m";
 }
+
 
 prepare_nix() {
     echo -e "\e[1;32mprepare_nix()\e[0m";
@@ -159,6 +221,7 @@ __EOF__
     echo -e "\e[1;32mprepare_nix() finished\e[0m";
 }
 
+
 prepare_source() {    
     /usr/bin/logger 'prepare_source' -t 'ce-2024-11-28';
     echo -e "\e[1;32mprepare_source()\e[0m";
@@ -199,7 +262,7 @@ prepare_source() {
     wget -O notus.tar.gz https://github.com/greenbone/notus-scanner/archive/refs/tags/v$NOTUS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..greenbone-feed-sync' -t 'ce-2024-11-28';
     wget -O greenbone-feed-sync.tar.gz https://github.com/greenbone/greenbone-feed-sync/archive/refs/tags/v$FEEDSYNC.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2024-11-25';
+    /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2025-04-26';
     wget -O valkey.tar.gz https://github.com/valkey-io/valkey/archive/refs/tags/$VALKEY.tar.gz > /dev/null 2>&1;
 
     # open and extract the tarballs
@@ -227,15 +290,6 @@ prepare_source() {
     /usr/bin/logger 'prepare_source finished' -t 'ce-2024-11-28';
 }
 
-install_poetry() {
-    /usr/bin/logger 'install_poetry' -t 'ce-2024-11-28';
-    echo -e "\e[1;32minstall_poetry()\e[0m";
-    export POETRY_HOME=/usr/poetry;
-    # https://python-poetry.org/docs/
-    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3 - > /dev/null 2>&1;
-    echo -e "\e[1;32minstall_poetry() finished\e[0m";
-    /usr/bin/logger 'install_poetry finished' -t 'ce-2024-11-28';
-}
 
 install_valkey() {
     /usr/bin/logger 'install_valkey' -t 'ce-2024-11-28';
@@ -244,7 +298,7 @@ install_valkey() {
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # make valkey
     cd valkey > /dev/null 2>&1;
-    /usr/bin/logger '..make install valkey' -t 'gce-2024-11-25';
+    /usr/bin/logger '..make install valkey' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...make install valkey $VALKEY\e[0m";
     make install USE_SYSTEMD=yes distclean > /dev/null 2>&1;
     # Create valkey user
@@ -255,6 +309,7 @@ install_valkey() {
     echo -e "\e[1;32minstall_valkey() finished\e[0m";
     /usr/bin/logger 'install_valkey finished' -t 'ce-2024-11-28';
 }
+
 
 install_libxml2() {
     /usr/bin/logger 'install_libxml2' -t 'ce-2024-11-28';
@@ -277,6 +332,7 @@ install_libxml2() {
     echo -e "\e[1;36m...ldconfig libxml2()\e[0m";
     ldconfig > /dev/null 2>&1;
 }
+
 
 install_gvm_libs() {
     /usr/bin/logger 'install_gvmlibs' -t 'ce-2024-11-28';
@@ -301,6 +357,7 @@ install_gvm_libs() {
     /usr/bin/logger 'install_gvmlibs finished' -t 'ce-2024-11-28';
 }
 
+
 install_python_gvm() {
     /usr/bin/logger 'install_python_gvm' -t 'ce-2024-11-28';
     # Installing from repo
@@ -311,6 +368,7 @@ install_python_gvm() {
     #/usr/poetry/bin/poetry install;
     /usr/bin/logger 'install_python_gvm finished' -t 'ce-2024-11-28';
 }
+
 
 install_openvas_smb() {
     /usr/bin/logger 'install_openvas_smb' -t 'ce-2024-11-28';
@@ -335,6 +393,7 @@ install_openvas_smb() {
     /usr/bin/logger 'install_openvas_smb finished' -t 'ce-2024-11-28';
 }
 
+
 install_ospd_openvas() {
     /usr/bin/logger 'install_ospd_openvas' -t 'ce-2024-11-28';
     echo -e "\e[1;32minstall_ospd_openvas()\e[0m";
@@ -352,6 +411,7 @@ install_ospd_openvas() {
     echo -e "\e[1;32minstall_ospd_openvas() finished\e[0m";
     /usr/bin/logger 'install_ospd_openvas finished' -t 'ce-2024-11-28';
 }
+
 
 install_openvas() {
     /usr/bin/logger 'install_openvas' -t 'ce-2024-11-28';
@@ -382,6 +442,7 @@ install_openvas() {
     /usr/bin/logger 'install_openvas finished' -t 'ce-2024-11-28';
 }
 
+
 create_scan_user() {
     /usr/bin/logger 'create_scan_user' -t 'ce-2024-11-28';
     echo -e "\e[1;32mcreate_scan_user()\e[0m";
@@ -397,6 +458,7 @@ __EOF__
     echo -e "\e[1;32mcreate_scan_user() finished\e[0m";
 }
 
+
 install_nmap() {
     /usr/bin/logger 'install_nmap' -t 'ce-2024-11-28';
     cd /opt/gvm/src/greenbone;
@@ -405,6 +467,7 @@ install_nmap() {
     sync;
     /usr/bin/logger 'install_nmap finished' -t 'ce-2024-11-28';
 }
+
 
 install_greenbone_feed_sync() {
     /usr/bin/logger 'install_greenbone_feed_sync()' -t 'ce-2024-11-28';
@@ -427,6 +490,7 @@ prepare_gvmpy() {
     echo -e "\e[1;32mprepare_gvmpy() finished\e[0m";
 }
 
+
 prestage_scan_data() {
     /usr/bin/logger 'prestage_scan_data' -t 'ce-2024-11-28';
     echo -e "\e[1;32mprestage_scan_data() \e[0m";
@@ -446,6 +510,7 @@ prestage_scan_data() {
     /usr/bin/logger 'prestage_scan_data finished' -t 'ce-2024-11-28';
 }
 
+
 update_feed_data() {
     /usr/bin/logger 'update_feed_data' -t 'ce-2024-11-28';
     echo -e "\e[1;32mupdate_feed_data() \e[0m";
@@ -456,6 +521,7 @@ update_feed_data() {
     echo -e "\e[1;32mupdate_feed_data() finished\e[0m";
     /usr/bin/logger 'update_feed_data finished' -t 'ce-2024-11-28';
 }
+
 
 install_gvm_tools() {
     /usr/bin/logger 'install_gvm_tools' -t 'ce-2024-11-28';
@@ -471,6 +537,7 @@ install_gvm_tools() {
     echo -e "\e[1;32minstall_gvm_tools() finished\e[0m";
     /usr/bin/logger 'install_gvm_tools finished' -t 'ce-2024-11-28';
 }
+
 
 install_impacket() {
     /usr/bin/logger 'install_impacket' -t 'ce-2024-11-28';
@@ -521,6 +588,7 @@ prepare_gpg() {
     /usr/bin/logger 'prepare_gpg finished' -t 'ce-2024-11-28';
     echo -e "\e[1;32mprepare_gpg() finished\e[0m";
 }
+
 
 configure_openvas() {
     /usr/bin/logger 'configure_openvas' -t 'ce-2024-11-28';
@@ -648,6 +716,7 @@ __EOF__
     /usr/bin/logger 'configure_openvas finished' -t 'ce-2024-11-28';
 }
 
+
 configure_greenbone_updates() {
     /usr/bin/logger 'configure_greenbone_updates' -t 'ce-2024-11-28';
     echo -e "\e[1;32mconfigure_greenbone_updates() \e[0m";
@@ -707,6 +776,7 @@ __EOF__
     echo -e "\e[1;32mconfigure_greenbone_updates() finished\e[0m";
     /usr/bin/logger 'configure_greenbone_updates finished' -t 'ce-2024-11-28';
 }   
+
 
 configure_valkey() {
     /usr/bin/logger 'configure_valkey' -t 'ce-2024-11-28';
@@ -851,6 +921,7 @@ __EOF__
     /usr/bin/logger 'configure_valkey finished' -t 'ce-2024-11-28';
 }
 
+
 start_services() {
     /usr/bin/logger 'start_services' -t 'ce-2024-11-28';
     echo -e "\e[1;32mstart_services()\e[0m";
@@ -894,19 +965,19 @@ start_services() {
             if systemctl is-active --quiet valkey-server.service;
             then
                 echo -e "\e[1;32mvalkey-server.service started successfully";
-                /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2024-06-29';
+                /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2025-04-26';
             else
                 echo -e "\e[1;31mvalkey-server.service FAILED!\e[0m";
-                /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2024-06-29';
+                /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2025-04-26';
             fi
         else    
             if systemctl is-active --quiet redis-server.service;
             then
                 echo -e "\e[1;32mredis-server.service started successfully";
-                /usr/bin/logger 'redis-server.service started successfully' -t 'gce-2024-06-29';
+                /usr/bin/logger 'redis-server.service started successfully' -t 'gce-2025-04-26';
             else
                 echo -e "\e[1;31mredis-server.service FAILED!\e[0m";
-                /usr/bin/logger 'redis-server.service FAILED' -t 'gce-2024-06-29';
+                /usr/bin/logger 'redis-server.service FAILED' -t 'gce-2025-04-26';
             fi
         fi
     echo 'Checking core daemons.....';
@@ -930,6 +1001,7 @@ start_services() {
     echo -e "\e[1;32m ... start:services() finished\e[0m";
     /usr/bin/logger 'start_services finished' -t 'ce-2024-11-28';
 }
+
 
 configure_redis() {
     /usr/bin/logger 'configure_redis' -t 'ce-2024-11-28';
@@ -1008,6 +1080,7 @@ __EOF__
     /usr/bin/logger 'configure_redis finished' -t 'ce-2024-11-28';
 }
 
+
 configure_feed_validation() {
     /usr/bin/logger 'configure_feed_validation()' -t 'ce-2024-11-28';
     echo -e "\e[1;32mconfigure_feed_validation()\e[0m";
@@ -1022,6 +1095,7 @@ configure_feed_validation() {
     /usr/bin/logger 'configure_feed_validation() finished' -t 'ce-2024-11-28';
     echo -e "\e[1;32mconfigure_feed_validation() finished\e[0m";
 }
+
 
 configure_permissions() {
     /usr/bin/logger 'configure_permissions' -t 'ce-2024-11-28';
@@ -1043,6 +1117,7 @@ configure_permissions() {
     echo -e "\e[1;32mconfigure_permissions() finished\e[0m";
     /usr/bin/logger 'configure_permissions finished' -t 'ce-2024-11-28';
 }
+
 
 create_gvm_python_script() {
     /usr/bin/logger 'create_gvm_python_script' -t 'ce-2024-11-28';
@@ -1078,6 +1153,7 @@ __EOF__
     /usr/bin/logger 'create_gvm_python_script finished' -t 'ce-2024-11-28';
 }
 
+
 update_openvas_feed () {
     /usr/bin/logger 'Updating NVT feed database (Redis)' -t 'ce-2024-11-28';
     echo -e "\e[1;32mupdate_openvas_feed()\e[0m";
@@ -1088,12 +1164,14 @@ update_openvas_feed () {
     /usr/bin/logger 'Updating NVT feed database (Redis) Finished' -t 'ce-2024-11-28';
 }
 
+
 install_openvas_from_github() {
     cd /opt/gvm/src/greenbone/
     rm -rf openvas
     git clone https://github.com/greenbone/openvas-scanner.git
     mv ./openvas-scanner ./openvas;
 }
+
 
 toggle_vagrant_nic() {
     /usr/bin/logger 'toggle_vagrant_nic()' -t 'ce-2024-11-28';
@@ -1114,6 +1192,7 @@ toggle_vagrant_nic() {
     echo -e "\e[1;32mtoggle_vagrant_nic() finished\e[0m";
     /usr/bin/logger 'toggle_vagrant_nic() finished' -t 'ce-2024-11-28';
 }
+
 
 remove_vagrant_nic() {
     /usr/bin/logger 'remove_vagrant_nic()' -t 'ce-2024-11-28';
@@ -1145,6 +1224,7 @@ __EOF__
     echo -e "\e[1;32mremove_vagrant_nic() finished\e[0m";
 }
 
+
 remove_vagrant_user() {
     /usr/bin/logger 'remove_vagrant_user()' -t 'ce-2024-11-28';
     echo -e "\e[1;32mremove_vagrant_user()\e[0m";
@@ -1164,6 +1244,7 @@ remove_vagrant_user() {
     echo -e "\e[1;32mremove_vagrant_user() finished\e[0m";
 }
 
+
 create_openvas_version_script() {
     /usr/bin/logger 'create_openvas_version_script()' -t 'ce-2024-11-28';
     echo -e "\e[1;32mcreate_openvas_version_script()\e[0m";
@@ -1178,6 +1259,7 @@ __EOF__
     /usr/bin/logger 'create_openvas_version_script() finished' -t 'ce-2024-11-28';
     echo -e "\e[1;32mcreate_openvas_version_script() finished\e[0m";
 }
+
 
 create_wrapper() {
     echo -e "\e[1;32mcreate_wrapper()\e[0m";
@@ -1228,8 +1310,9 @@ __EOF__
     /usr/bin/logger 'create_wrapper finished' -t 'ce-2024-11-28';
 }
 
+
 check_valkey() {
-    /usr/bin/logger 'check_valkey' -t 'gce-2024-04-14';
+    /usr/bin/logger 'check_valkey' -t 'gce-2025-04-26';
     echo -e "\e[1;32mcheck_valkey()\e[0m";
     # Check status of service valkey-server.service
     echo -e
@@ -1238,26 +1321,27 @@ check_valkey() {
     if systemctl is-active --quiet valkey-server.service;
     then
         echo -e "\e[1;32mvalkey-server.service started successfully";
-        /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2024-04-14';
+        /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2025-04-26';
         export VALKEY_REPLY=$(valkey-cli -s /run/valkey/valkey.sock PING);
 	#echo $VALKEY_REPLY;
 	if [ $VALKEY_REPLY == "PONG" ]
         then
             echo -e "\e[1;32mvalkey responding successfully with \e[1;35m$VALKEY_REPLY\e[1;32m on socket \e[1;35m$VALKEY_SOCKET\e[0m";
-            /usr/bin/logger "valkey responding successfully with $VALKEY_REPLY on socket $VALKEY_SOCKET" -t 'gce-2024-04-14';
+            /usr/bin/logger "valkey responding successfully with $VALKEY_REPLY on socket $VALKEY_SOCKET" -t 'gce-2025-04-26';
         else
             echo -e "\e[1;32mvalkey not responding on socket $VALKEY_SOCKET";
-            /usr/bin/logger "valkey not responding on socket $VALKEY_SOCKET" -t 'gce-2024-04-14';
+            /usr/bin/logger "valkey not responding on socket $VALKEY_SOCKET" -t 'gce-2025-04-26';
         fi
     else
         echo -e "\e[1;31mvalkey-server.service FAILED\e[0m";
-        /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2024-04-14';
+        /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2025-04-26';
     fi
-    /usr/bin/logger 'check_valkey finished' -t 'gce-2024-04-14';
+    /usr/bin/logger 'check_valkey finished' -t 'gce-2025-04-26';
 }
 
+
 run_once() {
-    /usr/bin/logger 'run_once' -t 'gce-2024-04-14';
+    /usr/bin/logger 'run_once' -t 'gce-2025-04-26';
     echo -e "\e[1;32mrun_once()\e[0m";
 
     mkdir -p /etc/local/runonce.d/ran
@@ -1284,9 +1368,49 @@ __EOF__
 
     chmod 755 /etc/local/runonce.d/scan_update.sh
 
-    /usr/bin/logger 'run_once finished' -t 'gce-2024-04-14';
+    /usr/bin/logger 'run_once finished' -t 'gce-2025-04-26';
     echo -e "\e[1;32mrun_once() finished\e[0m";
 }
+
+
+install_poetry() {
+    /usr/bin/logger 'install_poetry' -t 'gce-2025-04-26';
+    echo -e "\e[1;32minstall_poetry\e[0m";
+    
+    if [ $POETRY_INSTALL == "Yes" ];
+    then
+        /usr/bin/logger 'install_poetry' -t 'gce-2025-04-26';
+        echo -e "\e[1;32minstalling python3-poetry\e[0m";
+        apt-get -y -qq install python3-poetry > /dev/null 2>&1;
+        /usr/bin/logger 'installing poetry requirements' -t 'gce-2025-04-26';
+        echo -e "\e[1;32minstalling poetry requirements\e[0m";
+        cat << __EOF__  > /opt/gvm/scripts/requirements.txt
+autohooks>=22.8.0
+autohooks-plugin-ruff>=23.6.1
+autohooks-plugin-black>=22.8.1
+pontos>=22.8.1
+sphinx>=5.3.0
+coverage>=7.2
+rope>=1.9.0
+furo>=2023.3.27
+sphinx-autobuild>=2021.3.14
+myst-parser>=2.0.0
+__EOF__
+        sync
+        chown -R gvm:gvm /opt/gvm/scripts/;
+        su - gvm;
+        source /opt/gvm/gvmpy/bin/activate > /dev/null 2>&1;
+        pip3 install -r /opt/gvm/scripts/requirements.txt > /dev/null 2>&1;
+        deactivate  > /dev/null 2>&1;
+    else
+        /usr/bin/logger 'Not installing python3-poetry check .env file' -t 'gce-2025-04-26';
+        echo -e "\e[1;32mNot installing python3-poetry check .env file if this is in error\e[0m";
+    fi
+    
+    /usr/bin/logger 'install_poetry finished' -t 'gce-2025-04-26';
+    echo -e "\e[1;32minstall_poetry finished\e[0m";
+}
+
 
 ##################################################################################################################
 ## Main                                                                                                          #
