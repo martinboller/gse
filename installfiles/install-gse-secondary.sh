@@ -11,7 +11,7 @@
 
 
 install_prerequisites() {
-    /usr/bin/logger 'install_prerequisites' -t 'ce-2024-11-28';
+    /usr/bin/logger 'install_prerequisites' -t 'gce-2025-04-26';
     echo -e "\e[1;32minstall_prerequisites()\e[0m";
     echo -e "\e[1;32m--------------------------------------------\e[0m";
     echo -e "\e[1;36m...installing prerequisite packages\e[0m";
@@ -22,22 +22,57 @@ install_prerequisites() {
     OS=$NAME
     VER=$VERSION_ID
     CODENAME=$VERSION_CODENAME
-    /usr/bin/logger "Operating System: $OS Version: $VER: $CODENAME" -t 'ce-2024-11-28';
-    echo -e "\e[1;36m...Operating System: $OS Version: $VER: $CODENAME\e[0m";
+    DISTRIBUTION=$VERSION_CODENAME
+    /usr/bin/logger "Operating System $OS Version $VER Codename $CODENAME" -t 'gce-2025-04-26';
+    export DISTRIBUTION="$(lsb_release -s -c)"
+    echo -e "\e[1;36m...Operating System $OS Version $VER Codename $CODENAME\e[0m";
     # Install prerequisites
-    apt-get -qq update > /dev/null 2>&1;
-    # Install some basic tools on a Debian net install
-    /usr/bin/logger '..Install some basic tools missing if installed from Debian net-install' -t 'ce-2024-11-28';
-    echo -e "\e[1;36m...install tools missing if installed from Debian net-install\e[0m";
-    apt-get -qq -y install --fix-policy > /dev/null 2>&1;
-    apt-get -qq -y install adduser wget whois build-essential devscripts git unzip apt-transport-https ca-certificates curl gnupg2 \
-        software-properties-common dnsutils dirmngr --install-recommends  > /dev/null 2>&1;
-    # Set locale
-    locale-gen > /dev/null 2>&1;
-    update-locale > /dev/null 2>&1;
-    
+    apt-get update > /dev/null 2>&1;
+    echo -e "\e[1;36m...installing required packages\e[0m";
+    apt-get -y install \
+        clang \
+        adduser \
+        wget \
+        whois \
+        build-essential \
+        devscripts \
+        git \
+        unzip \
+        zip \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        gnupg2 \
+        software-properties-common \
+        dnsutils \
+        dirmngr \
+        libgpgme11-dev \
+        uuid-dev \
+        libgnutls28-dev \
+        nmap \
+        xmltoman \
+        graphviz \
+        rpm \
+        nsis \
+        sshpass \
+        socat \
+        gettext \
+        libldap2-dev \
+        libradcli-dev \
+        libpq-dev \
+        perl-base \
+        heimdal-dev \
+        libpopt-dev \
+        fakeroot \
+        gnupg \
+        snmp \
+        smbclient \
+        rsync \
+        --install-recommends > /dev/null 2>&1;
+
     # Other pre-requisites for GSE
-       if [ $VER -eq "12" ] 
+    echo -e "\e[1;36m...other prerequisites for Greenbone Community Edition\e[0m";
+    if [ $VER -eq "12" ] 
         then
             /usr/bin/logger '..install prerequisites Debian 12 Bookworm' -t 'gce-2025-04-26';
             echo -e "\e[1;36m...install prerequisites Debian 12 Bookworm\e[0m";
@@ -45,27 +80,22 @@ install_prerequisites() {
             /usr/bin/logger '..Tools for Development' -t 'gce-2025-04-26';
             echo -e "\e[1;36m...installing required development tools\e[0m";
             apt-get -y install \
+                sshpass \
                 openssh-client \
+                pnscan \
                 gpgsm \
                 dpkg \
                 xmlstarlet \
-                libbsd-dev \
                 libjson-glib-dev \
-                libpaho-mqtt-dev \
                 gcc \
                 cmake \
                 pkg-config \
-                libssh-gcrypt-dev \
-                libgnutls28-dev \
-                libglib2.0-dev \
-                libpcap-dev \
-                libgpgme-dev \
-                bison \
-                libksba-dev \
-                libsnmp-dev \
-                libgcrypt20-dev \
-                libunistring-dev \
-                libxml2-dev > /dev/null 2>&1;
+                libssh-4 \
+                doxygen \
+                cmdtest \
+                xsltproc \
+                --install-recommends > /dev/null 2>&1;
+
             # Python stuff
             apt-get -y install \
                 python3 \
@@ -75,7 +105,13 @@ install_prerequisites() {
                 python3-gnupg \
                 python3-venv \
                 python3-wheel \
-                python-wheel-common > /dev/null 2>&1;
+                python3-paramiko \
+                python3-polib \
+                python3-impacket \
+                python3-scapy \
+                virtualenv \
+                python-wheel-common \
+                --install-recommends > /dev/null 2>&1;
                 python3 -m pip install --upgrade pip > /dev/null 2>&1;
 
             # Prerequisites for gvm-libs
@@ -93,7 +129,8 @@ install_prerequisites() {
                 libssh-dev \
                 libxml2-dev \
                 pkg-config \
-                uuid-dev
+                uuid-dev \
+                --install-recommends > /dev/null 2>&1;
 
             # Prerequisites for ospd-openvas
             apt-get -y install \
@@ -104,7 +141,21 @@ install_prerequisites() {
                 python3-paho-mqtt \
                 python3-psutil \
                 python3-gnupg \
-                redis
+                libcjson-dev \
+                libcurl4-gnutls-dev \
+                libgcrypt20-dev \
+                libglib2.0-dev \
+                libgnutls28-dev \
+                libgpgme-dev \
+                libhiredis-dev \
+                libnet1-dev \
+                libpaho-mqtt-dev \
+                libpcap-dev \
+                libssh-dev \
+                libxml2-dev \
+                pkg-config \
+                uuid-dev \
+                --install-recommends > /dev/null 2>&1;
 
             # Prerequisites for openvas
             apt-get -y install \
@@ -122,8 +173,24 @@ install_prerequisites() {
                 redis-server \
                 libbsd-dev \
                 libcurl4-gnutls-dev \
-                krb5-multidev
+                krb5-multidev \
+                --install-recommends > /dev/null 2>&1;
 
+            # Prerequisites for Openvas-SMB
+            apt-get -y install \
+                pkg-config \
+                gcc-mingw-w64 \
+                libgnutls28-dev \
+                perl-base \
+                heimdal-dev \
+                libpopt-dev \
+                libglib2.0-dev \
+                libunistring-dev \
+                --install-recommends > /dev/null 2>&1;
+
+            # Prerequisites for notus-scannner
+            apt-get -y install \
+                mosquitto > /dev/null 2>&1;
         else
             /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'gce-2025-04-26';
             echo -e "\e[1;36m...Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION\e[0m";
@@ -132,34 +199,35 @@ install_prerequisites() {
     
     /usr/bin/logger '..install prerequisites finished' -t 'gce-2025-04-26';
     echo -e "\e[1;36m...install prerequisites finished\e[0m";
-
-    # Install other preferences and cleanup APT
-    echo -e "\e[1;36m...installing preferred tools and clean up apt\e[0m";
-    /usr/bin/logger '....Install preferences on Debian' -t 'gce-2025-04-26';
-    apt-get -qq -y install bash-completion > /dev/null 2>&1;
+     
+    # Install other preferences and clean up APT
+    /usr/bin/logger '....Install some preferences on Debian and clean up apt' -t 'gce-2025-04-26';
+    echo -e "\e[1;36m...installing some preferences on Debian\e[0m";
+    apt-get -qq -y install bash-completion haveged > /dev/null 2>&1;
     # Install SUDO
     apt-get -qq -y install sudo > /dev/null 2>&1;
-    # A little apt cleanup
-    apt-get -qq update > /dev/null 2>&1;
+    # A little apt 
+    echo -e "\e[1;36m...cleaning up apt\e[0m";
+        apt-get -qq update > /dev/null 2>&1;
+    apt-get -qq -y install --fix-policy;
+    apt-get -qq -y install --fix-missing;
     apt-get -qq -y full-upgrade > /dev/null 2>&1;
     apt-get -qq -y autoremove --purge > /dev/null 2>&1;
     apt-get -qq -y autoclean > /dev/null 2>&1;
-    apt-get -qq -y clean > /dev/null 2>&1;    
-    # Python pip packages
-    echo -e "\e[1;36m...installing python and python-pip\e[0m";
-    apt-get -qq -y install python3-pip > /dev/null 2>&1;
-    python3 -m pip install --upgrade pip > /dev/null 2>&1
-    # Prepare directories for scan data
+    apt-get -qq -y clean > /dev/null 2>&1;
+
+    # Prepare directories for scan feed data
     echo -e "\e[1;36m...preparing directories for scan feed data\e[0m";
     mkdir -p /var/lib/gvm/private/CA > /dev/null 2>&1;
     mkdir -p /var/lib/gvm/CA > /dev/null 2>&1;
     mkdir -p /var/lib/openvas/plugins > /dev/null 2>&1;
     # logging
+    echo -e "\e[1;36m...preparing directories for logs\e[0m";
     mkdir -p /var/log/gvm/ > /dev/null 2>&1;
     chown -R gvm:gvm /var/log/gvm/ > /dev/null 2>&1;
-    timedatectl set-timezone UTC > /dev/null 2>&1;
+    timedatectl set-timezone UTC  > /dev/null 2>&1;
     echo -e "\e[1;32minstall_prerequisites() finished\e[0m";
-    /usr/bin/logger 'install_prerequisites finished' -t 'ce-2024-11-28';
+    /usr/bin/logger 'install_prerequisites finished' -t 'gce-2025-04-26';
 }
 
 
