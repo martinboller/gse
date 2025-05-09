@@ -109,7 +109,7 @@ install_prerequisites() {
                 python3-wheel \
                 python3-paramiko \
                 python3-polib \
-                python3-impacket \
+                python3-nmap \
                 python3-scapy \
                 virtualenv \
                 python-wheel-common \
@@ -209,7 +209,7 @@ install_prerequisites() {
             pipx ensurepath > /dev/null 2>&1;
 
             # Prerequisites for Greenbode Security Assistant
-            curl -fsSL https://deb.nodesource.com/setup_22.x | sudo bash -  > /dev/null 2>&1;
+            curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | sudo bash -  > /dev/null 2>&1;
             apt-get update;
             apt-get -y install nodejs > /dev/null 2>&1;
 
@@ -843,7 +843,10 @@ install_impacket() {
     /usr/bin/logger 'install_impacket' -t 'gce-2024-06-29';
     echo -e "\e[1;32minstall_impacket() \e[0m";
     # Install impacket
-    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install impacket==$IMPACKET" > /dev/null 2>&1;
+
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install pyasn1" > /dev/null 2>&1;
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install impacket --use-pep517" > /dev/null 2>&1;
+    
     echo -e "\e[1;32minstall_impacket() finished\e[0m";
     /usr/bin/logger 'install_impacket finished' -t 'gce-2024-06-29';
 }
@@ -946,7 +949,7 @@ open_sock_max_attempts = 10
 plugins_timeout = 320
 scanner_plugins_timeout = 36000
 timeout_retry = 3
-vendor_version = Greenbone Community Edition 23.1.0
+vendor_version = Greenbone Community Edition $GCE
 plugins_folder = /var/lib/openvas/plugins
 config_file = /etc/openvas/openvas.conf
 max_hosts = 40
@@ -2162,6 +2165,7 @@ __EOF__
 ##################################################################################################################
 ## Main                                                                                                          #
 ##################################################################################################################
+
 main() {
     echo -e "\e[1;32mPrimary Server Install main()\e[0m";
     echo -e "\e[1;32m-----------------------------------------------------------------------------------------------------\e[0m"
@@ -2196,6 +2200,7 @@ main() {
     ################################
     ## Shared components
     install_prerequisites;
+    install_impacket;
     install_nginx;
     configure_nginx;
     ## The function below can be used to create a CSR to send to corporate PKI

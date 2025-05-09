@@ -35,11 +35,11 @@ Name | URL | Version
 ---|---|---
 gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.21.0
 ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.8.2
-openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.17.0
+openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.18.0
 GVM Daemon | https://github.com/greenbone/gvmd/ | 25.2.1
-GSA Daemon | https://github.com/greenbone/gsad/ | 24.2.4
+GSA Daemon | https://github.com/greenbone/gsad/ | 24.3.0
 GSA | https://github.com/greenbone/gsa/ | 24.6.1
-openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.7
+openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.8
 python-gvm | https://github.com/greenbone/python-gvm/ | 26.1.1
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 25.3.0
 pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.9
@@ -48,7 +48,7 @@ greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 25.1.0
 valkey | https://github.com/valkey-io/valkey | 8.1.1
 paho-mqtt | https://pypi.org/project/paho-mqtt/ | 2.1.0
 impacket | https://pypi.org/project/impacket/ | 0.12.0
-Node.js for Debian 12 | Debian Repo | 18.x
+Node.js for Debian 12 | https://deb.nodesource.com | 22.xx
 
 ----
 
@@ -74,8 +74,14 @@ Node.js for Debian 12 | Debian Repo | 18.x
 
 ## Latest changes
 
+
 ## 2025-02-08 - GCE updated from 22.04 to 24.10
--- See table for latest modules
+- Openvas-scanner, openvas-smb, and gsad.
+- See table for latest versions.
+
+
+## 2025-02-08 - GCE updated from 22.04 to 24.10
+- See table for latest modules.
 
 ## 2024-12-20 - openvas-scanner update
 - ~~ openvas-scanner v23.14.0 ~~

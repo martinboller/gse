@@ -107,7 +107,7 @@ install_prerequisites() {
                 python3-wheel \
                 python3-paramiko \
                 python3-polib \
-                python3-impacket \
+                python3-nmap \
                 python3-scapy \
                 virtualenv \
                 python-wheel-common \
@@ -608,12 +608,15 @@ install_gvm_tools() {
 
 
 install_impacket() {
-    /usr/bin/logger 'install_impacket' -t 'ce-2024-11-28';
+    /usr/bin/logger 'install_impacket' -t 'gce-2024-06-29';
     echo -e "\e[1;32minstall_impacket() \e[0m";
     # Install impacket
-    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install impacket==$IMPACKET" > /dev/null 2>&1;
+
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install pyasn1" > /dev/null 2>&1;
+    su gvm -c "source ~/gvmpy/bin/activate; python3 -m pip install impacket --use-pep517" > /dev/null 2>&1;
+    
     echo -e "\e[1;32minstall_impacket() finished\e[0m";
-    /usr/bin/logger 'install_impacket finished' -t 'ce-2024-11-28';
+    /usr/bin/logger 'install_impacket finished' -t 'gce-2024-06-29';
 }
 
 
@@ -681,7 +684,7 @@ open_sock_max_attempts = 10
 plugins_timeout = 320
 scanner_plugins_timeout = 36000
 timeout_retry = 3
-vendor_version = 
+vendor_version = Greenbone Community Edition $GCE
 plugins_folder = /var/lib/openvas/plugins
 config_file = /etc/openvas/openvas.conf
 max_hosts = 30
@@ -1514,6 +1517,7 @@ main() {
 
     # Shared components
     install_prerequisites;
+    install_impacket;
     prepare_nix;
     prepare_source;
     prepare_gvmpy;
