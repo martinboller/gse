@@ -1543,7 +1543,7 @@ main() {
    # valkey or redis
     if [ $VALKEY_INSTALL == "Yes" ]
         then
-            echo -e "\e[1;32Valkey v$VALKEY replacing Redis\e[0m";
+            echo -e "\e[1;32mValkey v$VALKEY replacing Redis\e[0m";
             install_valkey;
             configure_valkey;
         else 

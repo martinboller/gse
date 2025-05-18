@@ -34,11 +34,11 @@ Versions used:
 Name | URL | Version
 ---|---|---
 gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.21.0
-ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.8.2
-openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.18.0
-GVM Daemon | https://github.com/greenbone/gvmd/ | 25.2.1
+ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.9.0
+openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.19.0
+GVM Daemon | https://github.com/greenbone/gvmd/ | 26.0.0
 GSA Daemon | https://github.com/greenbone/gsad/ | 24.3.0
-GSA | https://github.com/greenbone/gsa/ | 24.6.1
+GSA | https://github.com/greenbone/gsa/ | 25.0.0
 openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.8
 python-gvm | https://github.com/greenbone/python-gvm/ | 26.1.1
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 25.3.0
