@@ -43,7 +43,7 @@ openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.8
 python-gvm | https://github.com/greenbone/python-gvm/ | 26.2.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 25.3.0
 pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.9
-notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.7.1
+notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.7.2
 greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 25.1.0
 valkey | https://github.com/valkey-io/valkey | 8.1.1
 paho-mqtt | https://pypi.org/project/paho-mqtt/ | 2.1.0
