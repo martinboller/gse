@@ -33,19 +33,19 @@ Note: Due to the ugly hack made removing the Vagrant NIC uses (it gave me a lot 
 Versions used:
 Name | URL | Version
 ---|---|---
-gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.22.0
+gvm-libs | https://github.com/greenbone/gvm-libs/ | 22.23.0
 ospd-openvas | https://github.com/greenbone/ospd-openvas/ | 22.9.0
-openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.20.1
+openvas-scanner | https://github.com/greenbone/openvas-scanner/ | 23.21.0
 GVM Daemon | https://github.com/greenbone/gvmd/ | 26.0.0
-GSA Daemon | https://github.com/greenbone/gsad/ | 24.3.0
+GSA Daemon | https://github.com/greenbone/gsad/ | 24.5.0
 GSA | https://github.com/greenbone/gsa/ | 25.0.0
 openvas-smb | https://github.com/greenbone/openvas-smb | 22.5.8
-python-gvm | https://github.com/greenbone/python-gvm/ | 26.2.0
+python-gvm | https://github.com/greenbone/python-gvm/ | 26.3.0
 gvm-tools | https://github.com/greenbone/gvm-tools/ | 25.3.0
 pg-gvm | https://github.com/greenbone/pg-gvm/ | 22.6.9
 notus-scanner | https://github.com/greenbone/notus-scanner/ | 22.7.2
 greenbone-feed-sync | https://github.com/greenbone/greenbone-feed-sync/ | 25.1.0
-valkey | https://github.com/valkey-io/valkey | 8.1.1
+valkey | https://github.com/valkey-io/valkey | 8.1.3
 paho-mqtt | https://pypi.org/project/paho-mqtt/ | 2.1.0
 impacket | https://pypi.org/project/impacket/ | 0.12.0
 Node.js | https://deb.nodesource.com | 22.xx
