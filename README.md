@@ -54,7 +54,7 @@ Node.js | https://deb.nodesource.com | 22.xx
 
 ### References
 
-[API Reference for Greenbone GMP 22.6](https://docs.greenbone.net/API/GMP/gmp-22.6.html)
+[API Reference for Greenbone GMP 22.7](https://docs.greenbone.net/API/GMP/gmp-22.7.html)
 
 ### Install on Debian 12 directly (not needed when using Vagrant)
 

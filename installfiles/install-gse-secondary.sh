@@ -176,6 +176,9 @@ install_prerequisites() {
                 krb5-multidev \
                 libmagic-dev \
                 libkrb5-dev \ 
+                libbsd-dev \
+                libksba-dev \
+                bison \ 
                 --install-recommends > /dev/null 2>&1;
                 
             # Prerequisites for Openvas-SMB
