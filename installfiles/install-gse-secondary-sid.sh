@@ -29,7 +29,7 @@ install_prerequisites() {
     # Install prerequisites
     apt-get update > /dev/null 2>&1;
     echo -e "\e[1;36m...installing required packages\e[0m";
-    apt-get -y install \
+    apt-get -y -qq install \
         clang \
         adduser \
         wget \
@@ -43,7 +43,6 @@ install_prerequisites() {
         ca-certificates \
         curl \
         gnupg2 \
-        software-properties-common \
         dnsutils \
         dirmngr \
         libgpgme11-dev \
@@ -72,14 +71,14 @@ install_prerequisites() {
 
     # Other pre-requisites for GSE
     echo -e "\e[1;36m...other prerequisites for Greenbone Community Edition\e[0m";
-    if [ $VER -eq "12" ] 
+    if [ $VER -eq "13" ] 
         then
-            /usr/bin/logger '..install prerequisites Debian 12 Bookworm' -t 'gce-2025-04-26';
-            echo -e "\e[1;36m...install prerequisites Debian 12 Bookworm\e[0m";
+            /usr/bin/logger '..install prerequisites Debian 13 Trixie' -t 'gce-2025-04-26';
+            echo -e "\e[1;36m...install prerequisites Debian 13 Trixie\e[0m";
             # Development tools
             /usr/bin/logger '..Tools for Development' -t 'gce-2025-04-26';
             echo -e "\e[1;36m...installing required development tools\e[0m";
-            apt-get -y install \
+            apt-get -y -qq install \
                 sshpass \
                 openssh-client \
                 pnscan \
@@ -92,12 +91,11 @@ install_prerequisites() {
                 pkg-config \
                 libssh-4 \
                 doxygen \
-                cmdtest \
                 xsltproc \
                 --install-recommends > /dev/null 2>&1;
 
             # Python stuff
-            apt-get -y install \
+            apt-get -y -qq install \
                 python3 \
                 python3-pip \
                 python3-setuptools \
@@ -114,7 +112,7 @@ install_prerequisites() {
                 --install-recommends > /dev/null 2>&1;
 
             # Prerequisites for gvm-libs
-            apt-get -y install \
+            apt-get -y -qq install \
                 libcjson-dev \
                 libcurl4-gnutls-dev \
                 libgcrypt-dev \
@@ -132,7 +130,7 @@ install_prerequisites() {
                 --install-recommends > /dev/null 2>&1;
 
             # Prerequisites for ospd-openvas
-            apt-get -y install \
+            apt-get -y -qq install \
                 python3-defusedxml \
                 python3-deprecated \
                 python3-lxml \
@@ -157,9 +155,8 @@ install_prerequisites() {
                 --install-recommends > /dev/null 2>&1;
 
             # Prerequisites for openvas
-            apt-get -y install \
+            apt-get -y -qq install \
                 pkg-config \
-                libssh-gcrypt-dev \
                 libgnutls28-dev \
                 libglib2.0-dev \
                 libjson-glib-dev \
@@ -174,14 +171,14 @@ install_prerequisites() {
                 libcurl4-gnutls-dev \
                 krb5-multidev \
                 libmagic-dev \
-                libkrb5-dev \ 
+                libkrb5-dev \
                 libbsd-dev \
                 libksba-dev \
                 bison \
                 --install-recommends > /dev/null 2>&1;
                 
             # Prerequisites for Openvas-SMB
-            apt-get -y install \
+            apt-get -y -qq install \
                 pkg-config \
                 gcc-mingw-w64 \
                 libgnutls28-dev \
@@ -193,7 +190,7 @@ install_prerequisites() {
                 --install-recommends > /dev/null 2>&1;
 
             # Prerequisites for notus-scannner
-            apt-get -y install \
+            apt-get -y -qq install \
                 mosquitto > /dev/null 2>&1;
         else
             /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'gce-2025-04-26';
@@ -212,7 +209,7 @@ install_prerequisites() {
     apt-get -qq -y install sudo > /dev/null 2>&1;
     # A little apt 
     echo -e "\e[1;36m...cleaning up apt\e[0m";
-        apt-get -qq update > /dev/null 2>&1;
+    apt-get -qq update > /dev/null 2>&1;
     apt-get -qq -y install --fix-policy;
     apt-get -qq -y install --fix-missing;
     apt-get -qq -y full-upgrade > /dev/null 2>&1;
@@ -257,6 +254,7 @@ prepare_nix() {
     mkdir /opt/gvm > /dev/null 2>&1;
     chown -R gvm:gvm /opt/gvm/ > /dev/null 2>&1;
 
+    
     # create user for valkey if required
     if [ $VALKEY_INSTALL == "Yes" ]
         then
@@ -302,11 +300,11 @@ prepare_source() {
     echo -e "\e[1;32mInstalling the following GCE versions\e[0m";
     echo -e "\e[1;35m----------------------------------"
     echo -e "\e[1;35mgvmlibs \t\t $GVMLIBS"
-    echo -e "\e[1;35mospd-openvas \t $OSPDOPENVAS"
+    echo -e "\e[1;35mospd-openvas \t\t $OSPDOPENVAS"
     echo -e "\e[1;35mopenvas-scanner \t $OPENVAS"
-    echo -e "\e[1;35mopenvas-smb \t $OPENVASSMB"
+    echo -e "\e[1;35mopenvas-smb \t\t $OPENVASSMB"
     echo -e "\e[1;35mgvm-tools \t\t $GVMTOOLS"
-    echo -e "\e[1;35mnotus-scanner \t $NOTUS"
+    echo -e "\e[1;35mnotus-scanner \t\t $NOTUS"
     echo -e "\e[1;35mfeed-sync \t\t $FEEDSYNC"
     echo -e "\e[1;35m----------------------------------"
     echo -e "\e[1;35mvalkey-server \t\t $VALKEY"
@@ -558,7 +556,7 @@ prepare_gvmpy() {
     /usr/bin/logger 'prepare_gvmpy' -t 'gce-2026-03-17';
     echo -e "\e[1;32mprepare_gvmpy() \e[0m";
     su gvm -c 'cd ~; python3 -m venv gvmpy' > /dev/null 2>&1;
-    su gvm -c "source gvmpy/bin/activate;python3 -m pip install --upgrade pip" > /dev/null 2>&1;
+    su gvm -c "python3 -m pip install --upgrade pip"
     /usr/bin/logger 'prepare_gvmpy finished' -t 'gce-2026-03-17';
     echo -e "\e[1;32mprepare_gvmpy() finished\e[0m";
 }

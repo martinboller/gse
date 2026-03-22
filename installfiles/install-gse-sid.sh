@@ -44,7 +44,6 @@ install_prerequisites() {
         ca-certificates \
         curl \
         gnupg2 \
-        software-properties-common \
         dnsutils \
         dirmngr \
         libgpgme11-dev \
@@ -74,7 +73,7 @@ install_prerequisites() {
     # Other pre-requisites for GSE
     echo -e "\e[1;36m...other prerequisites for Greenbone Community Edition\e[0m";
 
-    if [ $VER -eq "12" ] 
+    if [ $VER -eq "13" ] 
         then
             /usr/bin/logger '..install prerequisites Debian 12 Bookworm' -t 'gce-2025-04-26';
             echo -e "\e[1;36m...install prerequisites Debian 12 Bookworm\e[0m";
@@ -94,7 +93,6 @@ install_prerequisites() {
                 pkg-config \
                 libssh-4 \
                 doxygen \
-                cmdtest \
                 xsltproc \
                 --install-recommends > /dev/null 2>&1;
 
@@ -161,7 +159,6 @@ install_prerequisites() {
             # Prerequisites for openvas
             apt-get -y -qq install \
                 pkg-config \
-                libssh-gcrypt-dev \
                 libgnutls28-dev \
                 libglib2.0-dev \
                 libjson-glib-dev \
@@ -262,7 +259,7 @@ install_prerequisites() {
     # A little apt 
     echo -e "\e[1;36m...cleaning up apt\e[0m";
     apt-get -qq update > /dev/null 2>&1;
-    #apt-get -qq -y install --fix-policy > /dev/null 2>&1;
+    apt-get -qq -y install --fix-policy > /dev/null 2>&1;
     apt-get -qq -y install --fix-missing > /dev/null 2>&1;
     apt-get -qq -y full-upgrade > /dev/null 2>&1;
     apt-get -qq -y autoremove --purge > /dev/null 2>&1;
