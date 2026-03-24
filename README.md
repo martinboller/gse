@@ -741,5 +741,11 @@ When removing Vagrant specific configs, control the VMs using the Hypervisors sp
 
 ---
 
+### Postgresql
+Get the size of the database (gvmd)
+- su postgres -c "psql -c \"SELECT pg_size_pretty(pg_database_size('gvmd'));\""
+
+---
+
 ### Blog Post
 There's a short companion blogpost on https://blog.infosecworrier.dk/2020/12/building-your-own-greenbone.html

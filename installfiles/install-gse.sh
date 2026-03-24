@@ -11,7 +11,7 @@
 
 
 install_prerequisites() {
-    /usr/bin/logger 'install_prerequisites' -t 'gce-2025-04-26';
+    /usr/bin/logger 'install_prerequisites' -t 'gce-2026-03-23';
     echo -e "\e[1;32minstall_prerequisites()\e[0m";
     echo -e "\e[1;32m--------------------------------------------\e[0m";
     echo -e "\e[1;36m...installing prerequisite packages\e[0m";
@@ -23,14 +23,14 @@ install_prerequisites() {
     VER=$VERSION_ID
     CODENAME=$VERSION_CODENAME
     DISTRIBUTION=$VERSION_CODENAME
-    /usr/bin/logger "Operating System $OS Version $VER Codename $CODENAME" -t 'gce-2025-04-26';
+    /usr/bin/logger "Operating System $OS Version $VER Codename $CODENAME" -t 'gce-2026-03-23';
     export DISTRIBUTION="$(lsb_release -s -c)"
     echo -e "\e[1;36m...Operating System $OS Version $VER Codename $CODENAME\e[0m";
     # Install prerequisites
     # Some APT gymnastics to ensure it is all cleaned up
     apt-get update > /dev/null 2>&1;
     echo -e "\e[1;36m...installing required packages\e[0m";
-    apt-get -y -qq install \
+    apt-get -y install \
         clang \
         adduser \
         wget \
@@ -76,12 +76,12 @@ install_prerequisites() {
 
     if [ $VER -eq "12" ] 
         then
-            /usr/bin/logger '..install prerequisites Debian 12 Bookworm' -t 'gce-2025-04-26';
+            /usr/bin/logger '..install prerequisites Debian 12 Bookworm' -t 'gce-2026-03-23';
             echo -e "\e[1;36m...install prerequisites Debian 12 Bookworm\e[0m";
             # Development tools
-            /usr/bin/logger '..Tools for Development' -t 'gce-2025-04-26';
+            /usr/bin/logger '..Tools for Development' -t 'gce-2026-03-23';
             echo -e "\e[1;36m...installing required development tools\e[0m";
-            apt-get -y -qq install \
+            apt-get -y install \
                 sshpass \
                 openssh-client \
                 pnscan \
@@ -99,7 +99,7 @@ install_prerequisites() {
                 --install-recommends > /dev/null 2>&1;
 
             # Python stuff
-            apt-get -y -qq install \
+            apt-get -y install \
                 python3 \
                 python3-pip \
                 python3-setuptools \
@@ -116,7 +116,7 @@ install_prerequisites() {
                 --install-recommends > /dev/null 2>&1;
 
             # Prerequisites for gvm-libs
-            apt-get -y -qq install \
+            apt-get -y install \
                 libcjson-dev \
                 libcurl4-gnutls-dev \
                 libgcrypt-dev \
@@ -134,7 +134,7 @@ install_prerequisites() {
                 --install-recommends > /dev/null 2>&1;
 
             # Prerequisites for ospd-openvas
-            apt-get -y -qq install \
+            apt-get -y install \
                 python3-defusedxml \
                 python3-deprecated \
                 python3-lxml \
@@ -159,7 +159,7 @@ install_prerequisites() {
                 --install-recommends > /dev/null 2>&1;
 
             # Prerequisites for openvas
-            apt-get -y -qq install \
+            apt-get -y install \
                 pkg-config \
                 libssh-gcrypt-dev \
                 libgnutls28-dev \
@@ -181,7 +181,7 @@ install_prerequisites() {
                 # Recent version of openvas-scaner require libmagic and libkrb5.
 
             # Prerequisites for Greenbone Vulnerability Manager Daemon (GVMD)
-            apt-get -y -qq install \
+            apt-get -y install \
                 gnutls-bin \
                 libcjson-dev \
                 libglib2.0-dev \
@@ -200,13 +200,13 @@ install_prerequisites() {
                 --install-recommends > /dev/null 2>&1;
 
             # Prerequisites for Greenbone Security Assistant Daemon
-            apt-get -y -qq install \
+            apt-get -y install \
                 libmicrohttpd-dev \
                 libxml2-dev \
                 zlib1g-dev \
                 --install-recommends > /dev/null 2>&1;
             # Gersemi - cmake formatting
-            apt-get -y -qq install \
+            apt-get -y install \
                 pipx > /dev/null 2>&1;
             pipx install gersemi --install-recommends > /dev/null 2>&1;
             pipx ensurepath > /dev/null 2>&1;
@@ -214,10 +214,10 @@ install_prerequisites() {
             # Prerequisites for Greenbode Security Assistant
             curl -fsSL https://deb.nodesource.com/setup_$NODE_VERSION | sudo bash -  > /dev/null 2>&1;
             apt-get update;
-            apt-get -y -qq install nodejs > /dev/null 2>&1;
+            apt-get -y install nodejs > /dev/null 2>&1;
 
             # Prerequisites for Openvas-SMB
-            apt-get -y -qq install \
+            apt-get -y install \
                 pkg-config \
                 gcc-mingw-w64 \
                 libgnutls28-dev \
@@ -229,45 +229,59 @@ install_prerequisites() {
                 --install-recommends > /dev/null 2>&1;
 
             # Prerequisites for notus-scannner
-            apt-get -y -qq install \
+            apt-get -y install \
                 mosquitto > /dev/null 2>&1;
+
+            apt-get -y install \
+                libbrotli-dev \
+                libcurl4-gnutls-dev \
+                libkrb5-dev \
+                libnghttp2-dev \
+                libnghttp3-dev \
+                libngtcp2-crypto-gnutls-dev \
+                libngtcp2-dev \
+                libpsl-dev \
+                librtmp-dev \
+                libssh2-1-dev \
+                libzstd-dev \
+                --install-recommends > /dev/null 2>&1;
         else
-            /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'gce-2025-04-26';
+            /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'gce-2026-03-23';
             echo -e "\e[1;36m...Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION\e[0m";
             exit;
         fi
     
-    /usr/bin/logger '..install prerequisites finished' -t 'gce-2025-04-26';
+    /usr/bin/logger '..install prerequisites finished' -t 'gce-2026-03-23';
     echo -e "\e[1;36m...install prerequisites finished\e[0m";
      
     # Speed up installation without texlive (but then PDF reports wont work)
     if [ "$TEXLIVE_INSTALL" == "Yes" ]; then
     # Required for PDF report generation
-       /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gce-2025-04-26';
+       /usr/bin/logger '....Prerequisites for PDF report generation' -t 'gce-2026-03-23';
         echo -e "\e[1;36m...installing texlive required for PDF report generation\e[0m";
         echo -e "\e[1;36m...please be patient, this could take quite a while depending on your system\e[0m";
-        apt-get -qq -y install texlive-latex-extra --no-install-recommends > /dev/null 2>&1;
-        apt-get -qq -y install texlive-fonts-recommended > /dev/null 2>&1;
-        #apt-get -qq -y install texlive-full texlive-fonts-recommended > /dev/null 2>&1;
+        apt-get -y install texlive-latex-extra --no-install-recommends > /dev/null 2>&1;
+        apt-get -y install texlive-fonts-recommended > /dev/null 2>&1;
+        #apt-get -y install texlive-full texlive-fonts-recommended > /dev/null 2>&1;
     else
         echo -e "\e[1;32mNot installing texlive, you won't be able to create PDF-reports\e[0m";
     fi
 
     # Install other preferences and clean up APT
-    /usr/bin/logger '....Install some preferences on Debian and clean up apt' -t 'gce-2025-04-26';
+    /usr/bin/logger '....Install some preferences on Debian and clean up apt' -t 'gce-2026-03-23';
     echo -e "\e[1;36m...installing some preferences on Debian\e[0m";
-    apt-get -qq -y install bash-completion haveged > /dev/null 2>&1;
+    apt-get -y install bash-completion haveged > /dev/null 2>&1;
     # Install SUDO
-    apt-get -qq -y install sudo > /dev/null 2>&1;
+    apt-get -y install sudo > /dev/null 2>&1;
     # A little apt 
     echo -e "\e[1;36m...cleaning up apt\e[0m";
-    apt-get -qq update > /dev/null 2>&1;
-    #apt-get -qq -y install --fix-policy > /dev/null 2>&1;
-    apt-get -qq -y install --fix-missing > /dev/null 2>&1;
-    apt-get -qq -y full-upgrade > /dev/null 2>&1;
-    apt-get -qq -y autoremove --purge > /dev/null 2>&1;
-    apt-get -qq -y autoclean > /dev/null 2>&1;
-    apt-get -qq -y clean > /dev/null 2>&1;
+    apt-get update > /dev/null 2>&1;
+    #apt-get -y install --fix-policy > /dev/null 2>&1;
+    apt-get -y install --fix-missing > /dev/null 2>&1;
+    apt-get -y full-upgrade > /dev/null 2>&1;
+    apt-get -y autoremove --purge > /dev/null 2>&1;
+    apt-get -y autoclean > /dev/null 2>&1;
+    apt-get -y clean > /dev/null 2>&1;
 
     # Prepare directories for scan feed data
     echo -e "\e[1;36m...preparing directories for scan feed data\e[0m";
@@ -280,7 +294,7 @@ install_prerequisites() {
     chown -R gvm:gvm /var/log/gvm/ > /dev/null 2>&1;
     timedatectl set-timezone UTC  > /dev/null 2>&1;
     echo -e "\e[1;32minstall_prerequisites() finished\e[0m";
-    /usr/bin/logger 'install_prerequisites finished' -t 'gce-2025-04-26';
+    /usr/bin/logger 'install_prerequisites finished' -t 'gce-2026-03-23';
 }
 
 
@@ -410,7 +424,7 @@ prepare_source() {
     /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2026-03-17';
     wget -O greenbone-feed-sync.tar.gz https://github.com/greenbone/greenbone-feed-sync/archive/refs/tags/v$FEEDSYNC.tar.gz > /dev/null 2>&1;
     # valkey to replace redis
-    /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2024-11-25';
+    /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2026-03-23';
     wget -O valkey.tar.gz https://github.com/valkey-io/valkey/archive/refs/tags/$VALKEY.tar.gz > /dev/null 2>&1;
     
     # open and extract the tarballs
@@ -573,11 +587,11 @@ install_python_ical() {
 install_valkey() {
     /usr/bin/logger 'install_valkey' -t 'gce-2026-03-17';
     echo -e "\e[1;32minstall_valkey() $VALKEY\e[0m";
-    apt -qq -y install libsystemd-dev > /dev/null 2>&1; 
+    apt -y install libsystemd-dev > /dev/null 2>&1; 
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # make valkey
     cd valkey > /dev/null 2>&1;
-    /usr/bin/logger '..make install valkey' -t 'gce-2024-11-25';
+    /usr/bin/logger '..make install valkey' -t 'gce-2026-03-23';
     echo -e "\e[1;36m...make install valkey $VALKEY\e[0m";
     make install USE_SYSTEMD=yes distclean > /dev/null 2>&1;
     # Create valkey user
@@ -700,7 +714,7 @@ install_nmap() {
     /usr/bin/logger 'install_nmap' -t 'gce-2026-03-17';
     cd /opt/gvm/src/greenbone;
     # Install NMAP
-    apt-get -qq -y install nmap --fix-missing > /dev/null 2>&1;
+    apt-get -y install nmap --fix-missing > /dev/null 2>&1;
     sync;
     /usr/bin/logger 'install_nmap finished' -t 'gce-2026-03-17';
 }
@@ -1795,7 +1809,7 @@ install_nginx() {
     /usr/bin/logger 'install_nginx()' -t 'gce-2026-03-17';
     echo -e "\e[1;32minstall_nginx()\e[0m";
     echo -e "\e[1;36m...installing nginx and apache2 utils\e[0m";
-    apt-get -qq -y install nginx apache2-utils > /dev/null 2>&1;
+    apt-get -y install nginx apache2-utils > /dev/null 2>&1;
     echo -e "\e[1;32minstall_nginx() finished\e[0m";
     /usr/bin/logger 'install_nginx() finished' -t 'gce-2026-03-17';
 }
@@ -1914,10 +1928,10 @@ install_exim() {
     /usr/bin/logger 'install_exim()' -t 'gce-2026-03-17';
     echo -e "\e[1;32minstall_exim()\e[0m";
     # remove postfix if installed
-    apt-get -qq -y update > /dev/null 2>&1;
-    apt-get -qq -y purge postfix* > /dev/null 2>&1;
-    apt-get -qq -y update > /dev/null 2>&1;
-    apt-get -qq -y install exim4 > /dev/null 2>&1;
+    apt-get -y update > /dev/null 2>&1;
+    apt-get -y purge postfix* > /dev/null 2>&1;
+    apt-get -y update > /dev/null 2>&1;
+    apt-get -y install exim4 > /dev/null 2>&1;
     /usr/bin/logger 'install_exim() finished' -t 'gce-2026-03-17';
     echo -e "\e[1;32minstall_exim() finished\e[0m";    
 }
@@ -2071,7 +2085,7 @@ __EOF__
 
 
 check_valkey() {
-    /usr/bin/logger 'check_valkey' -t 'gce-2024-04-14';
+    /usr/bin/logger 'check_valkey' -t 'gce-2026-03-23';
     echo -e "\e[1;32mcheck_valkey()\e[0m";
     # Check status of service valkey-server.service
     echo -e
@@ -2080,29 +2094,29 @@ check_valkey() {
     if systemctl is-active --quiet valkey-server.service;
     then
         echo -e "\e[1;32mvalkey-server.service started successfully";
-        /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2024-04-14';
+        /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2026-03-23';
         export VALKEY_REPLY=$(valkey-cli -s /run/valkey/valkey.sock PING);
 	#echo $VALKEY_REPLY;
 	if [ $VALKEY_REPLY == "PONG" ]
         then
             echo -e "\e[1;32mvalkey responding successfully with \e[1;35m$VALKEY_REPLY\e[1;32m on socket \e[1;35m$VALKEY_SOCKET\e[0m";
-            /usr/bin/logger "valkey responding successfully with $VALKEY_REPLY on socket $VALKEY_SOCKET" -t 'gce-2024-04-14';
+            /usr/bin/logger "valkey responding successfully with $VALKEY_REPLY on socket $VALKEY_SOCKET" -t 'gce-2026-03-23';
         else
             echo -e "\e[1;32mvalkey not responding on socket $VALKEY_SOCKET";
-            /usr/bin/logger "valkey not responding on socket $VALKEY_SOCKET" -t 'gce-2024-04-14';
+            /usr/bin/logger "valkey not responding on socket $VALKEY_SOCKET" -t 'gce-2026-03-23';
         fi
     else
         echo -e "\e[1;31mvalkey-server.service FAILED\e[0m";
-        /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2024-04-14';
+        /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2026-03-23';
     fi
-    /usr/bin/logger 'check_valkey finished' -t 'gce-2024-04-14';
+    /usr/bin/logger 'check_valkey finished' -t 'gce-2026-03-23';
     echo -e "\e[1;32mcheck_valkey() finished\e[0m";
 
 }
 
 
 run_once() {
-    /usr/bin/logger 'run_once' -t 'gce-2024-04-14';
+    /usr/bin/logger 'run_once' -t 'gce-2026-03-23';
     echo -e "\e[1;32mrun_once()\e[0m";
 
     mkdir -p /etc/local/runonce.d/ran
@@ -2129,20 +2143,20 @@ __EOF__
 
     chmod 755 /etc/local/runonce.d/scan_update.sh
 
-    /usr/bin/logger 'run_once finished' -t 'gce-2024-04-14';
+    /usr/bin/logger 'run_once finished' -t 'gce-2026-03-23';
     echo -e "\e[1;32mrun_once() finished\e[0m";
 }
 
 
 install_poetry() {
-    /usr/bin/logger 'install_poetry' -t 'gce-2024-04-14';
+    /usr/bin/logger 'install_poetry' -t 'gce-2026-03-23';
     echo -e "\e[1;32minstall_poetry\e[0m";
     if [ $POETRY_INSTALL == "Yes" ];
     then
-        /usr/bin/logger 'install_poetry' -t 'gce-2024-04-14';
+        /usr/bin/logger 'install_poetry' -t 'gce-2026-03-23';
         echo -e "\e[1;32minstalling python3-poetry\e[0m";
-        apt-get -y -qq install python3-poetry > /dev/null 2>&1;
-        /usr/bin/logger 'installing poetry requirements' -t 'gce-2024-04-14';
+        apt-get -y install python3-poetry > /dev/null 2>&1;
+        /usr/bin/logger 'installing poetry requirements' -t 'gce-2026-03-23';
         echo -e "\e[1;32minstalling poetry requirements\e[0m";
         cat << __EOF__  > /opt/gvm/scripts/requirements.txt
 autohooks>=22.8.0
@@ -2163,10 +2177,10 @@ __EOF__
         pip3 install -r /opt/gvm/scripts/requirements.txt > /dev/null 2>&1;
         deactivate  > /dev/null 2>&1;
     else
-        /usr/bin/logger 'Not installing python3-poetry check .env file' -t 'gce-2024-04-14';
+        /usr/bin/logger 'Not installing python3-poetry check .env file' -t 'gce-2026-03-23';
         echo -e "\e[1;32mNot installing python3-poetry check .env file if this is in error\e[0m";
     fi
-    /usr/bin/logger 'install_poetry finished' -t 'gce-2024-04-14';
+    /usr/bin/logger 'install_poetry finished' -t 'gce-2026-03-23';
     echo -e "\e[1;32minstall_poetry finished\e[0m";
 }
 
@@ -2227,7 +2241,7 @@ main() {
     #install_poetry;
     #install_nmap;
     
-    apt-get -qq -y install --fix-broken > /dev/null 2>&1;
+    apt-get -y install --fix-broken > /dev/null 2>&1;
     # Prepare Python Virtual Evironment for gvm python tools and utilities.
     prepare_gvmpy;
     # Create wrapper to start services with config files
@@ -2271,7 +2285,7 @@ main() {
             configure_valkey;
         else 
             echo -e "\e[1;32mRedis despite new license, consider valkey\e[0m";
-            apt-get -qq -y install redis-server > /dev/null 2>&1;
+            apt-get -y install redis-server > /dev/null 2>&1;
             configure_redis;
         fi
     

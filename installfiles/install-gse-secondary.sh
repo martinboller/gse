@@ -11,7 +11,7 @@
 
 
 install_prerequisites() {
-    /usr/bin/logger 'install_prerequisites' -t 'gce-2025-04-26';
+    /usr/bin/logger 'install_prerequisites' -t 'gce-2026-03-23';
     echo -e "\e[1;32minstall_prerequisites()\e[0m";
     echo -e "\e[1;32m--------------------------------------------\e[0m";
     echo -e "\e[1;36m...installing prerequisite packages\e[0m";
@@ -23,7 +23,7 @@ install_prerequisites() {
     VER=$VERSION_ID
     CODENAME=$VERSION_CODENAME
     DISTRIBUTION=$VERSION_CODENAME
-    /usr/bin/logger "Operating System $OS Version $VER Codename $CODENAME" -t 'gce-2025-04-26';
+    /usr/bin/logger "Operating System $OS Version $VER Codename $CODENAME" -t 'gce-2026-03-23';
     export DISTRIBUTION="$(lsb_release -s -c)"
     echo -e "\e[1;36m...Operating System $OS Version $VER Codename $CODENAME\e[0m";
     # Install prerequisites
@@ -74,10 +74,10 @@ install_prerequisites() {
     echo -e "\e[1;36m...other prerequisites for Greenbone Community Edition\e[0m";
     if [ $VER -eq "12" ] 
         then
-            /usr/bin/logger '..install prerequisites Debian 12 Bookworm' -t 'gce-2025-04-26';
+            /usr/bin/logger '..install prerequisites Debian 12 Bookworm' -t 'gce-2026-03-23';
             echo -e "\e[1;36m...install prerequisites Debian 12 Bookworm\e[0m";
             # Development tools
-            /usr/bin/logger '..Tools for Development' -t 'gce-2025-04-26';
+            /usr/bin/logger '..Tools for Development' -t 'gce-2026-03-23';
             echo -e "\e[1;36m...installing required development tools\e[0m";
             apt-get -y install \
                 sshpass \
@@ -195,30 +195,46 @@ install_prerequisites() {
             # Prerequisites for notus-scannner
             apt-get -y install \
                 mosquitto > /dev/null 2>&1;
+
+            # Ensuring installation for Openvas-Scanner and OpenVAS-SMB for Debian 12 and 13
+            apt-get -y install \
+                libbrotli-dev \
+                libcurl4-gnutls-dev \
+                libkrb5-dev \
+                libnghttp2-dev \
+                libnghttp3-dev \
+                libngtcp2-crypto-gnutls-dev \
+                libngtcp2-dev \
+                libpsl-dev \
+                librtmp-dev \
+                libssh2-1-dev \
+                libzstd-dev \
+                --install-recommends > /dev/null 2>&1;
+                
         else
-            /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'gce-2025-04-26';
+            /usr/bin/logger "..Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION" -t 'gce-2026-03-23';
             echo -e "\e[1;36m...Unsupported Debian version $OS $VER $CODENAME $DISTRIBUTION\e[0m";
             exit;
         fi
     
-    /usr/bin/logger '..install prerequisites finished' -t 'gce-2025-04-26';
+    /usr/bin/logger '..install prerequisites finished' -t 'gce-2026-03-23';
     echo -e "\e[1;36m...install prerequisites finished\e[0m";
      
     # Install other preferences and clean up APT
-    /usr/bin/logger '....Install some preferences on Debian and clean up apt' -t 'gce-2025-04-26';
+    /usr/bin/logger '....Install some preferences on Debian and clean up apt' -t 'gce-2026-03-23';
     echo -e "\e[1;36m...installing some preferences on Debian\e[0m";
-    apt-get -qq -y install bash-completion haveged > /dev/null 2>&1;
+    apt-get -y install bash-completion haveged > /dev/null 2>&1;
     # Install SUDO
-    apt-get -qq -y install sudo > /dev/null 2>&1;
+    apt-get -y install sudo > /dev/null 2>&1;
     # A little apt 
     echo -e "\e[1;36m...cleaning up apt\e[0m";
-        apt-get -qq update > /dev/null 2>&1;
-    apt-get -qq -y install --fix-policy;
-    apt-get -qq -y install --fix-missing;
-    apt-get -qq -y full-upgrade > /dev/null 2>&1;
-    apt-get -qq -y autoremove --purge > /dev/null 2>&1;
-    apt-get -qq -y autoclean > /dev/null 2>&1;
-    apt-get -qq -y clean > /dev/null 2>&1;
+        apt-get update > /dev/null 2>&1;
+    apt-get -y install --fix-policy;
+    apt-get -y install --fix-missing;
+    apt-get -y full-upgrade > /dev/null 2>&1;
+    apt-get -y autoremove --purge > /dev/null 2>&1;
+    apt-get -y autoclean > /dev/null 2>&1;
+    apt-get -y clean > /dev/null 2>&1;
 
     # Prepare directories for scan feed data
     echo -e "\e[1;36m...preparing directories for scan feed data\e[0m";
@@ -231,7 +247,7 @@ install_prerequisites() {
     chown -R gvm:gvm /var/log/gvm/ > /dev/null 2>&1;
     timedatectl set-timezone UTC  > /dev/null 2>&1;
     echo -e "\e[1;32minstall_prerequisites() finished\e[0m";
-    /usr/bin/logger 'install_prerequisites finished' -t 'gce-2025-04-26';
+    /usr/bin/logger 'install_prerequisites finished' -t 'gce-2026-03-23';
 }
 
 
@@ -334,7 +350,7 @@ prepare_source() {
     wget -O notus.tar.gz https://github.com/greenbone/notus-scanner/archive/refs/tags/v$NOTUS.tar.gz > /dev/null 2>&1;
     /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2026-03-17';
     wget -O greenbone-feed-sync.tar.gz https://github.com/greenbone/greenbone-feed-sync/archive/refs/tags/v$FEEDSYNC.tar.gz > /dev/null 2>&1;
-    /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2025-04-26';
+    /usr/bin/logger '..greenbone-feed-sync' -t 'gce-2026-03-23';
     wget -O valkey.tar.gz https://github.com/valkey-io/valkey/archive/refs/tags/$VALKEY.tar.gz > /dev/null 2>&1;
 
     # open and extract the tarballs
@@ -366,11 +382,11 @@ prepare_source() {
 install_valkey() {
     /usr/bin/logger 'install_valkey' -t 'gce-2026-03-17';
     echo -e "\e[1;32minstall_valkey() $VALKEY\e[0m";
-    apt -qq -y install libsystemd-dev > /dev/null 2>&1; 
+    apt -y install libsystemd-dev > /dev/null 2>&1; 
     cd /opt/gvm/src/greenbone > /dev/null 2>&1;
     # make valkey
     cd valkey > /dev/null 2>&1;
-    /usr/bin/logger '..make install valkey' -t 'gce-2025-04-26';
+    /usr/bin/logger '..make install valkey' -t 'gce-2026-03-23';
     echo -e "\e[1;36m...make install valkey $VALKEY\e[0m";
     make install USE_SYSTEMD=yes distclean > /dev/null 2>&1;
     # Create valkey user
@@ -535,7 +551,7 @@ install_nmap() {
     /usr/bin/logger 'install_nmap' -t 'gce-2026-03-17';
     cd /opt/gvm/src/greenbone;
     # Install NMAP
-    apt-get -qq -y install ./nmap.deb --fix-missing > /dev/null 2>&1;
+    apt-get -y install ./nmap.deb --fix-missing > /dev/null 2>&1;
     sync;
     /usr/bin/logger 'install_nmap finished' -t 'gce-2026-03-17';
 }
@@ -1041,19 +1057,19 @@ start_services() {
             if systemctl is-active --quiet valkey-server.service;
             then
                 echo -e "\e[1;32mvalkey-server.service started successfully";
-                /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2025-04-26';
+                /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2026-03-23';
             else
                 echo -e "\e[1;31mvalkey-server.service FAILED!\e[0m";
-                /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2025-04-26';
+                /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2026-03-23';
             fi
         else    
             if systemctl is-active --quiet redis-server.service;
             then
                 echo -e "\e[1;32mredis-server.service started successfully";
-                /usr/bin/logger 'redis-server.service started successfully' -t 'gce-2025-04-26';
+                /usr/bin/logger 'redis-server.service started successfully' -t 'gce-2026-03-23';
             else
                 echo -e "\e[1;31mredis-server.service FAILED!\e[0m";
-                /usr/bin/logger 'redis-server.service FAILED' -t 'gce-2025-04-26';
+                /usr/bin/logger 'redis-server.service FAILED' -t 'gce-2026-03-23';
             fi
         fi
     echo 'Checking core daemons.....';
@@ -1388,7 +1404,7 @@ __EOF__
 
 
 check_valkey() {
-    /usr/bin/logger 'check_valkey' -t 'gce-2025-04-26';
+    /usr/bin/logger 'check_valkey' -t 'gce-2026-03-23';
     echo -e "\e[1;32mcheck_valkey()\e[0m";
     # Check status of service valkey-server.service
     echo -e
@@ -1397,27 +1413,27 @@ check_valkey() {
     if systemctl is-active --quiet valkey-server.service;
     then
         echo -e "\e[1;32mvalkey-server.service started successfully";
-        /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2025-04-26';
+        /usr/bin/logger 'valkey-server.service started successfully' -t 'gce-2026-03-23';
         export VALKEY_REPLY=$(valkey-cli -s /run/valkey/valkey.sock PING);
 	#echo $VALKEY_REPLY;
 	if [ $VALKEY_REPLY == "PONG" ]
         then
             echo -e "\e[1;32mvalkey responding successfully with \e[1;35m$VALKEY_REPLY\e[1;32m on socket \e[1;35m$VALKEY_SOCKET\e[0m";
-            /usr/bin/logger "valkey responding successfully with $VALKEY_REPLY on socket $VALKEY_SOCKET" -t 'gce-2025-04-26';
+            /usr/bin/logger "valkey responding successfully with $VALKEY_REPLY on socket $VALKEY_SOCKET" -t 'gce-2026-03-23';
         else
             echo -e "\e[1;32mvalkey not responding on socket $VALKEY_SOCKET";
-            /usr/bin/logger "valkey not responding on socket $VALKEY_SOCKET" -t 'gce-2025-04-26';
+            /usr/bin/logger "valkey not responding on socket $VALKEY_SOCKET" -t 'gce-2026-03-23';
         fi
     else
         echo -e "\e[1;31mvalkey-server.service FAILED\e[0m";
-        /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2025-04-26';
+        /usr/bin/logger 'valkey-server.service FAILED' -t 'gce-2026-03-23';
     fi
-    /usr/bin/logger 'check_valkey finished' -t 'gce-2025-04-26';
+    /usr/bin/logger 'check_valkey finished' -t 'gce-2026-03-23';
 }
 
 
 run_once() {
-    /usr/bin/logger 'run_once' -t 'gce-2025-04-26';
+    /usr/bin/logger 'run_once' -t 'gce-2026-03-23';
     echo -e "\e[1;32mrun_once()\e[0m";
 
     mkdir -p /etc/local/runonce.d/ran
@@ -1444,21 +1460,21 @@ __EOF__
 
     chmod 755 /etc/local/runonce.d/scan_update.sh
 
-    /usr/bin/logger 'run_once finished' -t 'gce-2025-04-26';
+    /usr/bin/logger 'run_once finished' -t 'gce-2026-03-23';
     echo -e "\e[1;32mrun_once() finished\e[0m";
 }
 
 
 install_poetry() {
-    /usr/bin/logger 'install_poetry' -t 'gce-2025-04-26';
+    /usr/bin/logger 'install_poetry' -t 'gce-2026-03-23';
     echo -e "\e[1;32minstall_poetry\e[0m";
     
     if [ $POETRY_INSTALL == "Yes" ];
     then
-        /usr/bin/logger 'install_poetry' -t 'gce-2025-04-26';
+        /usr/bin/logger 'install_poetry' -t 'gce-2026-03-23';
         echo -e "\e[1;32minstalling python3-poetry\e[0m";
-        apt-get -y -qq install python3-poetry > /dev/null 2>&1;
-        /usr/bin/logger 'installing poetry requirements' -t 'gce-2025-04-26';
+        apt-get -y install python3-poetry > /dev/null 2>&1;
+        /usr/bin/logger 'installing poetry requirements' -t 'gce-2026-03-23';
         echo -e "\e[1;32minstalling poetry requirements\e[0m";
         cat << __EOF__  > /opt/gvm/scripts/requirements.txt
 autohooks>=22.8.0
@@ -1479,11 +1495,11 @@ __EOF__
         pip3 install -r /opt/gvm/scripts/requirements.txt > /dev/null 2>&1;
         deactivate  > /dev/null 2>&1;
     else
-        /usr/bin/logger 'Not installing python3-poetry check .env file' -t 'gce-2025-04-26';
+        /usr/bin/logger 'Not installing python3-poetry check .env file' -t 'gce-2026-03-23';
         echo -e "\e[1;32mNot installing python3-poetry check .env file if this is in error\e[0m";
     fi
     
-    /usr/bin/logger 'install_poetry finished' -t 'gce-2025-04-26';
+    /usr/bin/logger 'install_poetry finished' -t 'gce-2026-03-23';
     echo -e "\e[1;32minstall_poetry finished\e[0m";
 }
 
@@ -1553,7 +1569,7 @@ main() {
             configure_valkey;
         else 
             echo -e "\e[1;32mRedis despite new license, consider valkey\e[0m";
-            apt-get -qq -y install redis-server > /dev/null 2>&1;
+            apt-get -y install redis-server > /dev/null 2>&1;
             configure_redis;
         fi
             
